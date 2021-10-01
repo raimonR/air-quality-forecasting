@@ -24,7 +24,6 @@ def to_dataframe(data: list):
 aq_stations = [[725, 'Santiago'], [2009, 'SanFran'], [2549, 'Chennai'], [3455, 'Toulouse'],
                [10753, 'Melbourne'], [9764, 'Accra']]
 
-dataframe = []
 for el in aq_stations:
     # Define API query parameters
     query = {'date_from': '2015-01-01T00:00:00+00:00', 'date_to': '2021-12-31T00:00:00+00:00', 'parameter': 'pm25',
@@ -42,10 +41,8 @@ for el in aq_stations:
     # Convert API response as a dataframe
     if response:
         df_temp = to_dataframe(response)
-        dataframe.append(df_temp)
 
-    # Combine and save dataframe
-    dataframe = pd.concat(dataframe, axis=0, ignore_index=True)
-    dataframe.to_pickle(f'dataset/aq_data_{el[1]}.pkl.zip')
+    # Save dataframe
+    df_temp.to_pickle(f'dataset/air_quality_data/aq_data_{el[1]}.pkl.zip')
 
     time.sleep(0.05)
