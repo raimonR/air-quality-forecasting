@@ -26,7 +26,7 @@ aq_stations = [[725, 'Santiago'], [2009, 'SanFran'], [2549, 'Chennai'], [3455, '
 
 for el in aq_stations:
     # Define API query parameters
-    query = {'date_from': '2015-01-01T00:00:00+00:00', 'date_to': '2021-12-31T00:00:00+00:00', 'parameter': 'pm25',
+    query = {'date_from': '2015-01-01T00:00:00+00:00', 'date_to': '2021-09-01T00:00:00+00:00', 'parameter': 'pm25',
              'location_id': el[0], 'limit': 100000, 'sort': 'asc'}
 
     # Query API and retry if 1st query fails
