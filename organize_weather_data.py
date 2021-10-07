@@ -47,7 +47,7 @@ chennai = pd.concat(chennai, axis=0, ignore_index=True).sort_values(by='DATE').r
 santiago = pd.concat(santiago, axis=0, ignore_index=True).sort_values(by='DATE').reset_index(drop=True)
 
 na1 = dict.fromkeys(['TEMP', 'dewpoint', 'sea level pressure', 'local pressure', 'max temp', 'min temp'], 9999.9)
-na2 = dict.fromkeys(['visibility', 'windspeed', 'max windspeed', 'gust', 'SNDP'], 999.9)
+na2 = dict.fromkeys(['visibility', 'windspeed', 'max windspeed', 'GUST', 'SNDP'], 999.9)
 na3 = dict.fromkeys(['precipitation'], 99.99)
 for element in [na1, na2, na3]:
     toulouse = toulouse.replace(element, np.nan)
@@ -57,16 +57,9 @@ for element in [na1, na2, na3]:
     chennai = chennai.replace(element, np.nan)
     santiago = santiago.replace(element, np.nan)
 
-toulouse = toulouse.dropna(how='all')
-sf = sf.dropna(how='all')
-accra = accra.dropna(how='all')
-melbourne = melbourne.dropna(how='all')
-chennai = chennai.dropna(how='all')
-santiago = santiago.dropna(how='all')
-
-toulouse.to_pickle('dataset/daily_weather_postprocessed/toulouse.pkl')
-sf.to_pickle('dataset/daily_weather_postprocessed/sf.pkl')
-accra.to_pickle('dataset/daily_weather_postprocessed/accra.pkl')
-melbourne.to_pickle('dataset/daily_weather_postprocessed/melbourne.pkl')
-chennai.to_pickle('dataset/daily_weather_postprocessed/chennai.pkl')
-santiago.to_pickle('dataset/daily_weather_postprocessed/santiago.pkl')
+toulouse.to_pickle('dataset/daily_weather_postprocessed/Toulouse.pkl')
+sf.to_pickle('dataset/daily_weather_postprocessed/SF.pkl')
+accra.to_pickle('dataset/daily_weather_postprocessed/Accra.pkl')
+melbourne.to_pickle('dataset/daily_weather_postprocessed/Melbourne.pkl')
+chennai.to_pickle('dataset/daily_weather_postprocessed/Chennai.pkl')
+santiago.to_pickle('dataset/daily_weather_postprocessed/Santiago.pkl')

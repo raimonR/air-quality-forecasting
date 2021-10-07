@@ -21,7 +21,7 @@ def to_dataframe(data: list):
 # 3455 = Toulouse, France ~ 73.82k data points
 # 10753 = Melbourne, Australia ~ 30.50k data points
 # 9764 = Accra, Ghana ~ 32.75k data points
-aq_stations = [[725, 'Santiago'], [2009, 'SanFran'], [2549, 'Chennai'], [3455, 'Toulouse'],
+aq_stations = [[725, 'Santiago'], [2009, 'SF'], [2549, 'Chennai'], [3455, 'Toulouse'],
                [10753, 'Melbourne'], [9764, 'Accra']]
 
 for el in aq_stations:
@@ -43,6 +43,6 @@ for el in aq_stations:
         df_temp = to_dataframe(response)
 
     # Save dataframe
-    df_temp.to_pickle(f'dataset/air_quality_data/aq_data_{el[1]}.pkl.zip')
+    df_temp.to_pickle(f'dataset/air_quality_data/{el[1]}.pkl.zip')
 
     time.sleep(0.05)
