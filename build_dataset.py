@@ -3,6 +3,7 @@ from numpy.random import default_rng
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+from sklearn import impute
 
 
 def combined_datasets():
@@ -12,7 +13,7 @@ def combined_datasets():
     # Number of preceding days for AQ forecasting
     d = 1
 
-# TODO: DETERMINE METHOD FOR REPLACING MISSING DATA
+
 def individual_datasets():
     # Define random seed for numpy
     rng = default_rng(0)
@@ -29,8 +30,10 @@ def individual_datasets():
                 aq_data = pd.read_pickle(f'./dataset/{f}/{city}.zip')
                 aq_data = aq_data.set_index('date')
                 aq_data.index = pd.to_datetime(aq_data.index, utc=False)
-                aq_data = aq_data.fillna(value=-999)
-                aq_data.asfreq(freq='1H', fill_value=-999)
+                aq_data.asfreq(freq='1H')
+                aq_data[aq_data < 0] = np.nan
+                imp = impute.KNNImputer(n_neighbors=10)
+                aq_data = imp.fit_transform(aq_data.values)
 
                 merged_df.append(aq_data)
 
@@ -38,16 +41,27 @@ def individual_datasets():
                 weather_data = pd.read_pickle(f'./dataset/{f}/{city}')
                 weather_data = weather_data.set_index('DATE')
                 weather_data.index = pd.to_datetime(weather_data.index, utc=False)
-                weather_data.iloc[:, np.r_[0:14, -1]] = weather_data.iloc[np.r_[0:14, -1]].fillna(
-                                                            value=weather_data.iloc[:, np.r_[0:14, -1]].mean())
+                weather_data[weather_data['SNDP'].isna()] = 0
+                weather_data[weather_data['sea level pressure'].isna()] = 1013.25
+                weather_data[weather_data['precipitation'].isna()] = 0
+                for cols in weather_data.columns:
+                    weather_data[weather_data[cols].isna()] = weather_data[cols].mean()
 
-                print('a')
+                # TODO: iteratively remove weather inputs to determine which ones are relevant
+                #  specifically: 'sea level pressure', 'GUST', 'visibility', 'weather'
+                merged_df.append(weather_data)
 
             elif f == 'drought_postprocessed':
                 drought_data = pd.read_pickle(f'./dataset/{f}/{city}')
+                drought_data = drought_data.set_index('Date')
+                drought_data.index = pd.to_datetime(drought_data.index, utc=False)
+
+                merged_df.append(drought_data)
 
             elif f == 'radiosonde_postprocessed':
                 radiosonde_data = pd.read_pickle(f'./dataset/{f}/{city}')
+
+                print('a')
 
 
 
