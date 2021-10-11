@@ -60,11 +60,16 @@ def postprocess():
         lr = -9.8/1e3
         surface_temp = np.mean(temp_arr[:2])
         points = lr*h_arr + surface_temp
-        intersection = np.argmax(np.isclose(temp_arr, points, atol=0.4))
-        return h_arr[intersection]
+        intersection = np.isclose(temp_arr, points, atol=0.25)
+        if np.all(intersection == False):
+            return 0
+        else:
+            intersection = np.argmax(intersection)
+            return h_arr[intersection]
 
+    # TODO: NEED TO FIX MAJOR SOURCES OF ERROR IN DETERMINING HEIGHT OF MIXING LAYER
     files = os.listdir('dataset/radiosonde_preprocessed/')
-    alt = 5000
+    alt = 4000
 
     for f in files:
         df = []
@@ -76,6 +81,9 @@ def postprocess():
             temperature = data.loc[m, 'TEMP'].iloc[:i + 2]
             theta_v = data.loc[m, 'THTV'].iloc[:i + 2]
             ws = data.loc[m, 'SKNT'].iloc[:i + 2]
+
+            if height.min() >= 100:
+                continue
 
             if np.all(height.isna()) or np.all(temperature.isna()) or np.all(theta_v.isna()) or np.all(ws.isna()):
                 continue
@@ -105,4 +113,4 @@ def postprocess():
 
 
 # preprocess()
-# postprocess()
+postprocess()
