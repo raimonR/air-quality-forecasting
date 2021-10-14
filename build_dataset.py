@@ -1,11 +1,10 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn import impute
 
 
 # Get datasets for each city
-for city in ['Accra.pkl', 'Chennai.pkl', 'Melbourne.pkl', 'Santiago.pkl', 'SF.pkl', 'Toulouse.pkl']:
+for city in ['Abidjan.pkl', 'Chennai.pkl', 'Melbourne.pkl', 'Santiago.pkl', 'Oakland.pkl', 'Munich.pkl']:
     ds = ['air_quality_data', 'daily_weather_postprocessed', 'drought_postprocessed', 'radiosonde_postprocessed']
     merged_df = []
     for f in ds:
@@ -16,8 +15,7 @@ for city in ['Accra.pkl', 'Chennai.pkl', 'Melbourne.pkl', 'Santiago.pkl', 'SF.pk
             aq_data.asfreq(freq='1H')
             aq_data.index = aq_data.index.tz_localize(None)
             aq_data[aq_data < 0] = np.nan
-            imp = impute.KNNImputer(n_neighbors=10)
-            aq_data['pm25'] = imp.fit_transform(aq_data.values)
+            aq_data['pm25'] =
 
             merged_df.append(aq_data)
 
@@ -33,7 +31,7 @@ for city in ['Accra.pkl', 'Chennai.pkl', 'Melbourne.pkl', 'Santiago.pkl', 'SF.pk
                     intersection = weather_data[cols].isna() & (weather_data.index.month == month)
                     weather_data.loc[intersection, cols] = weather_data.loc[weather_data.index.month == month, cols].mean()
 
-            weather_data = weather_data.asfreq(freq='1H', method='ffill')
+            weather_data = weather_data.asfreq(freq='1H')
             weather_data.index = weather_data.index.tz_localize(None)
 
             # TODO: iteratively remove weather inputs to determine which ones are relevant
@@ -52,10 +50,9 @@ for city in ['Accra.pkl', 'Chennai.pkl', 'Melbourne.pkl', 'Santiago.pkl', 'SF.pk
 
         elif f == 'radiosonde_postprocessed':
             radiosonde_data = pd.read_pickle(f'./dataset/{f}/{city}')
-            radiosonde_data = radiosonde_data.asfreq(freq='1H', method='ffill')
+            radiosonde_data = radiosonde_data.asfreq(freq='1H')
             radiosonde_data.index = radiosonde_data.index.tz_localize(None)
 
-            # TODO: MAXIMUM MIXING LAYER HEIGHT IN ACCRA IS 18930 M, WHICH IS ABSURD. MUST FIND A FIX
             merged_df.append(radiosonde_data)
 
     for i in range(1, len(merged_df)):

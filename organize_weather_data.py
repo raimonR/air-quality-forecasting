@@ -5,12 +5,12 @@ import os
 
 files = os.listdir('dataset/daily_weather_preprocessed/')
 
-toulouse = []
+munich = []
 chennai = []
 melbourne = []
 santiago = []
-accra = []
-sf = []
+abidjan = []
+oakland = []
 columns_to_drop = ['STATION', 'NAME', 'TEMP_ATTRIBUTES', 'DEWP_ATTRIBUTES', 'SLP_ATTRIBUTES', 'STP_ATTRIBUTES',
                    'VISIB_ATTRIBUTES', 'WDSP_ATTRIBUTES', 'MAX_ATTRIBUTES', 'MIN_ATTRIBUTES', 'PRCP_ATTRIBUTES']
 
@@ -24,24 +24,24 @@ for f in files:
     temp = temp.drop(columns=columns_to_drop)
     temp = temp.rename(columns=column_rename)
 
-    if city == 'Accra':
-        accra.append(temp)
-    elif city == 'Toulouse':
-        toulouse.append(temp)
+    if city == 'Abidjan':
+        abidjan.append(temp)
+    elif city == 'Munich':
+        munich.append(temp)
     elif city == 'Chennai':
         chennai.append(temp)
-    elif city == 'SF':
-        sf.append(temp)
-    elif city == 'Chile':
+    elif city == 'Oakland':
+        oakland.append(temp)
+    elif city == 'Santiago':
         santiago.append(temp)
     elif city == 'Melbourne':
         melbourne.append(temp)
     else:
         continue
 
-toulouse = pd.concat(toulouse, axis=0, ignore_index=True).sort_values(by='DATE').reset_index(drop=True)
-sf = pd.concat(sf, axis=0, ignore_index=True).sort_values(by='DATE').reset_index(drop=True)
-accra = pd.concat(accra, axis=0, ignore_index=True).sort_values(by='DATE').reset_index(drop=True)
+munich = pd.concat(munich, axis=0, ignore_index=True).sort_values(by='DATE').reset_index(drop=True)
+oakland = pd.concat(oakland, axis=0, ignore_index=True).sort_values(by='DATE').reset_index(drop=True)
+abidjan = pd.concat(abidjan, axis=0, ignore_index=True).sort_values(by='DATE').reset_index(drop=True)
 melbourne = pd.concat(melbourne, axis=0, ignore_index=True).sort_values(by='DATE').reset_index(drop=True)
 chennai = pd.concat(chennai, axis=0, ignore_index=True).sort_values(by='DATE').reset_index(drop=True)
 santiago = pd.concat(santiago, axis=0, ignore_index=True).sort_values(by='DATE').reset_index(drop=True)
@@ -50,16 +50,16 @@ na1 = dict.fromkeys(['TEMP', 'dewpoint', 'sea level pressure', 'local pressure',
 na2 = dict.fromkeys(['visibility', 'windspeed', 'max windspeed', 'GUST', 'SNDP'], 999.9)
 na3 = dict.fromkeys(['precipitation'], 99.99)
 for element in [na1, na2, na3]:
-    toulouse = toulouse.replace(element, np.nan)
-    sf = sf.replace(element, np.nan)
-    accra = accra.replace(element, np.nan)
+    munich = munich.replace(element, np.nan)
+    oakland = oakland.replace(element, np.nan)
+    abidjan = abidjan.replace(element, np.nan)
     melbourne = melbourne.replace(element, np.nan)
     chennai = chennai.replace(element, np.nan)
     santiago = santiago.replace(element, np.nan)
 
-toulouse.to_pickle('dataset/daily_weather_postprocessed/Toulouse.pkl')
-sf.to_pickle('dataset/daily_weather_postprocessed/SF.pkl')
-accra.to_pickle('dataset/daily_weather_postprocessed/Accra.pkl')
+munich.to_pickle('dataset/daily_weather_postprocessed/Munich.pkl')
+oakland.to_pickle('dataset/daily_weather_postprocessed/Oakland.pkl')
+abidjan.to_pickle('dataset/daily_weather_postprocessed/Abidjan.pkl')
 melbourne.to_pickle('dataset/daily_weather_postprocessed/Melbourne.pkl')
 chennai.to_pickle('dataset/daily_weather_postprocessed/Chennai.pkl')
 santiago.to_pickle('dataset/daily_weather_postprocessed/Santiago.pkl')

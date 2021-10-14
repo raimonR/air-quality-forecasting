@@ -15,14 +15,14 @@ def to_dataframe(data: list):
 
 
 # Define set of AQ stations
-# 725 = Santiago, Chile ~ 94.46k data points
-# 2009 = San Francisco, USA ~ 82.34k data points
-# 2549 = Chennai, India ~ 31.79k data points
-# 3455 = Toulouse, France ~ 73.82k data points
-# 10753 = Melbourne, Australia ~ 30.50k data points
-# 9764 = Accra, Ghana ~ 32.75k data points
-aq_stations = [[725, 'Santiago'], [2009, 'SF'], [2549, 'Chennai'], [3455, 'Toulouse'],
-               [10753, 'Melbourne'], [9764, 'Accra']]
+# 725 = Santiago, Chile
+# 2135 = Oakland, USA
+# 8558 = Chennai, India
+# 2669 = Munich, Germany
+# 10753 = Melbourne, Australia
+# 9762 = Abidjan, Ivory Coast
+aq_stations = [[725, 'Santiago'], [2135, 'Oakland'], [8558, 'Chennai'], [2669, 'Munich'],
+               [10753, 'Melbourne'], [9762, 'Abidjan']]
 
 for el in aq_stations:
     # Define API query parameters
@@ -43,6 +43,6 @@ for el in aq_stations:
         df_temp = to_dataframe(response)
 
     # Save dataframe
-    df_temp.to_pickle(f'dataset/air_quality_data/{el[1]}.pkl.zip')
+    df_temp.to_pickle(f'dataset/air_quality_data/{el[1]}.pkl')
 
-    time.sleep(0.05)
+    time.sleep(0.5)
