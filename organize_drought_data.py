@@ -6,14 +6,14 @@ import os
 files = os.listdir('dataset/drought_preprocessed')
 
 munich = []
-chennai = []
+dhaka = []
 melbourne = []
 santiago = []
 abidjan = []
 oakland = []
 
 set_list = [['Oakland', [-122.5, 37.5]], ['Santiago', [-70.5, -33.5]], ['Munich', [11.5, 48.5]],
-            ['Abidjan', [-3.5, 5.5]], ['Chennai', [80.5, 13.5]], ['Melbourne', [144.5, -37.5]]]
+            ['Abidjan', [-3.5, 5.5]], ['Dhaka', [90.5, 23.5]], ['Melbourne', [144.5, -37.5]]]
 for element in set_list:
     drought_data = []
     for f in files:

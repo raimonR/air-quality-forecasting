@@ -10,8 +10,8 @@ import os
 
 def preprocess_graphs():
     # data_list = [['Santiago', 85586, 2015], ['Oakland', 72493, 2016], ['Abidjan', 65578, 2020],
-    #              ['Melbourne', 94866, 2020], ['Munich', 10868, 2016], ['Chennai', 43279, 2018]]
-    data_list = [['Chennai', 43279, 2018]]
+    #              ['Melbourne', 94866, 2020], ['Munich', 10868, 2016], ['Dhaka', 41923, 2016]]
+    data_list = [['Dhaka', 41923, 2016]]
     for station, station_number, initial_date in data_list:
         columns = ['PRES', 'HGHT', 'TEMP', 'DWPT', 'RELH', 'MIXR', 'DRCT', 'SKNT', 'THTA', 'THTE', 'THTV']
         df = pd.DataFrame()
@@ -53,8 +53,8 @@ def preprocess_graphs():
 
 def preprocess_variables():
     # data_list = [['Santiago', 85586, 2015], ['Oakland', 72493, 2016], ['Abidjan', 65578, 2020],
-    #              ['Melbourne', 94866, 2020], ['Munich', 10868, 2016], ['Chennai', 43279, 2018]]
-    data_list = [['Chennai', 43279, 2018]]
+    #              ['Melbourne', 94866, 2020], ['Munich', 10868, 2016], ['Dhaka', 41923, 2016]]
+    data_list = [['Dhaka', 41923, 2016]]
     for station, station_number, initial_date in data_list:
         columns = ['showalter index', 'cape', 'ci', 'ml theta']
         df = pd.DataFrame()

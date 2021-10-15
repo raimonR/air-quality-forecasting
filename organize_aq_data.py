@@ -17,11 +17,11 @@ def to_dataframe(data: list):
 # Define set of AQ stations
 # 725 = Santiago, Chile
 # 2135 = Oakland, USA
-# 8558 = Chennai, India
+# 8415 = Dhaka, Bangladesh
 # 2669 = Munich, Germany
 # 10753 = Melbourne, Australia
 # 9762 = Abidjan, Ivory Coast
-aq_stations = [[725, 'Santiago'], [2135, 'Oakland'], [2586, 'Chennai'], [2669, 'Munich'], [10753, 'Melbourne'],
+aq_stations = [[725, 'Santiago'], [2135, 'Oakland'], [8415, 'Dhaka'], [2669, 'Munich'], [10753, 'Melbourne'],
                [9762, 'Abidjan']]
 
 for el in aq_stations:
