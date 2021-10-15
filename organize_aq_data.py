@@ -21,8 +21,8 @@ def to_dataframe(data: list):
 # 2669 = Munich, Germany
 # 10753 = Melbourne, Australia
 # 9762 = Abidjan, Ivory Coast
-aq_stations = [[725, 'Santiago'], [2135, 'Oakland'], [8558, 'Chennai'], [2669, 'Munich'],
-               [10753, 'Melbourne'], [9762, 'Abidjan']]
+aq_stations = [[725, 'Santiago'], [2135, 'Oakland'], [2586, 'Chennai'], [2669, 'Munich'], [10753, 'Melbourne'],
+               [9762, 'Abidjan']]
 
 for el in aq_stations:
     # Define API query parameters

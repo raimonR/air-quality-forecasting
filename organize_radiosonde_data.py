@@ -10,8 +10,8 @@ import os
 
 def preprocess_graphs():
     # data_list = [['Santiago', 85586, 2015], ['Oakland', 72493, 2016], ['Abidjan', 65578, 2020],
-    #              ['Melbourne', 94866, 2020], ['Munich', 10868, 2016], ['Chennai', 43279, 2016]]
-    data_list = [['Abidjan', 65578, 2020]] #, ['Melbourne', 94866, 2020]]
+    #              ['Melbourne', 94866, 2020], ['Munich', 10868, 2016], ['Chennai', 43279, 2018]]
+    data_list = [['Chennai', 43279, 2018]]
     for station, station_number, initial_date in data_list:
         columns = ['PRES', 'HGHT', 'TEMP', 'DWPT', 'RELH', 'MIXR', 'DRCT', 'SKNT', 'THTA', 'THTE', 'THTV']
         df = pd.DataFrame()
@@ -52,10 +52,11 @@ def preprocess_graphs():
 
 
 def preprocess_variables():
-    data_list = [['Santiago', 85586, 2015], ['Oakland', 72493, 2016], ['Abidjan', 65578, 2020],
-                 ['Melbourne', 94866, 2020], ['Munich', 10868, 2016], ['Chennai', 43279, 2016]]
+    # data_list = [['Santiago', 85586, 2015], ['Oakland', 72493, 2016], ['Abidjan', 65578, 2020],
+    #              ['Melbourne', 94866, 2020], ['Munich', 10868, 2016], ['Chennai', 43279, 2018]]
+    data_list = [['Chennai', 43279, 2018]]
     for station, station_number, initial_date in data_list:
-        columns = ['showalter index', 'cape', 'ci', 'ml theta', 'ml mixing ratio']
+        columns = ['showalter index', 'cape', 'ci', 'ml theta']
         df = pd.DataFrame()
         df[columns] = np.zeros(len(columns))
         for i in range(initial_date, 2022):
@@ -82,7 +83,7 @@ def preprocess_variables():
 
                     lines = points.text.split('\n')
                     cols = ['showalter', 'Convective Available Potential Energy', 'Convective Inhibition',
-                            'mean mixed layer potential temperature', 'mean mixed layer mixing ratio']
+                            'mean mixed layer potential temperature']
                     rows = []
                     for unit in cols:
                         row_size = len(rows)

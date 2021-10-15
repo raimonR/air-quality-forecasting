@@ -14,8 +14,8 @@ def build_dataset(radiosonde_graphs: bool):
                 aq_data.index = pd.to_datetime(aq_data.index, utc=False)
                 aq_data.asfreq(freq='1H')
                 aq_data.index = aq_data.index.tz_localize(None)
-                aq_data[aq_data < 0] = np.nan
                 aq_data['pm25'] = pd.to_numeric(aq_data['pm25'])
+                aq_data[aq_data < 0] = np.nan
                 aq_data = aq_data.interpolate(method='time', limit=4)
 
                 merged_df.append(aq_data)
