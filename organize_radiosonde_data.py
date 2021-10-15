@@ -177,13 +177,11 @@ def postprocess_graphs():
 def postprocess_variables():
     files = os.listdir('dataset/radiosonde_preprocessed/variables/')
     for f in files:
-        df = []
         data = pd.read_pickle(f'dataset/radiosonde_preprocessed/variables/{f}')
-        measurements = data.index.unique()
-        print('f')
+        data.to_pickle(f'dataset/radiosonde_postprocessed/variables/{f}')
 
 
-# preprocess_graphs()
-# preprocess_variables()
-# postprocess_graphs()
+preprocess_graphs()
+preprocess_variables()
+postprocess_graphs()
 postprocess_variables()
