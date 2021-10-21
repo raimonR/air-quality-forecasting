@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import sklearn as skl
+from darts import TimeSeries
 
 
 def grouped_dataset_split(rng_int: int):
@@ -48,5 +49,13 @@ def grouped_dataset_split(rng_int: int):
 def transfer_dataset_split(rng_int: int):
     rng = np.random.default_rng(rng_int)
 
-
-grouped_dataset_split(0)
+    files = os.listdir('dataset/merged/')
+    for f in files:
+        if f == 'Abidjan_merged_dataset.pkl':
+            df_temp = pd.read_pickle(f'dataset/merged/{f}')
+                
+            breakpoint()
+            print('asdf')    
+           
+# grouped_dataset_split(0)
+transfer_dataset_split(0)
