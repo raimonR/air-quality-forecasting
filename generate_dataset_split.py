@@ -4,15 +4,10 @@ import os
 import sklearn as skl
 
 
-def ensemble_dataset_split(rng_int: int, radiosonde_graphs: bool):
+def grouped_dataset_split(rng_int: int):
     rng = np.random.default_rng(rng_int)
 
-    if radiosonde_graphs:
-        files = os.listdir('dataset/merged/graphs/')
-        files = ['graphs/' + f for f in files]
-    else:
-        files = os.listdir('dataset/merged/variables/')
-        files = ['variables/' + f for f in files]
+    files = os.listdir('dataset/merged/')
 
     for f in files:
         if f == 'Abidjan_merged_dataset.pkl':
@@ -50,9 +45,8 @@ def ensemble_dataset_split(rng_int: int, radiosonde_graphs: bool):
             santiago_cal = np.arange(min_index, max_index, step=np.timedelta64(1, 'D'), dtype='datetime64')
 
 
-
 def transfer_dataset_split(rng_int: int):
     rng = np.random.default_rng(rng_int)
 
 
-ensemble_dataset_split(0, True)
+grouped_dataset_split(0)

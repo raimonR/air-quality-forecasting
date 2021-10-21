@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-def build_dataset(radiosonde_graphs: bool):
+def build_dataset():
     # Get datasets for each city
     for city in ['Abidjan.pkl', 'Dhaka.pkl', 'Melbourne.pkl', 'Santiago.pkl', 'Oakland.pkl', 'Munich.pkl']:
         ds = ['air_quality_data', 'daily_weather_postprocessed', 'drought_postprocessed', 'radiosonde_postprocessed']
@@ -36,30 +36,23 @@ def build_dataset(radiosonde_graphs: bool):
                 weather_data = weather_data.asfreq(freq='1H', method='ffill')
                 weather_data.index = weather_data.index.tz_localize(None)
 
-                # TODO: iteratively remove weather inputs to determine which ones are relevant
-                #  specifically: 'sea level pressure', 'GUST', 'visibility', 'weather'
                 merged_df.append(weather_data)
 
             elif f == 'drought_postprocessed':
                 drought_data = pd.read_pickle(f'./dataset/{f}/{city}')
                 drought_data = drought_data.set_index('Date')
                 drought_data.index = pd.to_datetime(drought_data.index, utc=False)
-                drought_data = drought_data.asfreq(freq='1H')
+                drought_data = drought_data.asfreq(freq='1H', method='ffill')
                 # TODO: Determine if interpolation or forward fill is the best choice
-                drought_data = drought_data.interpolate(method='time')
+                # drought_data = drought_data.interpolate(method='time')
                 drought_data.index = drought_data.index.tz_localize(None)
 
                 merged_df.append(drought_data)
 
             elif f == 'radiosonde_postprocessed':
-                if radiosonde_graphs:
-                    radiosonde_data = pd.read_pickle(f'./dataset/{f}/graphs/{city}')
-                    radiosonde_data = radiosonde_data.asfreq(freq='1H', method='ffill')
-                    radiosonde_data.index = radiosonde_data.index.tz_localize(None)
-                else:
-                    radiosonde_data = pd.read_pickle(f'./dataset/{f}/variables/{city}')
-                    radiosonde_data = radiosonde_data.asfreq(freq='1H', method='ffill')
-                    radiosonde_data.index = radiosonde_data.index.tz_localize(None)
+                radiosonde_data = pd.read_pickle(f'./dataset/{f}/{city}')
+                radiosonde_data = radiosonde_data.asfreq(freq='1H', method='ffill')
+                radiosonde_data.index = radiosonde_data.index.tz_localize(None)
 
                 merged_df.append(radiosonde_data)
 
@@ -67,11 +60,7 @@ def build_dataset(radiosonde_graphs: bool):
             merged_df[0] = merged_df[0].merge(merged_df[i], how='inner', left_index=True, right_index=True)
 
         merged_df = merged_df[0]
-        if radiosonde_graphs:
-            merged_df.to_pickle(f'./dataset/merged/graphs/{city.split(".")[0]}_merged_dataset.pkl')
-        else:
-            merged_df.to_pickle(f'./dataset/merged/variables/{city.split(".")[0]}_merged_dataset.pkl')
+        merged_df.to_pickle(f'./dataset/merged/{city.split(".")[0]}_merged_dataset.pkl')
 
 
-build_dataset(True)
-build_dataset(False)
+build_dataset()
