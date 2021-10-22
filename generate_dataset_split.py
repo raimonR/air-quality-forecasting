@@ -54,7 +54,6 @@ def transfer_dataset_split(rng_int: int):
         if f == 'Abidjan_merged_dataset.pkl':
             df_temp = pd.read_pickle(f'dataset/merged/{f}')
                 
-            breakpoint()
             print('asdf')    
            
 # grouped_dataset_split(0)
