@@ -59,7 +59,7 @@ def postprocess_arrays():
     files = os.listdir('dataset/radiosonde_preprocessed/')
     for f in files:
         data = pd.read_pickle(f'dataset/radiosonde_preprocessed/{f}')
-        df_temp = pd.DataFrame(columns=['PRES_vs_z', 'TEMP_vs_z', 'THTV_vs_z']).astype('object')
+        df_temp = pd.DataFrame()
         for m in data.index.unique():
             if data.loc[m, 'HGHT'].size <= 1:
                 continue
@@ -82,9 +82,14 @@ def postprocess_arrays():
             temperature = CubicSpline(h, temperature)
             theta_v = CubicSpline(h, theta_v)
 
-            df_temp.loc[m, 'PRES_vs_z'] = pressure(z)
-            df_temp.loc[m, 'TEMP_vs_z'] = temperature(z)
-            df_temp.loc[m, 'THTV_vs_z'] = theta_v(z)
+            pressure_columns = ['PRES_vs_z_' + str(s) for s in z]
+            temperature_columns = ['TEMP_vs_z_' + str(s) for s in z]
+            theta_v_columns = ['THTV_vs_z_' + str(s) for s in z]
+
+            columns = pressure_columns + temperature_columns + theta_v_columns
+            values = pressure(z).tolist() + temperature(z).tolist() + theta_v(z).tolist()
+
+            df_temp = df_temp.append(pd.DataFrame(dict(zip(columns, values)), index=[m]))
 
         df_temp.to_pickle(f'dataset/radiosonde_postprocessed/{f}')
 

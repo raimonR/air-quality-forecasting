@@ -59,8 +59,6 @@ def transfer_dataset_split(rng_int: int):
             covariates = TimeSeries.from_dataframe(df_temp, value_cols='LATITUDE', freq='1H')
             columns = df_temp.columns[(df_temp.columns != 'pm25') & (df_temp.columns != 'LATITUDE')].to_list()
             for column in columns:
-                # TODO: figure out how to make list of arrays as timeseries, i.e. the pressure, temperature,
-                #  and theta_v vertical profiles
                 covariates = covariates.stack(TimeSeries.from_dataframe(df_temp, value_cols=column, freq='1H'))
 
             print('a')
