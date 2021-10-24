@@ -20,10 +20,21 @@ def grouped_dataset_split(rng_int: int):
                 df_temp[c] = scaled_array[:, i]
 
             min_index = df_temp.index[0]
-            max_index = df_temp.index[-1]
-            abidjan_cal = np.arange(min_index, max_index, step=np.timedelta64(1, 'D'), dtype='datetime64')
+            if min_index.hour != 0:
+                min_index = df_temp.index[df_temp.index.hour == 0][0]
 
-            intersection = df_temp.isna()
+            max_index = df_temp.index[-1]
+            if max_index.hour != 0:
+                max_index = df_temp.index[df_temp.index.hour == 0][-1]
+
+            abidjan_cal = np.arange(min_index, max_index, step=np.timedelta64(1, 'D'), dtype='datetime64')
+            n = np.floor(abidjan_cal.shape[0]/2*0.9).astype(int)
+            abidjan_cal = rng.choice(abidjan_cal, n, replace=False, shuffle=False)
+            sub_sample = []
+            for day in abidjan_cal:
+                sub_sample.append(df_temp.loc[day:(day + np.timedelta64(2, 'D')), :])
+
+            print('asdf')
 
         elif f == 'Chennai_merged_dataset.pkl':
             df_temp = pd.read_pickle(f'dataset/merged/{f}')
@@ -112,5 +123,5 @@ def transfer_dataset_split():
             json.dump(covariates.to_json(), write_file)
 
 
-# grouped_dataset_split(0)
-transfer_dataset_split()
+grouped_dataset_split(0)
+# transfer_dataset_split()

@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 
 def build_dataset():
@@ -12,7 +13,7 @@ def build_dataset():
                 aq_data = pd.read_pickle(f'./dataset/{f}/{city}')
                 aq_data = aq_data.set_index('date')
                 aq_data.index = pd.to_datetime(aq_data.index, utc=False)
-                aq_data.asfreq(freq='1H')
+                aq_data = aq_data.asfreq(freq='1H')
                 aq_data.index = aq_data.index.tz_localize(None)
                 aq_data['pm25'] = pd.to_numeric(aq_data['pm25'])
                 aq_data[aq_data < 0] = np.nan
@@ -43,8 +44,6 @@ def build_dataset():
                 drought_data = drought_data.set_index('Date')
                 drought_data.index = pd.to_datetime(drought_data.index, utc=False)
                 drought_data = drought_data.asfreq(freq='1H', method='ffill')
-                # TODO: Determine if interpolation or forward fill is the best choice
-                # drought_data = drought_data.interpolate(method='time')
                 drought_data.index = drought_data.index.tz_localize(None)
 
                 merged_df.append(drought_data)
