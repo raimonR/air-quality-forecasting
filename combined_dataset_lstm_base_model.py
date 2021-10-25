@@ -32,5 +32,7 @@ for i, e in enumerate(epochs):
         train_loss[i, j] = res.history['loss'][-1]
         val_loss[i, j] = res.history['val_loss'][-1]
 
+np.save('epoch_tuning_training_loss', train_loss)
+np.save('epoch_tuning_validation_loss', val_loss)
 
 print('done')
