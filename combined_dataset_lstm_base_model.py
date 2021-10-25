@@ -28,7 +28,7 @@ repeats = 1
 train_loss = np.zeros((len(epochs), repeats))
 val_loss = np.zeros((len(epochs), repeats))
 for i, e in enumerate(epochs):
-    for j in range(5):
+    for j in range(repeats):
         res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y), epochs=e, batch_size=batches)
         train_loss[i, j] = res.history['loss'][-1]
         val_loss[i, j] = res.history['val_loss'][-1]
