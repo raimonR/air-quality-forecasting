@@ -21,16 +21,16 @@ model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.01), loss='mse')
 model.summary()
 
 # Start hyperparameter tuning with epochs
-epochs = [10, 50, 100, 200, 500, 1000, 2000]
+epochs = [1, 10, 50, 100, 250, 500, 1000, 2000]
 batches = 4
 
-train_loss = []
-val_loss = []
-for e in epochs:
-    for i in range(10):
-        res = model.fig(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y), epochs=e, batch_size=batches)
-        train_loss.append(res.history['loss'])
-        val_loss.append(res.history['val_loss'])
+train_loss = np.zeros((len(epochs), 10))
+val_loss = np.zeros((len(epochs), 10))
+for i, e in enumerate(epochs):
+    for j in range(10):
+        res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y), epochs=e, batch_size=batches)
+        train_loss[i, j] = res.history['loss'][-1]
+        val_loss[i, j] = res.history['val_loss'][-1]
 
 
 print('done')
