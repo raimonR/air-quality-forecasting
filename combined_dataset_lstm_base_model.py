@@ -35,4 +35,15 @@ for i, e in enumerate(epochs):
 np.save('epoch_tuning_training_loss', train_loss)
 np.save('epoch_tuning_validation_loss', val_loss)
 
+fig, ax = plt.subplots()
+for i, e in enumerate(epochs):
+    for j in range(10):
+        ax.semilogx(e, train_loss[i, j], '.', color='tab:blue')
+        ax.semilogx(e, val_loss[i, j], '.', color='tab:orange')
+
+ax.set(xlabel='Epochs', ylabel='Mean Squared Error')
+fig.savefig('epoch_tuning_plot.png')
+plt.close()
+
+
 print('done')
