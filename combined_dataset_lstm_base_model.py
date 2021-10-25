@@ -21,7 +21,7 @@ model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.01), loss='mse')
 model.summary()
 
 # Start hyperparameter tuning with epochs
-epochs = [1, 10, 50, 100, 250, 500]
+epochs = [1, 10, 50, 100, 250]
 batches = 4
 repeats = 5
 
