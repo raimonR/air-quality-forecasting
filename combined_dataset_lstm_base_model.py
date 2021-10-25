@@ -23,7 +23,7 @@ model.summary()
 # Start hyperparameter tuning with epochs
 epochs = [1, 10, 50, 100, 250]
 batches = 4
-repeats = 5
+repeats = 1
 
 train_loss = np.zeros((len(epochs), repeats))
 val_loss = np.zeros((len(epochs), repeats))
