@@ -23,11 +23,12 @@ model.summary()
 # Start hyperparameter tuning with epochs
 epochs = [1, 10, 50, 100, 250, 500, 1000]
 batches = 4
+repeats = 5
 
-train_loss = np.zeros((len(epochs), 10))
-val_loss = np.zeros((len(epochs), 10))
+train_loss = np.zeros((len(epochs), repeats))
+val_loss = np.zeros((len(epochs), repeats))
 for i, e in enumerate(epochs):
-    for j in range(10):
+    for j in range(5):
         res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y), epochs=e, batch_size=batches)
         train_loss[i, j] = res.history['loss'][-1]
         val_loss[i, j] = res.history['val_loss'][-1]
@@ -37,7 +38,7 @@ np.save('epoch_tuning_validation_loss', val_loss)
 
 fig, ax = plt.subplots()
 for i, e in enumerate(epochs):
-    for j in range(10):
+    for j in range(repeats):
         ax.semilogx(e, train_loss[i, j], '.', color='tab:blue')
         ax.semilogx(e, val_loss[i, j], '.', color='tab:orange')
 
