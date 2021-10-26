@@ -16,4 +16,13 @@ for f in files:
     test_set_x = np.load(f'dataset/lstm_dataset_splits/individual/{f}/test_set_x.npy')
     test_set_y = np.load(f'dataset/lstm_dataset_splits/individual/{f}/test_set_y.npy')
 
+    inputs = Input(shape=(train_set_x.shape[1], train_set_x.shape[2]))
+    lstm_out = Bidirectional(LSTM(units=296, return_sequences=True))(inputs)
+    lstm_out = Bidirectional(LSTM(units=148))(lstm_out)
+    outputs = Dense(units=24)(lstm_out)
+
+    model = keras.Model(inputs=inputs, outputs=outputs)
+    model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.01), loss='mse')
+    model.summary()
+
 

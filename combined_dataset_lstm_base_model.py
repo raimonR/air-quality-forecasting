@@ -21,9 +21,9 @@ model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.01), loss='mse')
 model.summary()
 
 # Start hyperparameter tuning with epochs
-epochs = [1, 10, 50, 100, 250]
+epochs = [1, 10, 50, 100, 250, 500]
 batches = 4
-repeats = 1
+repeats = 10
 
 train_loss = np.zeros((len(epochs), repeats))
 val_loss = np.zeros((len(epochs), repeats))
@@ -37,10 +37,10 @@ np.save('epoch_tuning_training_loss', train_loss)
 np.save('epoch_tuning_validation_loss', val_loss)
 
 fig, ax = plt.subplots()
-for i, e in enumerate(epochs):
-    for j in range(repeats):
-        ax.semilogx(e, train_loss[i, j], '.', color='tab:blue')
-        ax.semilogx(e, val_loss[i, j], '.', color='tab:orange')
+for j in range(repeats):
+    for e in epochs:
+        ax.plot(e, train_loss[:, j], '.', color='tab:blue')
+        ax.plot(e, val_loss[:, j], '.', color='tab:orange')
 
 ax.set(xlabel='Epochs', ylabel='Mean Squared Error')
 fig.savefig('epoch_tuning_plot.png')
