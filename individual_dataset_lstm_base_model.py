@@ -5,7 +5,7 @@ import tensorflow as tf
 from tensorflow import keras
 from keras.preprocessing.sequence import TimeseriesGenerator
 from keras.models import Sequential
-from keras.layers import Input, LSTM, Dense
+from keras.layers import Input, LSTM, Dense, Bidirectional
 
 files = os.listdir('dataset/lstm_dataset_splits/individual/')
 for f in files:
