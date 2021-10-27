@@ -3,7 +3,6 @@ import numpy as np
 import os
 from darts.timeseries import TimeSeries
 from sklearn.preprocessing import StandardScaler
-import json
 
 
 def individual_dataset_split():
@@ -133,14 +132,13 @@ def transfer_dataset_split():
         for column in columns:
             covariates = covariates.stack(TimeSeries.from_dataframe(df_temp, value_cols=column, freq='1H'))
 
-        # TODO: FIND A WAY TO STORE THE COVARIATES AND FORECAST IN MORE SPACE EFFICIENT FILES
-        with open(f'./dataset/transfer_learning/{f.split("_")[0]}/forecast.json', 'w') as write_file:
-            json.dump(forecast.to_json(), write_file)
+        forecast_df = forecast.data_array().to_dataframe('forecast')
+        forecast_df.to_pickle(f'./dataset/transfer_learning/{f.split("_")[0]}/forecast.pkl')
 
-        with open(f'./dataset/transfer_learning/{f.split("_")[0]}/covariates.json', 'w') as write_file:
-            json.dump(covariates.to_json(), write_file)
+        covariates_df = covariates.data_array().to_dataframe('covariates')
+        covariates_df.to_pickle(f'./dataset/transfer_learning/{f.split("_")[0]}/covariates.pkl')
 
 
 individual_dataset_split()
-# grouped_dataset_split(0)
-# transfer_dataset_split()
+grouped_dataset_split(0)
+transfer_dataset_split()
