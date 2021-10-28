@@ -16,26 +16,27 @@ test_set_y = np.load('dataset/lstm_dataset_splits/collective/test_set_y.npy')
 
 
 # Start hyperparameter tuning with epochs
-weights = [1*10**-w for w in range(10)]
+dropout_rate = np.linspace(1, num=10)
+weights = 1e-6
 epochs = 300
 batches = 128
 repeats = 3
 
-train_loss = np.zeros((len(weights), repeats))
-val_loss = np.zeros((len(weights), repeats))
+train_loss = np.zeros((len(dropout_rate), repeats))
+val_loss = np.zeros((len(dropout_rate), repeats))
 historical_train_loss = []
 historical_val_loss = []
-for i, l2w in enumerate(weights):
+for i, dr in enumerate(dropout_rate):
     t0 = time.perf_counter()
     for j in range(repeats):
         opt = keras.optimizers.Nadam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
         callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
 
         inputs = Input(shape=(train_set_x.shape[1], train_set_x.shape[2]))
-        lstm_out = Bidirectional(LSTM(units=64, return_sequences=True, dropout=0.25,
-                                      kernel_regularizer=l2(l2w), recurrent_regularizer=l2(l2w)))(inputs)
-        lstm_out_2 = Bidirectional(LSTM(units=32, dropout=0.25,
-                                        kernel_regularizer=l2(l2w), recurrent_regularizer=l2(l2w)))(lstm_out)
+        lstm_out = Bidirectional(LSTM(units=64, return_sequences=True, dropout=dr,
+                                      kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights)))(inputs)
+        lstm_out_2 = Bidirectional(LSTM(units=32, dropout=dr,
+                                        kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights)))(lstm_out)
         outputs = Dense(units=24)(lstm_out_2)
 
         model = keras.Model(inputs=inputs, outputs=outputs)
@@ -53,13 +54,13 @@ for i, l2w in enumerate(weights):
     print(f'Total time for {repeats} repeats:', (t1 - t0)/60)
     print('Time for 300 epochs:', ((t1 - t0)/repeats)/60)
 
-np.save('results/tuning/l2_weights_tuning_training_loss', train_loss)
-np.save('results/tuning/l2_weights_tuning_validation_loss', val_loss)
+np.save('results/tuning/drop_rate_tuning_training_loss', train_loss)
+np.save('results/tuning/drop_rate_tuning_validation_loss', val_loss)
 
-with open('results/tuning/lstm_combined_training_l2_weights.pickle', 'wb') as file:
+with open('results/tuning/lstm_combined_training_drop_rate.pickle', 'wb') as file:
     pickle.dump(historical_train_loss, file, protocol=-1)
 
-with open('results/tuning/lstm_combined_validation_l2_weights.pickle', 'wb') as file:
+with open('results/tuning/lstm_combined_validation_drop_rate.pickle', 'wb') as file:
     pickle.dump(historical_train_loss, file, protocol=-1)
 
 print('done')
