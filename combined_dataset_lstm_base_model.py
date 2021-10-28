@@ -54,13 +54,13 @@ for i, dr in enumerate(dropout_rate):
     print(f'Total time for {repeats} repeats:', (t1 - t0)/60)
     print('Time for 300 epochs:', ((t1 - t0)/repeats)/60)
 
-np.save('results/tuning/drop_rate_tuning_training_loss', train_loss)
-np.save('results/tuning/drop_rate_tuning_validation_loss', val_loss)
+np.save('results/tuning/recurrent_drop_rate_tuning_training_loss', train_loss)
+np.save('results/tuning/recurrent_drop_rate_tuning_validation_loss', val_loss)
 
-with open('results/tuning/lstm_combined_training_drop_rate.pickle', 'wb') as file:
+with open('results/tuning/lstm_combined_training_drop_rate_recurrent.pickle', 'wb') as file:
     pickle.dump(historical_train_loss, file, protocol=-1)
 
-with open('results/tuning/lstm_combined_validation_drop_rate.pickle', 'wb') as file:
+with open('results/tuning/lstm_combined_validation_drop_rate_recurrent.pickle', 'wb') as file:
     pickle.dump(historical_train_loss, file, protocol=-1)
 
 print('done')
