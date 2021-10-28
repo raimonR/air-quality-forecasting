@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
 from keras.layers import Input, LSTM, Dense, Bidirectional, Dropout
+from keras.regularizers import l2
 
 train_set_x = np.load('dataset/lstm_dataset_splits/collective/train_set_x.npy')
 train_set_y = np.load('dataset/lstm_dataset_splits/collective/train_set_y.npy')
@@ -17,8 +18,8 @@ opt = keras.optimizers.Nadam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, epsi
 callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
 
 inputs = Input(shape=(train_set_x.shape[1], train_set_x.shape[2]))
-lstm_out = Bidirectional(LSTM(units=128, return_sequences=True))(inputs)
-lstm_out_2 = Bidirectional(LSTM(units=64))(lstm_out)
+lstm_out = Bidirectional(LSTM(units=128, return_sequences=True, dropout=0.25, bias_regularizer=l2(1e-3)))(inputs)
+lstm_out_2 = Bidirectional(LSTM(units=64, dropout=0.25, bias_regularizer=l2(1e-3)))(lstm_out)
 outputs = Dense(units=24)(lstm_out_2)
 
 model = keras.Model(inputs=inputs, outputs=outputs)
@@ -56,15 +57,5 @@ with open('results/tuning/lstm_combined_training.pickle', 'wb') as file:
 
 with open('results/tuning/lstm_combined_validation.pickle', 'wb') as file:
     pickle.dump(historical_train_loss, file, protocol=-1)
-
-fig, ax = plt.subplots()
-for j in range(repeats):
-    for e in epochs:
-        ax.plot(e, train_loss[:, j], '.', color='tab:blue')
-        ax.plot(e, val_loss[:, j], '.', color='tab:orange')
-
-ax.set(xlabel='Epochs', ylabel='Mean Squared Error')
-fig.savefig('epoch_tuning_plot.png')
-plt.close()
 
 print('done')
