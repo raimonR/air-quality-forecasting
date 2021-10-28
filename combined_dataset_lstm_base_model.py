@@ -33,9 +33,9 @@ for i, dr in enumerate(dropout_rate):
         callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
 
         inputs = Input(shape=(train_set_x.shape[1], train_set_x.shape[2]))
-        lstm_out = Bidirectional(LSTM(units=64, return_sequences=True, dropout=dr,
+        lstm_out = Bidirectional(LSTM(units=64, return_sequences=True, dropout=dr, recurrent_dropout=dr,
                                       kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights)))(inputs)
-        lstm_out_2 = Bidirectional(LSTM(units=32, dropout=dr,
+        lstm_out_2 = Bidirectional(LSTM(units=32, dropout=dr, recurrent_dropout=dr,
                                         kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights)))(lstm_out)
         outputs = Dense(units=24)(lstm_out_2)
 
