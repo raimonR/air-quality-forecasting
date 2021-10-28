@@ -18,8 +18,8 @@ opt = keras.optimizers.Nadam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, epsi
 callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
 
 inputs = Input(shape=(train_set_x.shape[1], train_set_x.shape[2]))
-lstm_out = Bidirectional(LSTM(units=128, return_sequences=True, dropout=0.25, kernel_regularizer=l2(1e-3)))(inputs)
-lstm_out_2 = Bidirectional(LSTM(units=64, dropout=0.25, kernel_regularizer=l2(1e-3)))(lstm_out)
+lstm_out = Bidirectional(LSTM(units=100, return_sequences=True, dropout=0.25, kernel_regularizer=l2(1e-3)))(inputs)
+lstm_out_2 = Bidirectional(LSTM(units=50, dropout=0.25, kernel_regularizer=l2(1e-3)))(lstm_out)
 outputs = Dense(units=24)(lstm_out_2)
 
 model = keras.Model(inputs=inputs, outputs=outputs)
