@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
-from keras.layers import Input, LSTM, Dense, Bidirectional, Dropout
+from keras.layers import Input, LSTM, Dense, Bidirectional
 from keras.regularizers import l2
 
 train_set_x = np.load('dataset/lstm_dataset_splits/collective/train_set_x.npy')
@@ -53,10 +53,13 @@ for i, l2w in enumerate(weights):
     print(f'Total time for {repeats} repeats:', (t1 - t0)/60)
     print('Time for 300 epochs:', ((t1 - t0)/repeats)/60)
 
-with open('results/tuning/lstm_combined_training.pickle', 'wb') as file:
+np.save('results/tuning/l2_weights_tuning_training_loss', train_loss)
+np.save('results/tuning/l2_weights_tuning_validation_loss', val_loss)
+
+with open('results/tuning/lstm_combined_training_l2_weights.pickle', 'wb') as file:
     pickle.dump(historical_train_loss, file, protocol=-1)
 
-with open('results/tuning/lstm_combined_validation.pickle', 'wb') as file:
+with open('results/tuning/lstm_combined_validation_l2_weights.pickle', 'wb') as file:
     pickle.dump(historical_train_loss, file, protocol=-1)
 
 print('done')
