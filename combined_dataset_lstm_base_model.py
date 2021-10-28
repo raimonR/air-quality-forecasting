@@ -27,30 +27,22 @@ model.compile(optimizer=opt, loss='mse')
 model.summary()
 
 # Start hyperparameter tuning with epochs
-epochs = [10, 50, 100, 250, 500, 1000]
-batches = 64
+epochs = 300
+batches = 128
 repeats = 5
 
-train_loss = np.zeros((len(epochs), repeats))
-val_loss = np.zeros((len(epochs), repeats))
 historical_train_loss = []
 historical_val_loss = []
-for i, e in enumerate(epochs):
-    t0 = time.perf_counter()
-    for j in range(repeats):
-        res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y),
-                        epochs=e, batch_size=batches, callbacks=[callback])
-        historical_train_loss.append(res.history['loss'])
-        historical_val_loss.append(res.history['val_loss'])
-        train_loss[i, j] = res.history['loss'][-1]
-        val_loss[i, j] = res.history['val_loss'][-1]
+t0 = time.perf_counter()
+for j in range(repeats):
+    res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y),
+                    epochs=e, batch_size=batches, callbacks=[callback])
+    historical_train_loss.append(res.history['loss'])
+    historical_val_loss.append(res.history['val_loss'])
 
-    t1 = time.perf_counter()
-    print(f'Total time for {repeats} repeats:', (t1 - t0)/60)
-    print(f'Time for {e} epochs:', ((t1 - t0)/repeats)/60)
-
-np.save('epoch_tuning_training_loss', train_loss)
-np.save('epoch_tuning_validation_loss', val_loss)
+t1 = time.perf_counter()
+print(f'Total time for {repeats} repeats:', (t1 - t0)/60)
+print('Time for 300 epochs:', ((t1 - t0)/repeats)/60)
 
 with open('results/tuning/lstm_combined_training.pickle', 'wb') as file:
     pickle.dump(historical_train_loss, file, protocol=-1)

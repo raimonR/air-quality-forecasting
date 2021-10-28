@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
-from keras.layers import Input, LSTM, Dense, Bidirectional, Dropout
+from keras.layers import Input, LSTM, Dense, Bidirectional
 from keras.regularizers import l2
 
 train_set_x = np.load('dataset/lstm_dataset_splits/collective/train_set_x.npy')
