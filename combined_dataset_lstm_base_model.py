@@ -16,7 +16,7 @@ test_set_y = np.load('dataset/lstm_dataset_splits/collective/test_set_y.npy')
 
 
 # Start hyperparameter tuning with epochs
-weights = [1*10**w for w in range(10)]
+weights = [1*10**-w for w in range(10)]
 epochs = 300
 batches = 128
 repeats = 3
