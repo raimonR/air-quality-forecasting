@@ -17,5 +17,5 @@ eval "$(conda shell.bash hook)"
 
 conda activate /home/groups/gorle/miniconda3/envs/tensorflow_env
 
-python combined_dataset_lstm_base_model_batches_test.py
+python combined_dataset_lstm_base_model.py
 

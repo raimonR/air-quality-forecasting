@@ -16,7 +16,7 @@ test_set_y = np.load('dataset/lstm_dataset_splits/collective/test_set_y.npy')
 
 
 # Start hyperparameter tuning with epochs
-dropout_rate = np.linspace(1, num=10)
+dropout_rate = np.linspace(0, 1, num=10, endpoint=False)
 weights = 1e-6
 epochs = 300
 batches = 128
