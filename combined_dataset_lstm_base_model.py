@@ -15,51 +15,57 @@ test_set_x = np.load('dataset/lstm_dataset_splits/collective/test_set_x.npy')
 test_set_y = np.load('dataset/lstm_dataset_splits/collective/test_set_y.npy')
 
 
-# Start hyperparameter tuning with epochs
+# Define hyperparameters
 dr = 0.1
 weights = 1e-1
 epochs = 300
 batches = 128
 repeats = 3
 
+# test learning rate
+learning_rate = [1*10**-v for v in range(5)]
+
+
 train_loss = np.zeros((len([1]), repeats))
 val_loss = np.zeros((len([1]), repeats))
 historical_train_loss = []
 historical_val_loss = []
-t0 = time.perf_counter()
-for j in range(repeats):
-    opt = keras.optimizers.Nadam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
-    callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
 
-    inputs = Input(shape=(train_set_x.shape[1], train_set_x.shape[2]))
-    lstm_out = Bidirectional(LSTM(units=64, return_sequences=True, dropout=dr, recurrent_dropout=dr,
-                                  kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights)))(inputs)
-    lstm_out_2 = Bidirectional(LSTM(units=32, dropout=dr, recurrent_dropout=dr,
-                                    kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights)))(lstm_out)
-    outputs = Dense(units=24)(lstm_out_2)
+for lr in learning_rate:
+    t0 = time.perf_counter()
+    for j in range(repeats):
+        opt = keras.optimizers.Nadam(learning_rate=lr, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
+        callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
 
-    model = keras.Model(inputs=inputs, outputs=outputs)
-    model.compile(optimizer=opt, loss='mse')
-    model.summary()
+        inputs = Input(shape=(train_set_x.shape[1], train_set_x.shape[2]))
+        lstm_out = Bidirectional(LSTM(units=64, return_sequences=True, dropout=dr, recurrent_dropout=dr,
+                                      kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights)))(inputs)
+        lstm_out_2 = Bidirectional(LSTM(units=32, dropout=dr, recurrent_dropout=dr,
+                                        kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights)))(lstm_out)
+        outputs = Dense(units=24)(lstm_out_2)
 
-    res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y),
-                    epochs=epochs, batch_size=batches, callbacks=[callback])
-    historical_train_loss.append(res.history['loss'])
-    historical_val_loss.append(res.history['val_loss'])
-    train_loss[:, j] = res.history['loss'][-1]
-    val_loss[:, j] = res.history['val_loss'][-1]
+        model = keras.Model(inputs=inputs, outputs=outputs)
+        model.compile(optimizer=opt, loss='mse')
+        model.summary()
 
-t1 = time.perf_counter()
-print(f'Total time for {repeats} repeats:', (t1 - t0)/60)
-print('Time for 300 epochs:', ((t1 - t0)/repeats)/60)
+        res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y),
+                        epochs=epochs, batch_size=batches, callbacks=[callback])
+        historical_train_loss.append(res.history['loss'])
+        historical_val_loss.append(res.history['val_loss'])
+        train_loss[:, j] = res.history['loss'][-1]
+        val_loss[:, j] = res.history['val_loss'][-1]
 
-np.save('results/tuning/recurrent_drop_rate_tuning_training_loss', train_loss)
-np.save('results/tuning/recurrent_drop_rate_tuning_validation_loss', val_loss)
+    t1 = time.perf_counter()
+    print(f'Total time for {repeats} repeats:', (t1 - t0)/60)
+    print('Time for 300 epochs:', ((t1 - t0)/repeats)/60)
 
-with open('results/tuning/lstm_combined_training_drop_rate_recurrent.pickle', 'wb') as file:
+np.save('results/tuning/learning_rate_tuning_training_loss', train_loss)
+np.save('results/tuning/learning_rate_tuning_validation_loss', val_loss)
+
+with open('results/tuning/lstm_combined_training_learning_rate.pickle', 'wb') as file:
     pickle.dump(historical_train_loss, file, protocol=-1)
 
-with open('results/tuning/lstm_combined_validation_drop_rate_recurrent.pickle', 'wb') as file:
+with open('results/tuning/lstm_combined_validation_learning_rate.pickle', 'wb') as file:
     pickle.dump(historical_train_loss, file, protocol=-1)
 
 print('done')
