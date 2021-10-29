@@ -26,8 +26,8 @@ repeats = 3
 learning_rate = [1*10**-v for v in range(5)]
 
 
-train_loss = np.zeros((len([1]), repeats))
-val_loss = np.zeros((len([1]), repeats))
+train_loss = np.zeros((len(learning_rate), repeats))
+val_loss = np.zeros((len(learning_rate), repeats))
 historical_train_loss = []
 historical_val_loss = []
 
