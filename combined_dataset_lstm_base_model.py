@@ -31,12 +31,13 @@ val_loss = np.zeros((len(learning_rate), repeats))
 historical_train_loss = []
 historical_val_loss = []
 
-for lr in learning_rate:
+for i, lr in enumerate(learning_rate):
     t0 = time.perf_counter()
     for j in range(repeats):
         opt = keras.optimizers.Nadam(learning_rate=lr, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
         callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
 
+        # TODO: Decide if i should set recurrent dropout to 0 so that training time speeds up.
         inputs = Input(shape=(train_set_x.shape[1], train_set_x.shape[2]))
         lstm_out = Bidirectional(LSTM(units=64, return_sequences=True, dropout=dr, recurrent_dropout=dr,
                                       kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights)))(inputs)
@@ -52,8 +53,8 @@ for lr in learning_rate:
                         epochs=epochs, batch_size=batches, callbacks=[callback])
         historical_train_loss.append(res.history['loss'])
         historical_val_loss.append(res.history['val_loss'])
-        train_loss[:, j] = res.history['loss'][-1]
-        val_loss[:, j] = res.history['val_loss'][-1]
+        train_loss[i, j] = res.history['loss'][-1]
+        val_loss[i, j] = res.history['val_loss'][-1]
 
     t1 = time.perf_counter()
     print(f'Total time for {repeats} repeats:', (t1 - t0)/60)
