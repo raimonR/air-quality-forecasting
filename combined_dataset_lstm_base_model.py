@@ -70,10 +70,14 @@ for i in range(repeats):
     print('Mean Absolute Error: ', mae)
     print('Mean Absolute Percentage Error: ', mpe)
 
-    fig, ax = plt.subplots()
-    ax.plot(test_set_y, label=r'$y$')
-    ax.plot(test_set_y, label=r'$\hat{y}$')
-    ax.set(xlabel=r'$\text{Time}$', ylabel=r'$PM_{2.5}$')
+    plot_test_y = np.concatenate(test_set_y.squeeze())[:240]
+    plot_forecast_y = np.concatenate(test_res)[:240]
+    fig, ax = plt.subplots(nrows=2, sharex=True)
+    ax[0].plot(plot_test_y, label=r'$y$')
+    ax[0].plot(plot_forecast_y, label=r'$\hat{y}$')
+    ax[1].plot(np.abs(plot_test_y - plot_forecast_y))
+    ax[0].set(ylabel=r'$PM_{2.5}$')
+    ax[1].set(xlabel=r'$\text{Time}$', ylabel=r'$|y-\hat{y}|$')
     # plt.show()
     fig.savefig(f'results/tests/combined_lstm/forecast_vs_true_plot_{i}.png')
     plt.close()
