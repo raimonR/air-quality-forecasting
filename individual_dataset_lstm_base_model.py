@@ -9,13 +9,6 @@ from keras.layers import Input, LSTM, Dense, Bidirectional
 from keras.regularizers import l2
 
 
-# Define hyperparameters
-dr = 0.1
-weights = 1e-1
-epochs = 300
-batches = 128
-repeats = 3
-
 files = os.listdir('dataset/lstm_dataset_splits/individual/')
 for f in [files[0]]:
     train_set_x = np.load(f'dataset/lstm_dataset_splits/individual/{f}/train_set_x.npy')
@@ -25,8 +18,17 @@ for f in [files[0]]:
     test_set_x = np.load(f'dataset/lstm_dataset_splits/individual/{f}/test_set_x.npy')
     test_set_y = np.load(f'dataset/lstm_dataset_splits/individual/{f}/test_set_y.npy')
 
-    opt = keras.optimizers.Nadam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
-    callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
+    # Define hyperparameters
+    dr = 0.1
+    weights = 1e-1
+    epochs = 300
+    # TODO: determine the best number of batches since the datasets are significantly smaller
+    batches = 128
+    learning_rate = 1e-3
+    repeats = 3
+
+    opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
+    callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
 
     model = keras.Sequential()
     model.add(Input(shape=(train_set_x.shape[1], train_set_x.shape[2])))
@@ -40,7 +42,7 @@ for f in [files[0]]:
     model.compile(optimizer=opt, loss='mse')
 
     res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y),
-        epochs=epochs, batch_size=batches, callbacks=[callback])
+                    epochs=epochs, batch_size=batches, callbacks=[callback])
 
 
-    print('done')
+print('done')

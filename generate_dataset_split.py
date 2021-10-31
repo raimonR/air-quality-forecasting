@@ -5,6 +5,7 @@ from darts.timeseries import TimeSeries
 from sklearn.preprocessing import StandardScaler
 
 
+# TODO: this data needs to be reshaped into sequential set.
 def individual_dataset_split():
     files = os.listdir('dataset/merged/')
     for f in files:

@@ -61,9 +61,9 @@ for i in range(repeats):
     test_res = model.predict(test_set_x)
 
     # metrics
-    mse = mean_squared_error(test_set_y, test_res)
-    mae = mean_absolute_error(test_set_y, test_res)
-    mpe = mean_absolute_percentage_error(test_set_y, test_res)
+    mse = mean_squared_error(test_set_y.squeeze(), test_res)
+    mae = mean_absolute_error(test_set_y.squeeze(), test_res)
+    mpe = mean_absolute_percentage_error(test_set_y.squeeze(), test_res)
 
     print('Mean Squared Error: ', mse)
     print('Mean Absolute Error: ', mae)
