@@ -8,10 +8,6 @@ from sklearn.preprocessing import StandardScaler
 
 # TODO: this data needs to be reshaped into sequential set.
 def individual_dataset_split(normalize: bool):
-    from tensorflow.keras.preprocessing import timeseries_dataset_from_array
-    from tensorflow import data, autograph
-
-    autograph.set_verbosity(0)
     files = os.listdir('dataset/merged/')
     for f in files:
         df_temp = pd.read_pickle(f'dataset/merged/{f}')
@@ -35,29 +31,16 @@ def individual_dataset_split(normalize: bool):
                 thetav_data = StandardScaler().fit_transform(thetav_data.reshape(-1, 1))
                 df_temp.loc[index][-150:] = thetav_data.reshape(150, )
 
-        def dataset_generator(inputs, output_dims, input_length, output_length, batch_size):
-            dataset = timeseries_dataset_from_array(inputs, None, input_length + output_length, batch_size=batch_size)
-
-            def split_inputs(x):
-                return x[:, :input_length, :], x[:, input_length:, output_dims]
-
-            dataset = dataset.map(split_inputs)
-
-            return dataset
-
         num = df_temp.shape[0]
         split_1 = int(num*0.8)
         split_2 = int(num*0.9)
         train_set = df_temp.iloc[:split_1, :].to_numpy()
         dev_set = df_temp.iloc[split_1:split_2, 1:].to_numpy()
         test_set = df_temp.iloc[split_2:, 1:].to_numpy()
-        train_set = dataset_generator(train_set, slice(0, 1), input_length=24, output_length=24, batch_size=128)
-        dev_set = dataset_generator(dev_set, slice(0, 1), input_length=24, output_length=24, batch_size=128)
-        test_set = dataset_generator(test_set, slice(0, 1), input_length=24, output_length=24, batch_size=128)
 
-        data.experimental.save(train_set, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/train_set', 'gzip')
-        data.experimental.save(dev_set, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/dev_set', 'gzip')
-        data.experimental.save(test_set, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/test_set', 'gzip')
+        np.save(f'dataset/lstm_dataset_splits/individual/{f}/train_set.npy', train_set)
+        np.save(f'dataset/lstm_dataset_splits/individual/{f}/dev_set.npy', dev_set)
+        np.save(f'dataset/lstm_dataset_splits/individual/{f}/test_set.npy', test_set)
 
 
 # TODO: Testing if unscaled inputs work as well

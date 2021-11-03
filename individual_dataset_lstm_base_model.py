@@ -7,19 +7,37 @@ from tensorflow import data
 from keras.models import Sequential
 from keras.layers import Input, LSTM, Dense, Bidirectional
 from keras.regularizers import l2
+from tensorflow.keras.preprocessing import timeseries_dataset_from_array
+from tensorflow import data, autograph
+
+autograph.set_verbosity(0)
+
+
+def dataset_generator(inputs, output_dims, input_length, output_length, batch_size):
+    dataset = timeseries_dataset_from_array(inputs, None, input_length + output_length, batch_size=batch_size)
+
+    def split_inputs(x):
+        return x[:, :input_length, :], x[:, input_length:, output_dims]
+
+    dataset = dataset.map(split_inputs)
+
+    return dataset
 
 
 files = os.listdir('dataset/lstm_dataset_splits/individual/')
 for f in [files[0]]:
-    train_set = data.experimental.load(f'dataset/lstm_dataset_splits/individual/{f}/train_set')
-    dev_set = data.experimental.load(f'dataset/lstm_dataset_splits/individual/{f}/dev_set')
-    test_set = data.experimental.load(f'dataset/lstm_dataset_splits/individual/{f}/test_set')
+    train_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/train_set.npy')
+    dev_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/dev_set.npy')
+    test_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/test_set.npy')
+
+    train_set = dataset_generator(train_set, slice(0, 1), input_length=24, output_length=24, batch_size=128)
+    dev_set = dataset_generator(dev_set, slice(0, 1), input_length=24, output_length=24, batch_size=128)
+    test_set = dataset_generator(test_set, slice(0, 1), input_length=24, output_length=24, batch_size=128)
 
     # Define hyperparameters
     dr = 0.1
     weights = 1e-1
     epochs = 300
-    # TODO: determine the best number of batches since the datasets are significantly smaller
     batches = 128
     learning_rate = 1e-3
     repeats = 3
