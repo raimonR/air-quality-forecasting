@@ -22,7 +22,7 @@ weights = 1e-1
 epochs = 300
 batches = 128
 learning_rate = 1e-3
-repeats = 2
+repeats = 5
 
 historical_train_loss = []
 historical_val_loss = []
@@ -56,14 +56,18 @@ print('Time for 300 epochs:', ((t1 - t0)/repeats)/60)
 
 # forecast air quality
 for i in range(repeats):
+    keras.backend.clear_session()
     model = keras.models.load_model(f'results/tests/combined_lstm/keras_states/version_{j}')
     test_res = model.predict(test_set_x)
-    print(test_res.shape)
 
     # metrics
     mse = mean_squared_error(test_set_y.squeeze(), test_res)
     mae = mean_absolute_error(test_set_y.squeeze(), test_res)
     mpe = mean_absolute_percentage_error(test_set_y.squeeze(), test_res)
+
+    error_metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
+    with open('results/tests/combined_lstm/error_metrics.pickle', 'wb') as file:
+        pickle.dump(error_metrics, file, protocol=-1)
 
     print('Mean Squared Error: ', mse)
     print('Mean Absolute Error: ', mae)
