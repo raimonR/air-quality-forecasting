@@ -34,8 +34,8 @@ def individual_dataset_split(normalize: bool):
         split_1 = int(num*0.8)
         split_2 = int(num*0.9)
         train_set = df_temp.iloc[:split_1, :].to_numpy()
-        dev_set = df_temp.iloc[split_1:split_2, 1:].to_numpy()
-        test_set = df_temp.iloc[split_2:, 1:].to_numpy()
+        dev_set = df_temp.iloc[split_1:split_2, :].to_numpy()
+        test_set = df_temp.iloc[split_2:, :].to_numpy()
 
         np.save(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/train_set.npy', train_set)
         np.save(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/dev_set.npy', dev_set)
