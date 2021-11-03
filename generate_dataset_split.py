@@ -8,7 +8,7 @@ from sklearn.preprocessing import StandardScaler
 
 # TODO: this data needs to be reshaped into sequential set.
 def individual_dataset_split(normalize: bool):
-    from keras.preprocessing import timeseries_dataset_from_array
+    from keras.utils import timeseries_dataset_from_array
     files = os.listdir('dataset/merged/')
     for f in files:
         df_temp = pd.read_pickle(f'dataset/merged/{f}')
