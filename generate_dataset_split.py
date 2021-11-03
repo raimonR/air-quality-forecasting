@@ -6,7 +6,6 @@ from sklearn.preprocessing import StandardScaler
 # TODO: determine the correct procedure for scaling inputs and outputs or only inputs
 
 
-# TODO: this data needs to be reshaped into sequential set.
 def individual_dataset_split(normalize: bool):
     files = os.listdir('dataset/merged/')
     for f in files:
@@ -38,9 +37,9 @@ def individual_dataset_split(normalize: bool):
         dev_set = df_temp.iloc[split_1:split_2, 1:].to_numpy()
         test_set = df_temp.iloc[split_2:, 1:].to_numpy()
 
-        np.save(f'dataset/lstm_dataset_splits/individual/{f}/train_set.npy', train_set)
-        np.save(f'dataset/lstm_dataset_splits/individual/{f}/dev_set.npy', dev_set)
-        np.save(f'dataset/lstm_dataset_splits/individual/{f}/test_set.npy', test_set)
+        np.save(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/train_set.npy', train_set)
+        np.save(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/dev_set.npy', dev_set)
+        np.save(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/test_set.npy', test_set)
 
 
 # TODO: Testing if unscaled inputs work as well
