@@ -41,6 +41,8 @@ for j in range(repeats):
     model.add(Dense(units=24))
     model.summary()
 
+    model.compile(optimizer=opt, loss='mse')
+
     res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y),
                     epochs=epochs, batch_size=batches, callbacks=[callback])
     historical_train_loss.append(res.history['loss'])
