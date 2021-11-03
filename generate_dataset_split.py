@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
-from darts.timeseries import TimeSeries
+# from darts.timeseries import TimeSeries
 from sklearn.preprocessing import StandardScaler
 # TODO: SAVE SCALERS SO THAT DATA CAN BE CORRECTLY RESCALED AND COMPARED
 # TODO: determine the correct procedure for scaling inputs and outputs or only inputs
@@ -117,31 +117,31 @@ def grouped_dataset_split(rng_int: int, normalize: bool):
     np.save('dataset/lstm_dataset_splits/collective/test_set_y', test_set_y)
 
 
-def transfer_dataset_split():
-    files = os.listdir('dataset/merged/')
-    for f in files:
-        df_temp = pd.read_pickle(f'dataset/merged/{f}')
-        df_temp = df_temp.fillna(0)
+# def transfer_dataset_split():
+#     files = os.listdir('dataset/merged/')
+#     for f in files:
+#         df_temp = pd.read_pickle(f'dataset/merged/{f}')
+#         df_temp = df_temp.fillna(0)
+#
+#         scaler = StandardScaler()
+#         scaled_array = scaler.fit_transform(df_temp)
+#         for i, c in enumerate(df_temp.columns):
+#             df_temp[c] = scaled_array[:, i]
+#
+#         forecast = TimeSeries.from_dataframe(df_temp, value_cols='pm25', freq='1H')
+#
+#         covariates = TimeSeries.from_dataframe(df_temp, value_cols='LATITUDE', freq='1H')
+#         columns = df_temp.columns[(df_temp.columns != 'pm25') & (df_temp.columns != 'LATITUDE')].to_list()
+#         for column in columns:
+#             covariates = covariates.stack(TimeSeries.from_dataframe(df_temp, value_cols=column, freq='1H'))
+#
+#         forecast_df = forecast.data_array().to_dataframe('forecast')
+#         forecast_df.to_pickle(f'./dataset/transfer_learning/{f.split("_")[0]}/forecast.pkl')
+#
+#         covariates_df = covariates.data_array().to_dataframe('covariates')
+#         covariates_df.to_pickle(f'./dataset/transfer_learning/{f.split("_")[0]}/covariates.pkl')
 
-        scaler = StandardScaler()
-        scaled_array = scaler.fit_transform(df_temp)
-        for i, c in enumerate(df_temp.columns):
-            df_temp[c] = scaled_array[:, i]
 
-        forecast = TimeSeries.from_dataframe(df_temp, value_cols='pm25', freq='1H')
-
-        covariates = TimeSeries.from_dataframe(df_temp, value_cols='LATITUDE', freq='1H')
-        columns = df_temp.columns[(df_temp.columns != 'pm25') & (df_temp.columns != 'LATITUDE')].to_list()
-        for column in columns:
-            covariates = covariates.stack(TimeSeries.from_dataframe(df_temp, value_cols=column, freq='1H'))
-
-        forecast_df = forecast.data_array().to_dataframe('forecast')
-        forecast_df.to_pickle(f'./dataset/transfer_learning/{f.split("_")[0]}/forecast.pkl')
-
-        covariates_df = covariates.data_array().to_dataframe('covariates')
-        covariates_df.to_pickle(f'./dataset/transfer_learning/{f.split("_")[0]}/covariates.pkl')
-
-
-individual_dataset_split()
+# individual_dataset_split()
 grouped_dataset_split(0, True)
 # transfer_dataset_split()
