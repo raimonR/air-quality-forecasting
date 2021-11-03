@@ -3,14 +3,14 @@ import numpy as np
 import os
 from darts.timeseries import TimeSeries
 from sklearn.preprocessing import StandardScaler
+# TODO: SAVE SCALERS SO THAT DATA CAN BE CORRECTLY RESCALED AND COMPARED
+# TODO: determine the correct procedure for scaling inputs and outputs or only inputs
 
 
 # TODO: this data needs to be reshaped into sequential set.
 def individual_dataset_split():
     files = os.listdir('dataset/merged/')
     for f in files:
-        set_x = []
-        set_y = []
         df_temp = pd.read_pickle(f'dataset/merged/{f}')
         df_temp = df_temp.fillna(0)
 
@@ -46,6 +46,7 @@ def individual_dataset_split():
         np.save(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/test_set_y', test_set_y)
 
 
+# TODO: Testing if unscaled inputs work as well
 def grouped_dataset_split(rng_int: int):
     rng = np.random.default_rng(rng_int)
     files = os.listdir('dataset/merged/')
@@ -55,22 +56,22 @@ def grouped_dataset_split(rng_int: int):
         df_temp = pd.read_pickle(f'dataset/merged/{f}')
         df_temp = df_temp.fillna(0)
 
-        for e in df_temp.columns.to_list()[:-450]:
-            if e not in ('LATITUDE', 'LONGITUDE', 'ELEVATION'):
-                df_temp[e] = StandardScaler().fit_transform(df_temp[e].to_numpy().reshape(-1, 1))
-
-        for index, row in df_temp.iterrows():
-            pressure_data = row[-450:-300].to_numpy()
-            pressure_data = StandardScaler().fit_transform(pressure_data.reshape(-1, 1))
-            df_temp.loc[index][-450:-300] = pressure_data.reshape(150, )
-
-            temperature_data = row[-300:-150].to_numpy()
-            temperature_data = StandardScaler().fit_transform(temperature_data.reshape(-1, 1))
-            df_temp.loc[index][-300:-150] = temperature_data.reshape(150, )
-
-            thetav_data = row[-150:].to_numpy()
-            thetav_data = StandardScaler().fit_transform(thetav_data.reshape(-1, 1))
-            df_temp.loc[index][-150:] = thetav_data.reshape(150, )
+        # for e in df_temp.columns.to_list()[:-450]:
+        #     if e not in ('LATITUDE', 'LONGITUDE', 'ELEVATION'):
+        #         df_temp[e] = StandardScaler().fit_transform(df_temp[e].to_numpy().reshape(-1, 1))
+        #
+        # for index, row in df_temp.iterrows():
+        #     pressure_data = row[-450:-300].to_numpy()
+        #     pressure_data = StandardScaler().fit_transform(pressure_data.reshape(-1, 1))
+        #     df_temp.loc[index][-450:-300] = pressure_data.reshape(150, )
+        #
+        #     temperature_data = row[-300:-150].to_numpy()
+        #     temperature_data = StandardScaler().fit_transform(temperature_data.reshape(-1, 1))
+        #     df_temp.loc[index][-300:-150] = temperature_data.reshape(150, )
+        #
+        #     thetav_data = row[-150:].to_numpy()
+        #     thetav_data = StandardScaler().fit_transform(thetav_data.reshape(-1, 1))
+        #     df_temp.loc[index][-150:] = thetav_data.reshape(150, )
 
         min_index = df_temp.index[0]
         if min_index.hour != 0:
@@ -140,6 +141,6 @@ def transfer_dataset_split():
         covariates_df.to_pickle(f'./dataset/transfer_learning/{f.split("_")[0]}/covariates.pkl')
 
 
-individual_dataset_split()
+# individual_dataset_split()
 grouped_dataset_split(0)
-transfer_dataset_split()
+# transfer_dataset_split()
