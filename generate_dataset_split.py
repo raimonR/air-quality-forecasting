@@ -55,9 +55,9 @@ def individual_dataset_split(normalize: bool):
         dev_set = dataset_generator(dev_set, slice(0, 1), input_length=24, output_length=24, batch_size=128)
         test_set = dataset_generator(test_set, slice(0, 1), input_length=24, output_length=24, batch_size=128)
 
-        data.experimental.save(train_set, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/train_set')
-        data.experimental.save(dev_set, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/dev_set')
-        data.experimental.save(test_set, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/test_set')
+        data.experimental.save(train_set, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/train_set', 'gzip')
+        data.experimental.save(dev_set, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/dev_set', 'gzip')
+        data.experimental.save(test_set, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/test_set', 'gzip')
 
 
 # TODO: Testing if unscaled inputs work as well
