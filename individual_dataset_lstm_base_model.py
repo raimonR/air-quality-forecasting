@@ -47,9 +47,9 @@ for f in [files[0]]:
 
     model = Sequential()
     model.add(Input(shape=(24, 468)))
-    model.add(Bidirectional(LSTM(units=64, return_sequences=True, dropout=dr, recurrent_dropout=dr,
+    model.add(Bidirectional(LSTM(units=64, return_sequences=True, dropout=dr, recurrent_dropout=0,
                                  kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights))))
-    model.add(Bidirectional(LSTM(units=32, dropout=dr, recurrent_dropout=dr,
+    model.add(Bidirectional(LSTM(units=32, dropout=dr, recurrent_dropout=0,
                                  kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights))))
     model.add(Dense(units=24))
     model.summary()
