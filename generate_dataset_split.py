@@ -9,6 +9,7 @@ from sklearn.preprocessing import StandardScaler
 # TODO: this data needs to be reshaped into sequential set.
 def individual_dataset_split(normalize: bool):
     from tensorflow.keras.preprocessing import timeseries_dataset_from_array
+    from tensorflow import data
     files = os.listdir('dataset/merged/')
     for f in files:
         df_temp = pd.read_pickle(f'dataset/merged/{f}')
@@ -52,9 +53,9 @@ def individual_dataset_split(normalize: bool):
         dev_set = dataset_generator(dev_set, slice(0, 1), input_length=24, output_length=24, batch_size=128)
         test_set = dataset_generator(test_set, slice(0, 1), input_length=24, output_length=24, batch_size=128)
 
-        np.save(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/train_set', train_set)
-        np.save(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/dev_set', dev_set)
-        np.save(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/test_set', test_set)
+        data.experimental.save(train_set, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/train_set')
+        data.experimental.save(dev_set, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/dev_set')
+        data.experimental.save(test_set, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/test_set')
 
 
 # TODO: Testing if unscaled inputs work as well
