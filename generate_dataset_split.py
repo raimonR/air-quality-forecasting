@@ -154,6 +154,6 @@ def transfer_dataset_split():
         covariates_df.to_pickle(f'./dataset/transfer_learning/{f.split("_")[0]}/covariates.pkl')
 
 
-individual_dataset_split(False)
+individual_dataset_split(True)
 grouped_dataset_split(0, True)
 # transfer_dataset_split()
