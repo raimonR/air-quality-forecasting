@@ -5,6 +5,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolu
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
+from keras import Sequential
 from keras.layers import Input, LSTM, Dense, Bidirectional
 from keras.regularizers import l2
 
@@ -31,19 +32,17 @@ for j in range(repeats):
     opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
     callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
 
-    inputs = Input(shape=(train_set_x.shape[1], train_set_x.shape[2]))
-    lstm_out = Bidirectional(LSTM(units=64, return_sequences=True, dropout=dr, recurrent_dropout=dr,
-                                  kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights)))(inputs)
-    lstm_out_2 = Bidirectional(LSTM(units=32, dropout=dr, recurrent_dropout=dr,
-                                    kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights)))(lstm_out)
-    outputs = Dense(units=24)(lstm_out_2)
-
-    model = keras.Model(inputs=inputs, outputs=outputs)
-    model.compile(optimizer=opt, loss='mse')
+    model = Sequential()
+    model.add(Input(shape=(train_set_x.shape[1], train_set_y.shape[2])))
+    model.add(Bidirectional(LSTM(units=64, return_sequences=True, dropout=dr, recurrent_dropout=dr,
+                                 kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights))))
+    model.add(Bidirectional(LSTM(units=32, dropout=dr, recurrent_dropout=dr,
+                                 kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights))))
+    model.add(Dense(units=24))
     model.summary()
 
     res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y),
-        epochs=epochs, batch_size=batches, callbacks=[callback])
+                    epochs=epochs, batch_size=batches, callbacks=[callback])
     historical_train_loss.append(res.history['loss'])
     historical_val_loss.append(res.history['val_loss'])
 

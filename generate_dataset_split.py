@@ -9,7 +9,9 @@ from sklearn.preprocessing import StandardScaler
 # TODO: this data needs to be reshaped into sequential set.
 def individual_dataset_split(normalize: bool):
     from tensorflow.keras.preprocessing import timeseries_dataset_from_array
-    from tensorflow import data
+    from tensorflow import data, autograph
+
+    autograph.set_verbosity(0)
     files = os.listdir('dataset/merged/')
     for f in files:
         df_temp = pd.read_pickle(f'dataset/merged/{f}')
