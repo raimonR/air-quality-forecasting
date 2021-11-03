@@ -46,7 +46,7 @@ for f in [files[0]]:
     callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
 
     model = Sequential()
-    model.add(Input(shape=(24, 467)))
+    model.add(Input(shape=(24, 468)))
     model.add(Bidirectional(LSTM(units=64, return_sequences=True, dropout=dr, recurrent_dropout=dr,
                                  kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights))))
     model.add(Bidirectional(LSTM(units=32, dropout=dr, recurrent_dropout=dr,
