@@ -52,24 +52,6 @@ def grouped_dataset_split(rng_int: int, normalize: bool):
         df_temp = pd.read_pickle(f'dataset/merged/{f}')
         df_temp = df_temp.fillna(0)
 
-        if normalize:
-            for e in df_temp.columns.to_list()[:-450]:
-                if e not in ('LATITUDE', 'LONGITUDE', 'ELEVATION'):
-                    df_temp[e] = StandardScaler().fit_transform(df_temp[e].to_numpy().reshape(-1, 1))
-
-            for index, row in df_temp.iterrows():
-                pressure_data = row[-450:-300].to_numpy()
-                pressure_data = StandardScaler().fit_transform(pressure_data.reshape(-1, 1))
-                df_temp.loc[index][-450:-300] = pressure_data.reshape(150, )
-
-                temperature_data = row[-300:-150].to_numpy()
-                temperature_data = StandardScaler().fit_transform(temperature_data.reshape(-1, 1))
-                df_temp.loc[index][-300:-150] = temperature_data.reshape(150, )
-
-                thetav_data = row[-150:].to_numpy()
-                thetav_data = StandardScaler().fit_transform(thetav_data.reshape(-1, 1))
-                df_temp.loc[index][-150:] = thetav_data.reshape(150, )
-
         min_index = df_temp.index[0]
         if min_index.hour != 0:
             min_index = df_temp.index[df_temp.index.hour == 0][0]
@@ -97,6 +79,17 @@ def grouped_dataset_split(rng_int: int, normalize: bool):
     shuffle = rng.permutation(num)
     set_x = set_x[shuffle, :, :]
     set_y = set_y[shuffle, :, :]
+
+    if normalize:
+        set_y[:, :, 0] = StandardScaler().fit_transform(set_y.squeeze())
+
+        for i in range(18):
+            set_x[:, :, i] = StandardScaler().fit_transform(set_x[:, :, i])
+
+        for i in range(set_x.shape[1]):
+            set_x[:, i, -450:-300] = StandardScaler().fit_transform(set_x[:, i, -450:-300])
+            set_x[:, i, -300:-150] = StandardScaler().fit_transform(set_x[:, i, -300:-150])
+            set_x[:, i, -150:] = StandardScaler().fit_transform(set_x[:, i, -150:])
 
     split_1 = int(num*0.8)
     split_2 = int(num*0.9)
@@ -139,6 +132,6 @@ def transfer_dataset_split():
         covariates_df.to_pickle(f'./dataset/transfer_learning/{f.split("_")[0]}/covariates.pkl')
 
 
-individual_dataset_split(True)
+# individual_dataset_split(True)
 grouped_dataset_split(0, True)
 # transfer_dataset_split()

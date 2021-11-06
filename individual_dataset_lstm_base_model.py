@@ -35,7 +35,6 @@ for f in [files[0]]:
     test_set = dataset_generator(test_set, slice(0, 1), input_length=24, output_length=24, batch_size=128)
 
     # Define hyperparameters
-    dr = 0.1
     weights = 1e-1
     epochs = 300
     batches = 128
@@ -47,10 +46,8 @@ for f in [files[0]]:
 
     model = Sequential()
     model.add(Input(shape=(24, 468)))
-    model.add(Bidirectional(LSTM(units=64, return_sequences=True, dropout=dr, recurrent_dropout=0,
-                                 kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights))))
-    model.add(Bidirectional(LSTM(units=32, dropout=dr, recurrent_dropout=0,
-                                 kernel_regularizer=l2(weights), recurrent_regularizer=l2(weights))))
+    model.add(Bidirectional(LSTM(units=64, return_sequences=True, kernel_regularizer=l2(weights))))
+    model.add(Bidirectional(LSTM(units=32, kernel_regularizer=l2(weights))))
     model.add(Dense(units=24))
     model.summary()
 
