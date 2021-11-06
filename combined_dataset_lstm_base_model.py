@@ -56,7 +56,7 @@ for i, (l1, l2) in enumerate(l1l2_weights):
 
 test_loss = test_loss.reshape((7, 386*3), order='F')
 l1l2_weights = [str(tup) for tup in l1l2_weights]
-df = pd.DataFrame(test_loss.T, columns=l1l2_weights).melt(var_name='L1L2 Weights', value_data='MSE')
+df = pd.DataFrame(test_loss.T, columns=l1l2_weights).melt(var_name='L1L2 Weights', value_name='MSE')
 
 ax = sb.boxplot(data=df, x='L1L2 Weights', y='MSE', orient='v')
 ax.set(title='Bias Regularizer')
