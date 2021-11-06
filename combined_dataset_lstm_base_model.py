@@ -35,8 +35,8 @@ for i, (l1, l2) in enumerate(l1l2_weights):
 
         model = Sequential()
         model.add(Input(shape=(train_set_x.shape[1], train_set_x.shape[2])))
-        model.add(Bidirectional(LSTM(units=64, return_sequences=True, bias_regularizer=l1_l2(l1, l2)))) # , recurrent_regularizer=l1_l2(l1, l2))))
-        model.add(Bidirectional(LSTM(units=32, bias_regularizer=l1_l2(l1, l2)))) # , recurrent_regularizer=l1_l2(l1, l2))))
+        model.add(Bidirectional(LSTM(units=64, return_sequences=True, kernel_regularizer=l1_l2(l1, l2)))) # , recurrent_regularizer=l1_l2(l1, l2))))
+        model.add(Bidirectional(LSTM(units=32, kernel_regularizer=l1_l2(l1, l2)))) # , recurrent_regularizer=l1_l2(l1, l2))))
         model.add(Dense(units=24))
         model.summary()
 
@@ -59,9 +59,9 @@ l1l2_weights = [str(tup) for tup in l1l2_weights]
 df = pd.DataFrame(test_loss.T, columns=l1l2_weights).melt(var_name='L1L2 Weights', value_name='MSE')
 
 ax = sb.boxplot(data=df, x='L1L2 Weights', y='MSE', orient='v', whis=5)
-ax.set(title='Bias Regularizer', yscale='log')
+ax.set(title='Kernel Regularizer', yscale='log')
 fig = ax.get_figure()
-fig.savefig('results/tuning/combined_lstm/bias_regularizer.png')
+fig.savefig('results/tuning/combined_lstm/kernel_regularizer.png')
 plt.close()
 
 # forecast air quality
