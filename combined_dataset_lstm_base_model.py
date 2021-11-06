@@ -54,7 +54,7 @@ for i, (l1, l2) in enumerate(l1l2_weights):
     print(f'Total time for {repeats} repeats:', (t1 - t0)/60)
     print('Time for 300 epochs:', ((t1 - t0)/repeats)/60)
 
-test_loss = test_loss.reshape((7, 386*3), order='F')
+test_loss = test_loss.reshape((7, test_set_y.shape[0]*repeats), order='F')
 l1l2_weights = [str(tup) for tup in l1l2_weights]
 df = pd.DataFrame(test_loss.T, columns=l1l2_weights).melt(var_name='L1L2 Weights', value_name='MSE')
 
