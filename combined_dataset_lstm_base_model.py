@@ -44,7 +44,7 @@ for j in range(repeats):
     t1 = time.perf_counter()
     print(f'Time for {callback.stopped_epoch} epochs:', t1 - t0)
 
-    model.save(f'results/tests/combined_lstm/keras_states/version_unnormalized_{j}')
+    model.save(f'results/tests/combined_lstm/keras_states/version_{j}')
     keras.backend.clear_session()
 
 t2 = time.perf_counter()
@@ -53,7 +53,7 @@ print(f'Total time for {repeats} repeats:', t2 - t0)
 # forecast air quality
 for i in range(repeats):
     keras.backend.clear_session()
-    model = keras.models.load_model(f'results/tests/combined_lstm/keras_states/version_unnormalized_{i}')
+    model = keras.models.load_model(f'results/tests/combined_lstm/keras_states/version_{i}')
     test_res = model.predict(test_set_x)
 
     # metrics
@@ -62,7 +62,7 @@ for i in range(repeats):
     mpe = mean_absolute_percentage_error(test_set_y.squeeze(), test_res)
 
     error_metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-    with open('results/tests/combined_lstm/error_metrics_unnormalized.pickle', 'wb') as file:
+    with open('results/tests/combined_lstm/error_metrics.pickle', 'wb') as file:
         pickle.dump(error_metrics, file, protocol=-1)
 
     print('Mean Squared Error: ', mse)
@@ -78,7 +78,7 @@ for i in range(repeats):
     ax[0].set(ylabel=r'Normalized $PM_{2.5}$')
     ax[1].set(xlabel=r'Measurements', ylabel=r'$|y-\hat{y}|$')
     # plt.show()
-    fig.savefig(f'results/tests/combined_lstm/forecast_vs_true_unnormalized_plot_{i}.png')
+    fig.savefig(f'results/tests/combined_lstm/forecast_vs_true_plot_{i}.png')
     plt.close()
 
 print('done')
