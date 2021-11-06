@@ -64,10 +64,10 @@ def grouped_dataset_split(rng_int: int, normalize: bool):
         n = np.floor(cal.shape[0]/2*0.9).astype(int)
         cal = rng.choice(cal, n, replace=False, shuffle=False)
         for day in cal:
-            if df_temp.loc[day:(day + np.timedelta64(4, 'D')), :].shape[0] < 96:
+            if df_temp.loc[day:(day + np.timedelta64(2, 'D')), :].shape[0] < 48:
                 continue
-            set_x.append(df_temp.loc[day:(day + np.timedelta64(71, 'h')), :])
-            set_y.append(df_temp.loc[(day + np.timedelta64(3, 'D')):(day + np.timedelta64(95, 'h')), 'pm25'].values)
+            set_x.append(df_temp.loc[day:(day + np.timedelta64(23, 'h')), :])
+            set_y.append(df_temp.loc[(day + np.timedelta64(1, 'D')):(day + np.timedelta64(47, 'h')), 'pm25'].values)
 
         print(f'Approx. number of {f.split("_")[0]} elements: {n}')
 
