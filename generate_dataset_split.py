@@ -131,5 +131,5 @@ def transfer_dataset_split():
 
 
 # individual_dataset_split(True)
-grouped_dataset_split(0, True)
+grouped_dataset_split(0, False)
 # transfer_dataset_split()
