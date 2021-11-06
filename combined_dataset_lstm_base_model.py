@@ -9,6 +9,7 @@ from keras import Sequential
 from keras.layers import Input, LSTM, Dense, Bidirectional
 from keras.regularizers import l1_l2
 
+
 train_set_x = np.load('dataset/lstm_dataset_splits/collective/train_set_x.npy')
 train_set_y = np.load('dataset/lstm_dataset_splits/collective/train_set_y.npy')
 dev_set_x = np.load('dataset/lstm_dataset_splits/collective/dev_set_x.npy')
@@ -35,7 +36,7 @@ for j in range(repeats):
     model.add(Dense(units=24))
     model.summary()
 
-    model.compile(optimizer=opt, loss='mape')
+    model.compile(optimizer=opt, loss='mse')
 
     res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y), shuffle=False,
                     epochs=epochs, batch_size=batches, callbacks=[callback])
