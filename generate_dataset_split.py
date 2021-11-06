@@ -3,7 +3,6 @@ import numpy as np
 import os
 from sklearn.preprocessing import StandardScaler
 # TODO: SAVE SCALERS SO THAT DATA CAN BE CORRECTLY RESCALED AND COMPARED
-# TODO: determine the correct procedure for scaling inputs and outputs or only inputs
 
 
 def individual_dataset_split(normalize: bool):
@@ -42,7 +41,6 @@ def individual_dataset_split(normalize: bool):
         np.save(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/test_set.npy', test_set)
 
 
-# TODO: Testing if unscaled inputs work as well
 def grouped_dataset_split(rng_int: int, normalize: bool):
     rng = np.random.default_rng(rng_int)
     files = os.listdir('dataset/merged/')
