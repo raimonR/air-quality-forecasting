@@ -59,7 +59,7 @@ l1l2_weights = [str(tup) for tup in l1l2_weights]
 df = pd.DataFrame(test_loss.T, columns=l1l2_weights).melt(var_name='L1L2 Weights', value_name='MSE')
 
 ax = sb.boxplot(data=df, x='L1L2 Weights', y='MSE', orient='v', whis=5)
-ax.set(title='Bias Regularizer')
+ax.set(title='Bias Regularizer', yscale='log')
 fig = ax.get_figure()
 fig.savefig('results/tuning/combined_lstm/bias_regularizer.png')
 plt.close()
