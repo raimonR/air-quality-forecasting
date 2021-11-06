@@ -37,7 +37,7 @@ for j in range(repeats):
 
     model.compile(optimizer=opt, loss='mse')
 
-    res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y),
+    res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y), shuffle=False,
                     epochs=epochs, batch_size=batches, callbacks=[callback])
 
     t1 = time.perf_counter()
