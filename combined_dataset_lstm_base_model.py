@@ -35,7 +35,7 @@ for j in range(repeats):
     model.add(Dense(units=24))
     model.summary()
 
-    model.compile(optimizer=opt, loss='mae')
+    model.compile(optimizer=opt, loss='mape')
 
     res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y), shuffle=False,
                     epochs=epochs, batch_size=batches, callbacks=[callback])
