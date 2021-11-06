@@ -34,7 +34,7 @@ for i, (l1, l2) in enumerate(l1l2_weights):
         callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
 
         model = Sequential()
-        model.add(Input(shape=(train_set_x.shape[1], train_set_y.shape[2])))
+        model.add(Input(shape=(train_set_x.shape[1], train_set_x.shape[2])))
         model.add(Bidirectional(LSTM(units=64, return_sequences=True, bias_regularizer=l1_l2(l1, l2)))) # , recurrent_regularizer=l1_l2(l1, l2))))
         model.add(Bidirectional(LSTM(units=32, bias_regularizer=l1_l2(l1, l2)))) # , recurrent_regularizer=l1_l2(l1, l2))))
         model.add(Dense(units=24))
