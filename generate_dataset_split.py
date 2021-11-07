@@ -4,7 +4,8 @@ import os
 from sklearn.preprocessing import StandardScaler
 # TODO: SAVE SCALERS SO THAT DATA CAN BE CORRECTLY RESCALED AND COMPARED
 
-
+# TODO: CHANGE WAY THINGS ARE NORMALIZED OR AT LEAST VERIFY THAT THE NORMALIZATION
+#       IS DONE CORRECTLY.
 def individual_dataset_split(normalize: bool):
     files = os.listdir('dataset/merged/')
     for f in files:
@@ -130,6 +131,6 @@ def transfer_dataset_split():
         covariates_df.to_pickle(f'./dataset/transfer_learning/{f.split("_")[0]}/covariates.pkl')
 
 
-# individual_dataset_split(True)
-grouped_dataset_split(0, True)
+individual_dataset_split(True)
+# grouped_dataset_split(0, True)
 # transfer_dataset_split()

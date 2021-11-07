@@ -15,9 +15,10 @@ ml cudnn/8.1
 
 eval "$(conda shell.bash hook)"
 
+# conda activate /home/groups/gorle/miniconda3/envs/pytorch_env
 conda activate /home/groups/gorle/miniconda3/envs/tensorflow_env
 
 python generate_dataset_split.py
-python combined_dataset_lstm_base_model.py
-# python individual_dataset_lstm_base_model.py
+# python combined_dataset_lstm_base_model.py
+python individual_dataset_lstm_base_model.py
 
