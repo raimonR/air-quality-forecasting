@@ -59,14 +59,14 @@ for f in [files[0]]:
         opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
         early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=25, restore_best_weights=True)
         reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=10, min_lr=0.001)
-    
+
         model = Sequential()
         model.add(Input(shape=(past, n_features)))
         model.add(Bidirectional(LSTM(units=64, return_sequences=True, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
         model.add(Bidirectional(LSTM(units=32, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
         model.add(Dense(units=horizon))
         model.summary()
-    
+
         model.compile(optimizer=opt, loss='mse')
     
         res = model.fit(x=train_ds, validation_data=dev_ds, epochs=epochs, shuffle=False,
@@ -83,9 +83,10 @@ for f in [files[0]]:
         true_values = np.array([])
         for j in range(iterations):
             forecast_input = test_set[j*past:(j + 1)*past, :]
+            forecast_input = np.expand_dims(forecast_input, axis=0)
             forecast_output = test_set[(j + 1)*past:(j + 2)*past, 0]
             res = model.predict(forecast_input)
-            predictions = np.append(predictions, res)
+            predictions = np.append(predictions, res.squeeze())
             true_values = true_values.append(true_values, forecast_output)
 
         # metrics
