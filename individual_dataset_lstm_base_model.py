@@ -87,7 +87,7 @@ for f in [files[0]]:
             forecast_output = test_set[(j + 1)*past:(j + 2)*past, 0]
             res = model.predict(forecast_input)
             predictions = np.append(predictions, res.squeeze())
-            true_values = true_values.append(true_values, forecast_output)
+            true_values = np.append(true_values, forecast_output)
 
         # metrics
         mse = mean_squared_error(true_values, predictions)
