@@ -14,7 +14,7 @@ from tensorflow import autograph
 autograph.set_verbosity(0)
 
 files = os.listdir('dataset/lstm_dataset_splits/individual/')
-for f in files:
+for f in [files[0]]:
     train_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/train_set.npy')
     dev_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/dev_set.npy')
     test_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/test_set.npy')
