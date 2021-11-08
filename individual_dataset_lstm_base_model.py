@@ -78,7 +78,7 @@ for f in [files[0]]:
         forecast = model.evaluate(test_ds, return_dict=True)
         print(forecast)
 
-        iterations = np.floor(test_set.shape[0]/past) - 1
+        iterations = int(np.floor(test_set.shape[0]/past) - 1)
         predictions = np.array([])
         true_values = np.array([])
         for j in range(iterations):
