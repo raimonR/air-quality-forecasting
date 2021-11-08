@@ -95,7 +95,7 @@ for f in [files[0]]:
         mpe = mean_absolute_percentage_error(true_values, predictions)
     
         error_metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-        with open('results/tests/individual_lstm/{f}/error_metrics.pickle', 'wb') as file:
+        with open(f'results/tests/individual_lstm/{f}/error_metrics.pickle', 'wb') as file:
             pickle.dump(error_metrics, file, protocol=-1)
 
         print('Mean Squared Error: ', mse)
