@@ -1,5 +1,6 @@
 import os
 import time
+import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
@@ -8,21 +9,9 @@ from tensorflow import keras
 from keras.models import Sequential
 from keras.layers import Input, LSTM, Dense, Bidirectional
 from keras.regularizers import l1_l2
-from tensorflow.keras.preprocessing import timeseries_dataset_from_array
 from tensorflow import autograph
 
 autograph.set_verbosity(0)
-
-
-def dataset_generator(inputs, output_dims, input_length, output_length, batch_size):
-    dataset = timeseries_dataset_from_array(inputs, None, input_length + output_length, batch_size=batch_size)
-
-    def split_inputs(x):
-        return x[:, :input_length, :], x[:, input_length:, output_dims]
-
-    dataset = dataset.map(split_inputs)
-
-    return dataset
 
 files = os.listdir('dataset/lstm_dataset_splits/individual/')
 for f in files:
@@ -30,20 +19,38 @@ for f in files:
     dev_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/dev_set.npy')
     test_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/test_set.npy')
     
-    # n_features = train_set.shape[2]
-    print(train_set.shape)
-    horizon = 24
+    n_features = train_set.shape[1]
     past = 24
+    horizon = 24
 
-    train_set_ds = dataset_generator(train_set, slice(0, 1), input_length=past, output_length=horizon, batch_size=128)
-    dev_set_ds = dataset_generator(dev_set, slice(0, 1), input_length=past, output_length=horizon, batch_size=128)
-    test_set_ds = dataset_generator(test_set, slice(0, 1), input_length=past, output_length=horizon, batch_size=128)
+    def generate_inputs_outputs(data, n_past, n_horizon, batch_size):
+        def make_batch(x):
+            return x.batch(length)
+
+        def make_split(x):
+            return x[:-n_horizon], x[-n_horizon:, 0]
+
+        length = n_past + n_horizon
+        ds = tf.data.Dataset.from_tensor_slices(data)
+
+        ds = ds.window(length, shift=1, drop_remainder=True)
+        ds = ds.flat_map(make_batch)
+
+        ds = ds.map(make_split)
+
+        ds = ds.batch(batch_size).prefetch(1)
+        return ds
+
+
+    train_ds = generate_inputs_outputs(train_set, past, horizon, 128)
+    dev_ds = generate_inputs_outputs(dev_set, past, horizon, 128)
+    test_ds = generate_inputs_outputs(test_set, past, horizon, 128)
 
     # Define hyperparameters
-    epochs = 500
+    epochs = 1
     batches = 128
     learning_rate = 1e-1
-    repeats = 3
+    repeats = 1
     l1l2 = (0.1, 0.1)
     
     os.makedirs(f'results/tests/individual_lstm/{f}/keras_states/', exist_ok=True)
@@ -54,7 +61,7 @@ for f in files:
         reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=10, min_lr=0.001)
     
         model = Sequential()
-        model.add(Input(shape=(past, 468)))
+        model.add(Input(shape=(past, n_features)))
         model.add(Bidirectional(LSTM(units=64, return_sequences=True, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
         model.add(Bidirectional(LSTM(units=32, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
         model.add(Dense(units=horizon))
@@ -62,41 +69,50 @@ for f in files:
     
         model.compile(optimizer=opt, loss='mse')
     
-        res = model.fit(x=train_set_ds, validation_data=dev_set_ds, epochs=epochs, shuffle=False, batch_size=batches,
+        res = model.fit(x=train_ds, validation_data=dev_ds, epochs=epochs, shuffle=False,
                         callbacks=[early_stopping, reduce_lr])
                         
         t1 = time.perf_counter()
         print(f'Time for {early_stopping.stopped_epoch} epochs:', t1 - t0)
         
-        forecast = model.predict(test_set_ds)
-    
+        forecast = model.evaluate(test_ds, return_dict=True)
+        print(forecast)
+
+        iterations = np.floor(test_set.shape[0]/past) - 1
+        predictions = np.array([])
+        true_values = np.array([])
+        for j in range(iterations):
+            forecast_input = test_set[j*past:(j + 1)*past, :]
+            forecast_output = test_set[(j + 1)*past:(j + 2)*past, 0]
+            res = model.predict(forecast_input)
+            predictions = np.append(predictions, res)
+            true_values = true_values.append(true_values, forecast_output)
+
         # metrics
-        mse = mean_squared_error(test_set_ds.squeeze(), forecast)
-        mae = mean_absolute_error(test_set_ds.squeeze(), forecast)
-        mpe = mean_absolute_percentage_error(test_set_ds.squeeze(), forecast)
+        mse = mean_squared_error(true_values, predictions)
+        mae = mean_absolute_error(true_values, predictions)
+        mpe = mean_absolute_percentage_error(true_values, predictions)
     
         error_metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
         with open('results/tests/individual_lstm/{f}/error_metrics.pickle', 'wb') as file:
             pickle.dump(error_metrics, file, protocol=-1)
-    
+
         print('Mean Squared Error: ', mse)
         print('Mean Absolute Error: ', mae)
         print('Mean Absolute Percentage Error: ', mpe)
-    
-        plot_test_y = np.concatenate(test_set_y.squeeze())[:720]
-        plot_forecast_y = np.concatenate(forecast)[:720]
+
         fig, ax = plt.subplots(nrows=2, sharex=True)
-        ax[0].plot(plot_test_y, label=r'$y$')
-        ax[0].plot(plot_forecast_y, label=r'$\hat{y}$')
-        ax[1].plot(np.abs(plot_test_y - plot_forecast_y))
+        ax[0].plot(true_values[:480], label=r'$y$')
+        ax[0].plot(predictions[:480], label=r'$\hat{y}$')
+        ax[1].plot(np.abs(true_values[:480] - predictions[:480]))
         ax[0].set(ylabel=r'Normalized $PM_{2.5}$')
         ax[1].set(xlabel=r'Measurements', ylabel=r'$|y-\hat{y}|$')
         # plt.show()
         fig.savefig(f'results/tests/individual_lstm/{f}/forecast_vs_true_plot_{i}.png')
         plt.close()
-        
-        model.save(f'results/tests/individual_lstm/{f}/keras_states/version_{j}')
-        keras.backend.clear_session()
+        #
+        # model.save(f'results/tests/individual_lstm/{f}/keras_states/version_{j}')
+        # keras.backend.clear_session()
     
     print(f'done with {f}')
 
