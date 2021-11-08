@@ -47,7 +47,7 @@ for f in [files[0]]:
     test_ds = generate_inputs_outputs(test_set, past, horizon, 128)
 
     # Define hyperparameters
-    epochs = 1
+    epochs = 500
     batches = 128
     learning_rate = 1e-1
     repeats = 1
