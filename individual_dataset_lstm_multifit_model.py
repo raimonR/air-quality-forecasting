@@ -125,3 +125,5 @@ ax[1].set(xlabel=r'Measurements', ylabel=r'$|y-\hat{y}|$')
 # plt.show()
 fig.savefig(f'results/tests/multifit_lstm/forecast_vs_true_plot.png')
 plt.close()
+
+print('done')

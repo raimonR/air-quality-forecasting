@@ -38,7 +38,7 @@ for f in [files[0]]:
 
         ds = ds.map(make_split)
 
-        ds = ds.batch(batch_size).prefetch(1)
+        ds = ds.batch(batch_size)
         return ds
 
 
@@ -47,8 +47,7 @@ for f in [files[0]]:
     test_ds = generate_inputs_outputs(test_set, past, horizon, 128)
 
     # Define hyperparameters
-    epochs = 500
-    batches = 128
+    epochs = 1
     learning_rate = 1e-1
     repeats = 1
     l1l2 = (0.1, 0.1)
