@@ -46,7 +46,7 @@ for idx, f in enumerate(files):
 
     train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx], 1)
     dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx], 1)
-    test_ds = generate_inputs_outputs(test_set, past, horizon, batch_numbers[idx], 24)
+    test_ds = generate_inputs_outputs(test_set, past, horizon, 1, 24)
 
     # Define hyperparameters
     epochs = 500
@@ -79,18 +79,13 @@ for idx, f in enumerate(files):
         forecast = model.evaluate(test_ds, return_dict=True)
         print(forecast)
 
-        # iterations = int(np.floor(test_set.shape[0]/past) - 1)
-        # predictions = np.array([])
-        # true_values = np.array([])
-        # for j in range(iterations):
-        #     forecast_input = test_set[j*past:(j + 1)*past, :]
-        #     forecast_input = np.expand_dims(forecast_input, axis=0)
-        #     forecast_output = test_set[(j + 1)*past:(j + 2)*past, 0]
-        #     res = model.predict(forecast_input)
-        #     predictions = np.append(predictions, res.squeeze())
-        #     true_values = np.append(true_values, forecast_output)
-
-
+        predictions = np.array([])
+        true_values = np.array([])
+        for batch in test_ds.as_numpy_iterator():
+            input_tensor, output_tensor = batch
+            res = model.predict_on_batch(input_tensor)
+            predictions = np.append(predictions, res.squeeze())
+            true_values = np.append(true_values, output_tensor.squeeze())
 
         # metrics
         mse = mean_squared_error(true_values, predictions)
