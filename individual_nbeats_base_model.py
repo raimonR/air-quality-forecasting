@@ -7,6 +7,11 @@ from darts.models import NBEATSModel
 from darts.metrics import mape, mse
 import torch
 
+print(torch.cuda.is_available())
+if torch.cuda.is_available():
+    cuda = torch.cuda.current_device()
+    print(torch.cuda.get_device_name(cuda))
+
 # TODO: Vary the number of blocks to determine optimal value
 # TODO: Vary the layer width to determine optimal value
 # TODO: Vary the number of epochs

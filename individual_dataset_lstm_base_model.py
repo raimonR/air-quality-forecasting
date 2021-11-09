@@ -25,7 +25,7 @@ for idx, f in enumerate(files):
     past = 24
     horizon = 24
 
-    def generate_inputs_outputs(data, n_past, n_horizon, batch_size):
+    def generate_inputs_outputs(data, n_past, n_horizon, batch_size, shift):
         def make_batch(x):
             return x.batch(length)
 
@@ -35,7 +35,7 @@ for idx, f in enumerate(files):
         length = n_past + n_horizon
         ds = tf.data.Dataset.from_tensor_slices(data)
 
-        ds = ds.window(length, shift=1, drop_remainder=True)
+        ds = ds.window(length, shift=shift, drop_remainder=True)
         ds = ds.flat_map(make_batch)
 
         ds = ds.map(make_split)
@@ -44,9 +44,9 @@ for idx, f in enumerate(files):
         return ds
 
 
-    train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx])
-    dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx])
-    test_ds = generate_inputs_outputs(test_set, past, horizon, batch_numbers[idx])
+    train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx], 1)
+    dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx], 1)
+    test_ds = generate_inputs_outputs(test_set, past, horizon, batch_numbers[idx], 24)
 
     # Define hyperparameters
     epochs = 500
@@ -79,16 +79,18 @@ for idx, f in enumerate(files):
         forecast = model.evaluate(test_ds, return_dict=True)
         print(forecast)
 
-        iterations = int(np.floor(test_set.shape[0]/past) - 1)
-        predictions = np.array([])
-        true_values = np.array([])
-        for j in range(iterations):
-            forecast_input = test_set[j*past:(j + 1)*past, :]
-            forecast_input = np.expand_dims(forecast_input, axis=0)
-            forecast_output = test_set[(j + 1)*past:(j + 2)*past, 0]
-            res = model.predict(forecast_input)
-            predictions = np.append(predictions, res.squeeze())
-            true_values = np.append(true_values, forecast_output)
+        # iterations = int(np.floor(test_set.shape[0]/past) - 1)
+        # predictions = np.array([])
+        # true_values = np.array([])
+        # for j in range(iterations):
+        #     forecast_input = test_set[j*past:(j + 1)*past, :]
+        #     forecast_input = np.expand_dims(forecast_input, axis=0)
+        #     forecast_output = test_set[(j + 1)*past:(j + 2)*past, 0]
+        #     res = model.predict(forecast_input)
+        #     predictions = np.append(predictions, res.squeeze())
+        #     true_values = np.append(true_values, forecast_output)
+
+
 
         # metrics
         mse = mean_squared_error(true_values, predictions)
