@@ -47,9 +47,9 @@ for f in [files[0]]:
     test_ds = generate_inputs_outputs(test_set, past, horizon, 128)
 
     # Define hyperparameters
-    epochs = 1
+    epochs = 500
     learning_rate = 1e-1
-    repeats = 1
+    repeats = 3
     l1l2 = (0.1, 0.1)
     
     os.makedirs(f'results/tests/individual_lstm/{f}/keras_states/', exist_ok=True)
@@ -110,6 +110,8 @@ for f in [files[0]]:
         # plt.show()
         fig.savefig(f'results/tests/individual_lstm/{f}/forecast_vs_true_plot_{i}.png')
         plt.close()
+
+        keras.backend.clear_session()
     
     print(f'done with {f}')
 
