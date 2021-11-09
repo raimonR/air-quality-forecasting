@@ -8,6 +8,7 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=16G
 #SBATCH --gpus=1
+#SBATCH --output=slurm-%x-%j.out
 
 module purge
 ml cuda/11.2
