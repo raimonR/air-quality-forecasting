@@ -133,25 +133,22 @@ def transfer_dataset_split(normalize: bool):
         num = df_temp.shape[0]
         split_1 = int(num*0.8)
         split_2 = int(num*0.9)
-        train_set_x = df_temp.iloc[:split_1, 1:]
-        train_set_y = df_temp.iloc[:split_1, 0]
-        dev_set_x = df_temp.iloc[split_1:split_2, 1:]
-        dev_set_y = df_temp.iloc[split_1:split_2, 0]
-        test_set_x = df_temp.iloc[split_2:, 1:]
-        test_set_y = df_temp.iloc[split_2:, 0]
+        train_set = df_temp.iloc[:split_1]
+        dev_set = df_temp.iloc[split_1:split_2]
+        test_set = df_temp.iloc[split_2:]
 
-        train_forecast = TimeSeries.from_dataframe(train_set_y, value_cols='pm25', freq='1H')
-        dev_forecast = TimeSeries.from_dataframe(dev_set_y, value_cols='pm25', freq='1H')
-        test_forecast = TimeSeries.from_dataframe(test_set_y, value_cols='pm25', freq='1H')
+        train_forecast = TimeSeries.from_dataframe(train_set, value_cols='pm25', freq='1H')
+        dev_forecast = TimeSeries.from_dataframe(dev_set, value_cols='pm25', freq='1H')
+        test_forecast = TimeSeries.from_dataframe(test_set, value_cols='pm25', freq='1H')
 
-        train_covar = TimeSeries.from_dataframe(train_set_x, value_cols='LATITUDE', freq='1H')
-        dev_covar = TimeSeries.from_dataframe(dev_set_x, value_cols='LATITUDE', freq='1H')
-        test_covar = TimeSeries.from_dataframe(test_set_x, value_cols='LATITUDE', freq='1H')
+        train_covar = TimeSeries.from_dataframe(train_set, value_cols='LATITUDE', freq='1H')
+        dev_covar = TimeSeries.from_dataframe(dev_set, value_cols='LATITUDE', freq='1H')
+        test_covar = TimeSeries.from_dataframe(test_set, value_cols='LATITUDE', freq='1H')
         columns = df_temp.columns[(df_temp.columns != 'pm25') & (df_temp.columns != 'LATITUDE')].to_list()
         for column in columns:
-            train_covar = train_covar.stack(TimeSeries.from_dataframe(train_set_x, value_cols=column, freq='1H'))
-            dev_covar = dev_covar.stack(TimeSeries.from_dataframe(dev_set_x, value_cols=column, freq='1H'))
-            test_covar = test_covar.stack(TimeSeries.from_dataframe(test_set_x, value_cols=column, freq='1H'))
+            train_covar = train_covar.stack(TimeSeries.from_dataframe(train_set, value_cols=column, freq='1H'))
+            dev_covar = dev_covar.stack(TimeSeries.from_dataframe(dev_set, value_cols=column, freq='1H'))
+            test_covar = test_covar.stack(TimeSeries.from_dataframe(test_set, value_cols=column, freq='1H'))
 
         train_forecast = train_forecast.data_array().to_dataframe('forecast')
         train_forecast.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/train_forecast.pkl')
