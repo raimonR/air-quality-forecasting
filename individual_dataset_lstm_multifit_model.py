@@ -111,9 +111,9 @@ for i in range(repeats):
     print('Mean Absolute Percentage Error: ', mpe)
 
     fig, ax = plt.subplots(nrows=2, sharex=True)
-    ax[0].plot(true_values[:480], label=r'$y$')
-    ax[0].plot(predictions[:480], label=r'$\hat{y}$')
-    ax[1].plot(np.abs(true_values[:480] - predictions[:480]))
+    ax[0].plot(true_values, label=r'$y$')
+    ax[0].plot(predictions, label=r'$\hat{y}$')
+    ax[1].plot(np.abs(true_values - predictions))
     ax[0].set(ylabel=r'Normalized $PM_{2.5}$')
     ax[1].set(xlabel=r'Measurements', ylabel=r'$|y-\hat{y}|$')
     # plt.show()
