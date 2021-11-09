@@ -13,8 +13,10 @@ from tensorflow import autograph
 
 autograph.set_verbosity(0)
 
+
+batch_numbers = [32, 128, 128, 128, 128, 128]
 files = os.listdir('dataset/lstm_dataset_splits/individual/')
-for f in [files[0]]:
+for idx, f in enumerate(files):
     train_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/train_set.npy')
     dev_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/dev_set.npy')
     test_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/test_set.npy')
@@ -42,9 +44,9 @@ for f in [files[0]]:
         return ds
 
 
-    train_ds = generate_inputs_outputs(train_set, past, horizon, 128)
-    dev_ds = generate_inputs_outputs(dev_set, past, horizon, 128)
-    test_ds = generate_inputs_outputs(test_set, past, horizon, 128)
+    train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx])
+    dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx])
+    test_ds = generate_inputs_outputs(test_set, past, horizon, batch_numbers[idx])
 
     # Define hyperparameters
     epochs = 500
