@@ -20,34 +20,24 @@ model = NBEATSModel(input_chunk_length=24, output_chunk_length=24, generic_archi
 
 files = os.listdir('dataset/transfer_learning/')
 for f in [files[0]]:
-    train_forecast = pd.read_pickle(f'dataset/transfer_learning/{f}/train_forecast.pkl')
-    train_covar = pd.read_pickle(f'dataset/transfer_learning/{f}/train_covar.pkl')
-    dev_forecast = pd.read_pickle(f'dataset/transfer_learning/{f}/dev_forecast.pkl')
-    dev_covar = pd.read_pickle(f'dataset/transfer_learning/{f}/dev_covar.pkl')
-    test_forecast = pd.read_pickle(f'dataset/transfer_learning/{f}/test_forecast.pkl')
-    test_covar = pd.read_pickle(f'dataset/transfer_learning/{f}/test_covar.pkl')
+    train_set = pd.read_pickle(f'dataset/transfer_learning/{f}/train_set.pkl')
+    dev_set = pd.read_pickle(f'dataset/transfer_learning/{f}/dev_set.pkl')
+    test_set = pd.read_pickle(f'dataset/transfer_learning/{f}/test_set.pkl')
 
-    n = test_forecast.shape[0]
+    # n = test_forecast.shape[0]
 
-    #         train_forecast = TimeSeries.from_dataframe(train_set, value_cols='pm25', freq='1H')
-    #         dev_forecast = TimeSeries.from_dataframe(dev_set, value_cols='pm25', freq='1H')
-    #         test_forecast = TimeSeries.from_dataframe(test_set, value_cols='pm25', freq='1H')
-    #
-    #         train_covar = TimeSeries.from_dataframe(train_set, value_cols='LATITUDE', freq='1H')
-    #         dev_covar = TimeSeries.from_dataframe(dev_set, value_cols='LATITUDE', freq='1H')
-    #         test_covar = TimeSeries.from_dataframe(test_set, value_cols='LATITUDE', freq='1H')
-    #         columns = df_temp.columns[(df_temp.columns != 'pm25') & (df_temp.columns != 'LATITUDE')].to_list()
-    #         for column in columns:
-    #             train_covar = train_covar.stack(TimeSeries.from_dataframe(train_set, value_cols=column, freq='1H'))
-    #             dev_covar = dev_covar.stack(TimeSeries.from_dataframe(dev_set, value_cols=column, freq='1H'))
-    #             test_covar = test_covar.stack(TimeSeries.from_dataframe(test_set, value_cols=column, freq='1H'))
+    train_forecast = TimeSeries.from_dataframe(train_set, value_cols='pm25', freq='1H')
+    dev_forecast = TimeSeries.from_dataframe(dev_set, value_cols='pm25', freq='1H')
+    test_forecast = TimeSeries.from_dataframe(test_set, value_cols='pm25', freq='1H')
 
-    train_forecast = TimeSeries.from_dataframe(train_forecast)
-    train_covar = TimeSeries.from_dataframe(train_covar)
-    dev_forecast = TimeSeries.from_dataframe(dev_forecast)
-    dev_covar = TimeSeries.from_dataframe(dev_covar)
-    test_forecast = TimeSeries.from_dataframe(test_forecast)
-    test_covar = TimeSeries.from_dataframe(test_covar)
+    train_covar = TimeSeries.from_dataframe(train_set, value_cols='LATITUDE', freq='1H')
+    dev_covar = TimeSeries.from_dataframe(dev_set, value_cols='LATITUDE', freq='1H')
+    test_covar = TimeSeries.from_dataframe(test_set, value_cols='LATITUDE', freq='1H')
+    columns = train_set.columns[(train_set.columns != 'pm25') & (train_set.columns != 'LATITUDE')].to_list()
+    for column in columns:
+        train_covar = train_covar.stack(TimeSeries.from_dataframe(train_set, value_cols=column, freq='1H'))
+        dev_covar = dev_covar.stack(TimeSeries.from_dataframe(dev_set, value_cols=column, freq='1H'))
+        test_covar = test_covar.stack(TimeSeries.from_dataframe(test_set, value_cols=column, freq='1H'))
 
     model.fit(series=train_forecast, past_covariates=train_covar, val_series=dev_forecast,
               val_past_covariates=dev_covar)
