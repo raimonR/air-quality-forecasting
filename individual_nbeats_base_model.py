@@ -12,7 +12,7 @@ import torch
 # TODO: Vary the number of epochs
 # TODO: Vary the learning rate
 model = NBEATSModel(input_chunk_length=24, output_chunk_length=24, generic_architecture=False, num_blocks=3,
-                    layer_widths=512, n_epochs=300, optimizer_cls=torch.optim.NAdam,
+                    layer_widths=512, n_epochs=300, optimizer_cls=torch.optim.Adam,
                     optimizer_kwargs={'lr': 0.1, 'eps': 1e-7},
                     lr_scheduler_cls=torch.optim.lr_scheduler.ReduceLROnPlateau,
                     lr_scheduler_kwargs={'factor': 0.2, 'patience': 10, 'min_lr': 0.001}, model_name='base_model',
