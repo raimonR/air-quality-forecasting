@@ -76,7 +76,7 @@ for idx, f in enumerate(files):
         t1 = time.perf_counter()
         print(f'Time for {early_stopping.stopped_epoch} epochs:', t1 - t0)
 
-        test_ds = generate_inputs_outputs(test_set, past, horizon, 128)
+        test_ds = generate_inputs_outputs(test_set, past, horizon, 128, 1)
         forecast = model.evaluate(test_ds, return_dict=True)
         print(forecast)
 

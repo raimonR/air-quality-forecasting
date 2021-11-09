@@ -65,8 +65,8 @@ for i in range(repeats):
         dev_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/dev_set.npy')
         test_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/test_set.npy')
 
-        train_ds = generate_inputs_outputs(train_set, past, horizon, 128)
-        dev_ds = generate_inputs_outputs(dev_set, past, horizon, 128)
+        train_ds = generate_inputs_outputs(train_set, past, horizon, 128, 1)
+        dev_ds = generate_inputs_outputs(dev_set, past, horizon, 128, 1)
 
         t0 = time.perf_counter()
         res = model.fit(x=train_ds, validation_data=dev_ds, epochs=epochs, shuffle=False,
@@ -81,7 +81,7 @@ for i in range(repeats):
     true_values = np.array([])
     for f in files:
         test_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/test_set.npy')
-        test_ds = generate_inputs_outputs(test_set, past, horizon, 128)
+        test_ds = generate_inputs_outputs(test_set, past, horizon, 128, 1)
 
         forecast = model.evaluate(test_ds, return_dict=True)
         metrics.append(forecast['loss'])
