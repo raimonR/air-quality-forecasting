@@ -22,7 +22,7 @@ for f in [files[0]]:
     dev_set = pd.read_pickle(f'dataset/transfer_learning/{f}/dev_set.pkl')
     test_set = pd.read_pickle(f'dataset/transfer_learning/{f}/test_set.pkl')
 
-    # n = test_forecast.shape[0]
+    n = test_forecast.shape[0]
 
     train_forecast = TimeSeries.from_dataframe(train_set, value_cols='pm25', freq='1H')
     dev_forecast = TimeSeries.from_dataframe(dev_set, value_cols='pm25', freq='1H')
