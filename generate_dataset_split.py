@@ -105,17 +105,30 @@ def grouped_dataset_split(rng_int: int, normalize: bool):
     np.save('dataset/lstm_dataset_splits/collective/test_set_y', test_set_y)
 
 
-def transfer_dataset_split():
+def transfer_dataset_split(normalize: bool):
     from darts.timeseries import TimeSeries
     files = os.listdir('dataset/merged/')
     for f in files:
         df_temp = pd.read_pickle(f'dataset/merged/{f}')
         df_temp = df_temp.fillna(0)
 
-        scaler = StandardScaler()
-        scaled_array = scaler.fit_transform(df_temp)
-        for i, c in enumerate(df_temp.columns):
-            df_temp[c] = scaled_array[:, i]
+        if normalize:
+            for e in df_temp.columns.to_list()[:-450]:
+                if e not in ('LATITUDE', 'LONGITUDE', 'ELEVATION'):
+                    df_temp[e] = StandardScaler().fit_transform(df_temp[e].to_numpy().reshape(-1, 1))
+
+            for index, row in df_temp.iterrows():
+                pressure_data = row[-450:-300].to_numpy()
+                pressure_data = StandardScaler().fit_transform(pressure_data.reshape(-1, 1))
+                df_temp.loc[index][-450:-300] = pressure_data.reshape(150, )
+
+                temperature_data = row[-300:-150].to_numpy()
+                temperature_data = StandardScaler().fit_transform(temperature_data.reshape(-1, 1))
+                df_temp.loc[index][-300:-150] = temperature_data.reshape(150, )
+
+                thetav_data = row[-150:].to_numpy()
+                thetav_data = StandardScaler().fit_transform(thetav_data.reshape(-1, 1))
+                df_temp.loc[index][-150:] = thetav_data.reshape(150, )
 
         forecast = TimeSeries.from_dataframe(df_temp, value_cols='pm25', freq='1H')
 
@@ -131,6 +144,6 @@ def transfer_dataset_split():
         covariates_df.to_pickle(f'./dataset/transfer_learning/{f.split("_")[0]}/covariates.pkl')
 
 
-individual_dataset_split(True)
+# individual_dataset_split(True)
 # grouped_dataset_split(0, True)
-# transfer_dataset_split()
+transfer_dataset_split(True)
