@@ -14,7 +14,26 @@ from tensorflow import autograph
 autograph.set_verbosity(0)
 
 
-batch_numbers = [32, 128, 128, 128, 128, 128]
+def generate_inputs_outputs(data, n_past, n_horizon, batch_size, shift):
+    def make_batch(x):
+        return x.batch(length)
+
+    def make_split(x):
+        return x[:-n_horizon], x[-n_horizon:, 0]
+
+    length = n_past + n_horizon
+    ds = tf.data.Dataset.from_tensor_slices(data)
+
+    ds = ds.window(length, shift=shift, drop_remainder=True)
+    ds = ds.flat_map(make_batch)
+
+    ds = ds.map(make_split)
+
+    ds = ds.batch(batch_size)
+    return ds
+
+
+batch_numbers = [128, 128, 128, 128, 128, 128]
 files = os.listdir('dataset/lstm_dataset_splits/individual/')
 for idx, f in enumerate(files):
     train_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/train_set.npy')
@@ -24,25 +43,6 @@ for idx, f in enumerate(files):
     n_features = train_set.shape[1]
     past = 24
     horizon = 24
-
-    def generate_inputs_outputs(data, n_past, n_horizon, batch_size, shift):
-        def make_batch(x):
-            return x.batch(length)
-
-        def make_split(x):
-            return x[:-n_horizon], x[-n_horizon:, 0]
-
-        length = n_past + n_horizon
-        ds = tf.data.Dataset.from_tensor_slices(data)
-
-        ds = ds.window(length, shift=shift, drop_remainder=True)
-        ds = ds.flat_map(make_batch)
-
-        ds = ds.map(make_split)
-
-        ds = ds.batch(batch_size)
-        return ds
-
 
     train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx], 1)
     dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx], 1)
