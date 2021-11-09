@@ -14,7 +14,7 @@ from tensorflow import autograph
 autograph.set_verbosity(0)
 
 
-def generate_inputs_outputs(data, n_past, n_horizon, batch_size):
+def generate_inputs_outputs(data, n_past, n_horizon, batch_size, shift):
     def make_batch(x):
         return x.batch(length)
 
@@ -24,14 +24,13 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_size):
     length = n_past + n_horizon
     ds = tf.data.Dataset.from_tensor_slices(data)
 
-    ds = ds.window(length, shift=1, drop_remainder=True)
+    ds = ds.window(length, shift=shift, drop_remainder=True)
     ds = ds.flat_map(make_batch)
 
     ds = ds.map(make_split)
 
-    ds = ds.batch(batch_size).prefetch(1)
+    ds = ds.batch(batch_size)
     return ds
-
 
 repeats = 2
 for i in range(repeats):
@@ -68,7 +67,6 @@ for i in range(repeats):
 
         train_ds = generate_inputs_outputs(train_set, past, horizon, 128)
         dev_ds = generate_inputs_outputs(dev_set, past, horizon, 128)
-        test_ds = generate_inputs_outputs(test_set, past, horizon, 128)
 
         t0 = time.perf_counter()
         res = model.fit(x=train_ds, validation_data=dev_ds, epochs=epochs, shuffle=False,
@@ -88,14 +86,14 @@ for i in range(repeats):
         forecast = model.evaluate(test_ds, return_dict=True)
         metrics.append(forecast['loss'])
 
-        iterations = int(np.floor(test_set.shape[0]/past) - 1)
-        for j in range(iterations):
-            forecast_input = test_set[j*past:(j + 1)*past, :]
-            forecast_input = np.expand_dims(forecast_input, axis=0)
-            forecast_output = test_set[(j + 1)*past:(j + 2)*past, 0]
-            res = model.predict(forecast_input)
+        test_ds = generate_inputs_outputs(test_set, past, horizon, 1, 24)
+        predictions = np.array([])
+        true_values = np.array([])
+        for batch in test_ds.as_numpy_iterator():
+            input_tensor, output_tensor = batch
+            res = model.predict_on_batch(input_tensor)
             predictions = np.append(predictions, res.squeeze())
-            true_values = np.append(true_values, forecast_output)
+            true_values = np.append(true_values, output_tensor.squeeze())
 
     # metrics
     mse = mean_squared_error(true_values, predictions)

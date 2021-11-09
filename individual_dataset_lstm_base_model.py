@@ -75,10 +75,12 @@ for idx, f in enumerate(files):
                         
         t1 = time.perf_counter()
         print(f'Time for {early_stopping.stopped_epoch} epochs:', t1 - t0)
-        
+
+        test_ds = generate_inputs_outputs(test_set, past, horizon, 128)
         forecast = model.evaluate(test_ds, return_dict=True)
         print(forecast)
 
+        test_ds = generate_inputs_outputs(test_set, past, horizon, 1, 24)
         predictions = np.array([])
         true_values = np.array([])
         for batch in test_ds.as_numpy_iterator():
