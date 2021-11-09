@@ -51,7 +51,7 @@ for idx, f in enumerate(files):
     # Define hyperparameters
     epochs = 500
     learning_rate = 1e-1
-    repeats = 3
+    repeats = 2
     l1l2 = (0.1, 0.1)
     
     os.makedirs(f'results/tests/individual_lstm/{f}/keras_states/', exist_ok=True)
