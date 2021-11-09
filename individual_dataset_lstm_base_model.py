@@ -63,8 +63,8 @@ for idx, f in enumerate(files):
 
         model = Sequential()
         model.add(Input(shape=(past, n_features)))
-        model.add(Bidirectional(LSTM(units=64, return_sequences=True, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
-        model.add(Bidirectional(LSTM(units=32, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
+        model.add(Bidirectional(LSTM(units=32, return_sequences=True, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
+        model.add(Bidirectional(LSTM(units=28, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
         model.add(Dense(units=horizon))
         model.summary()
 

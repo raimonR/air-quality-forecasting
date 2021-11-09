@@ -29,6 +29,19 @@ for f in [files[0]]:
 
     n = test_forecast.shape[0]
 
+    #         train_forecast = TimeSeries.from_dataframe(train_set, value_cols='pm25', freq='1H')
+    #         dev_forecast = TimeSeries.from_dataframe(dev_set, value_cols='pm25', freq='1H')
+    #         test_forecast = TimeSeries.from_dataframe(test_set, value_cols='pm25', freq='1H')
+    #
+    #         train_covar = TimeSeries.from_dataframe(train_set, value_cols='LATITUDE', freq='1H')
+    #         dev_covar = TimeSeries.from_dataframe(dev_set, value_cols='LATITUDE', freq='1H')
+    #         test_covar = TimeSeries.from_dataframe(test_set, value_cols='LATITUDE', freq='1H')
+    #         columns = df_temp.columns[(df_temp.columns != 'pm25') & (df_temp.columns != 'LATITUDE')].to_list()
+    #         for column in columns:
+    #             train_covar = train_covar.stack(TimeSeries.from_dataframe(train_set, value_cols=column, freq='1H'))
+    #             dev_covar = dev_covar.stack(TimeSeries.from_dataframe(dev_set, value_cols=column, freq='1H'))
+    #             test_covar = test_covar.stack(TimeSeries.from_dataframe(test_set, value_cols=column, freq='1H'))
+
     train_forecast = TimeSeries.from_dataframe(train_forecast)
     train_covar = TimeSeries.from_dataframe(train_covar)
     dev_forecast = TimeSeries.from_dataframe(dev_forecast)

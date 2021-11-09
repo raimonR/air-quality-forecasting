@@ -137,32 +137,9 @@ def transfer_dataset_split(normalize: bool):
         dev_set = df_temp.iloc[split_1:split_2]
         test_set = df_temp.iloc[split_2:]
 
-        train_forecast = TimeSeries.from_dataframe(train_set, value_cols='pm25', freq='1H')
-        dev_forecast = TimeSeries.from_dataframe(dev_set, value_cols='pm25', freq='1H')
-        test_forecast = TimeSeries.from_dataframe(test_set, value_cols='pm25', freq='1H')
-
-        train_covar = TimeSeries.from_dataframe(train_set, value_cols='LATITUDE', freq='1H')
-        dev_covar = TimeSeries.from_dataframe(dev_set, value_cols='LATITUDE', freq='1H')
-        test_covar = TimeSeries.from_dataframe(test_set, value_cols='LATITUDE', freq='1H')
-        columns = df_temp.columns[(df_temp.columns != 'pm25') & (df_temp.columns != 'LATITUDE')].to_list()
-        for column in columns:
-            train_covar = train_covar.stack(TimeSeries.from_dataframe(train_set, value_cols=column, freq='1H'))
-            dev_covar = dev_covar.stack(TimeSeries.from_dataframe(dev_set, value_cols=column, freq='1H'))
-            test_covar = test_covar.stack(TimeSeries.from_dataframe(test_set, value_cols=column, freq='1H'))
-
-        train_forecast = train_forecast.data_array().to_dataframe('forecast')
-        train_forecast.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/train_forecast.pkl')
-        dev_forecast = dev_forecast.data_array().to_dataframe('forecast')
-        dev_forecast.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/dev_forecast.pkl')
-        test_forecast = test_forecast.data_array().to_dataframe('forecast')
-        test_forecast.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/test_forecast.pkl')
-
-        train_covar = train_covar.data_array().to_dataframe('covariates')
-        train_covar.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/train_covar.pkl')
-        dev_covar = dev_covar.data_array().to_dataframe('covariates')
-        dev_covar.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/dev_covar.pkl')
-        test_covar = test_covar.data_array().to_dataframe('covariates')
-        test_covar.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/test_covar.pkl')
+        train_set.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/train_set.pkl')
+        dev_set.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/dev_set.pkl')
+        test_set.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/test_set.pkl')
 
 
 # individual_dataset_split(True)
