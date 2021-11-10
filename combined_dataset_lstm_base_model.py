@@ -67,14 +67,15 @@ print('Mean Squared Error: ', mse)
 print('Mean Absolute Error: ', mae)
 print('Mean Absolute Percentage Error: ', mpe)
 
-plot_test_y = np.concatenate(test_set_y)[:]
-plot_forecast_y = np.concatenate(test_res)[:]
+plot_test_y = np.concatenate(test_set_y)[:500]
+plot_forecast_y = np.concatenate(test_res)[:500]
 fig, ax = plt.subplots(nrows=2, sharex=True)
 ax[0].plot(plot_test_y, label=r'$y$')
 ax[0].plot(plot_forecast_y, label=r'$\hat{y}$')
 ax[1].plot(np.abs(plot_test_y - plot_forecast_y))
 ax[0].set(ylabel=r'Normalized $PM_{2.5}$')
 ax[1].set(xlabel=r'Measurements', ylabel=r'$|y-\hat{y}|$')
+ax[0].legend(fontsize=5)
 # plt.show()
 fig.savefig(f'results/tests/combined_lstm/forecast_vs_true_plot.png')
 plt.close()
