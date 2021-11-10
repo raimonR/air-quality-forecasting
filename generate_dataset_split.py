@@ -2,7 +2,7 @@ import os
 from joblib import dump
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 
 
 def individual_dataset_split():
@@ -18,7 +18,7 @@ def individual_dataset_split():
         test_set = df_temp.iloc[split_2:]
 
         cols = train_set.columns.drop(['LATITUDE', 'LONGITUDE', 'ELEVATION'])
-        normalizer = MinMaxScaler()
+        normalizer = StandardScaler()
         normalizer.fit(train_set[cols])
 
         train_set_temp = pd.DataFrame(normalizer.transform(train_set[cols]), index=train_set.index, columns=cols)
@@ -99,7 +99,6 @@ def grouped_dataset_split(rng_int: int):
     set_y = []
     for f in files:
         df_temp = pd.read_pickle(f'dataset/merged/{f}')
-        df_temp = df_temp.interpolate()
 
         min_index = df_temp.index[0]
         if min_index.hour != 0:
@@ -146,8 +145,8 @@ def grouped_dataset_split(rng_int: int):
     dev_set_x, dev_set_y = set_x[split_1:split_2], set_y[split_1:split_2]
     test_set_x, test_set_y = set_x[split_2:], set_y[split_2:]
 
-    normalizer_x = MinMaxScaler()
-    normalizer_y = MinMaxScaler()
+    normalizer_x = StandardScaler()
+    normalizer_y = StandardScaler()
     train_set_x[:, :, 0] = normalizer_x.fit_transform(train_set_x[:, :, 0])
     train_set_y[:, :, 0] = normalizer_y.fit_transform(train_set_y.squeeze())
     dev_set_x[:, :, 0] = normalizer_x.transform(dev_set_x[:, :, 0])
@@ -186,7 +185,7 @@ def transfer_dataset_split():
         test_set = df_temp.iloc[split_2:]
 
         cols = train_set.columns.drop(['LATITUDE', 'LONGITUDE', 'ELEVATION'])
-        normalizer = MinMaxScaler()
+        normalizer = StandardScaler()
         normalizer.fit(train_set[cols])
 
         train_set_temp = pd.DataFrame(normalizer.transform(train_set[cols]), index=train_set.index, columns=cols)
