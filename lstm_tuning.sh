@@ -25,3 +25,4 @@ conda activate /home/groups/gorle/miniconda3/envs/tensorflow_env
 python individual_dataset_lstm_multifit_model.py
 
 echo "individual_dataset_lstm_multifit_model done"
+
