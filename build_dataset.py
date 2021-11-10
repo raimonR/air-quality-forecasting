@@ -24,6 +24,7 @@ def build_dataset():
                 weather_data = pd.read_pickle(f'./dataset/{f}/{city}')
                 weather_data = weather_data.set_index('DATE')
                 weather_data.index = pd.to_datetime(weather_data.index, utc=False)
+                weather_data.loc[weather_data['GUST'].isna(), 'GUST'] = 0
                 weather_data.loc[weather_data['SNDP'].isna(), 'SNDP'] = 0
                 weather_data.loc[weather_data['sea level pressure'].isna(), 'sea level pressure'] = 1013.25
                 weather_data.loc[weather_data['precipitation'].isna(), 'precipitation'] = 0
