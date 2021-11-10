@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 
-
+# TODO: NEW NORMALIZATION METHOD IS NOT GOOD (FOR ALL DATASET SPLITS), SHOULD GO BACK TO OLD ONE --> CHECK GITHUB COMMITS.
 def individual_dataset_split():
     files = os.listdir('dataset/merged/')
     for f in files:
@@ -147,20 +147,29 @@ def grouped_dataset_split(rng_int: int):
 
     normalizer_x = StandardScaler()
     normalizer_y = StandardScaler()
-    train_set_x[:, :, 0] = normalizer_x.fit_transform(train_set_x[:, :, 0])
     train_set_y[:, :, 0] = normalizer_y.fit_transform(train_set_y.squeeze())
-    dev_set_x[:, :, 0] = normalizer_x.transform(dev_set_x[:, :, 0])
     dev_set_y[:, :, 0] = normalizer_y.transform(dev_set_y[:, :, 0])
-    test_set_x[:, :, 0] = normalizer_x.transform(test_set_x[:, :, 0])
     test_set_y[:, :, 0] = normalizer_y.transform(test_set_y[:, :, 0])
 
-    dump(normalizer_x, 'dataset/lstm_dataset_splits/collective/normalizer_x.joblib')
-    dump(normalizer_y, 'dataset/lstm_dataset_splits/collective/normalizer_y.joblib')
-
-    for i in range(1, train_set_x.shape[2]):
-        train_set_x[:, :, i] = normalizer_x.transform(train_set_x[:, :, i])
+    for i in range(18):
+        train_set_x[:, :, i] = normalizer_x.fit_transform(train_set_x[:, :, i])
         dev_set_x[:, :, i] = normalizer_x.transform(dev_set_x[:, :, i])
         test_set_x[:, :, i] = normalizer_x.transform(test_set_x[:, :, i])
+
+    for i in range(train_set_x.shape[1]):
+        train_set_x[:, i, -450:-300] = normalizer_x.fit_transform(train_set_x[:, i, -450:-300])
+        dev_set_x[:, i, -450:-300] = normalizer_x.transform(dev_set_x[:, i, -450:-300])
+        test_set_x[:, i, -450:-300] = normalizer_x.transform(test_set_x[:, i, -450:-300])
+
+        train_set_x[:, i, -300:-150] = normalizer_x.fit_transform(train_set_x[:, i, -300:-150])
+        dev_set_x[:, i, -300:-150] = normalizer_x.transform(dev_set_x[:, i, -300:-150])
+        test_set_x[:, i, -300:-150] = normalizer_x.transform(test_set_x[:, i, -300:-150])
+
+        train_set_x[:, i, -150:] = normalizer_x.fit_transform(train_set_x[:, i, -150:])
+        dev_set_x[:, i, -150:] = normalizer_x.transform(dev_set_x[:, i, -150:])
+        test_set_x[:, i, -150:] = normalizer_x.transform(test_set_x[:, i, -150:])
+
+    dump(normalizer_y, 'dataset/lstm_dataset_splits/collective/normalizer_y.joblib')
 
     train_set_x = np.nan_to_num(train_set_x)
     train_set_y = np.nan_to_num(train_set_y)
@@ -266,6 +275,6 @@ def transfer_dataset_split():
     print('done')
 
 
-individual_dataset_split()
+# individual_dataset_split()
 grouped_dataset_split(0)
-transfer_dataset_split()
+# transfer_dataset_split()
