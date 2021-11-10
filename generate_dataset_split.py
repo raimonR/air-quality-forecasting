@@ -162,6 +162,13 @@ def grouped_dataset_split(rng_int: int):
         dev_set_x[:, :, i] = normalizer_x.transform(dev_set_x[:, :, i])
         test_set_x[:, :, i] = normalizer_x.transform(test_set_x[:, :, i])
 
+    train_set_x = np.nan_to_num(train_set_x)
+    train_set_y = np.nan_to_num(train_set_y)
+    dev_set_x = np.nan_to_num(dev_set_x)
+    dev_set_y = np.nan_to_num(dev_set_y)
+    test_set_x = np.nan_to_num(test_set_x)
+    test_set_y = np.nan_to_num(test_set_y)
+
     np.save('dataset/lstm_dataset_splits/collective/train_set_x', train_set_x)
     np.save('dataset/lstm_dataset_splits/collective/train_set_y', train_set_y)
     np.save('dataset/lstm_dataset_splits/collective/dev_set_x', dev_set_x)
