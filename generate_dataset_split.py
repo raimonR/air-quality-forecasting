@@ -142,6 +142,6 @@ def transfer_dataset_split(normalize: bool):
         test_set.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/test_set.pkl')
 
 
-# individual_dataset_split(True)
-# grouped_dataset_split(0, True)
+individual_dataset_split(True)
+grouped_dataset_split(0, True)
 transfer_dataset_split(True)

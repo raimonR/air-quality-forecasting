@@ -51,10 +51,10 @@ for idx, f in enumerate(files):
     # Define hyperparameters
     epochs = 500
     learning_rate = 1e-1
-    repeats = 2
+    repeats = 1
     l1l2 = (0.1, 0.1)
     
-    os.makedirs(f'results/tests/individual_lstm/{f}/keras_states/', exist_ok=True)
+    os.makedirs(f'results/tests/individual_lstm/{f}/', exist_ok=True)
     t0 = time.perf_counter()
     for i in range(repeats):
         opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
@@ -83,11 +83,18 @@ for idx, f in enumerate(files):
         test_ds = generate_inputs_outputs(test_set, past, horizon, 1, 24)
         predictions = np.array([])
         true_values = np.array([])
+        counter = 0
         for batch in test_ds.as_numpy_iterator():
             input_tensor, output_tensor = batch
+            print(input_tensor.shape)
+            print(output_tensor.shape)
             res = model.predict_on_batch(input_tensor)
             predictions = np.append(predictions, res.squeeze())
+            print(predictions)
             true_values = np.append(true_values, output_tensor.squeeze())
+            counter += 1
+        
+        print(counter)
 
         # metrics
         mse = mean_squared_error(true_values, predictions)

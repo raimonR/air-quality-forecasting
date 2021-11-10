@@ -32,7 +32,7 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_size, shift):
     ds = ds.batch(batch_size)
     return ds
 
-repeats = 2
+repeats = 1
 for i in range(repeats):
     # Define hyperparameters
     epochs = 500
@@ -87,13 +87,13 @@ for i in range(repeats):
         metrics.append(forecast['loss'])
 
         test_ds = generate_inputs_outputs(test_set, past, horizon, 1, 24)
-        predictions = np.array([])
-        true_values = np.array([])
         for batch in test_ds.as_numpy_iterator():
             input_tensor, output_tensor = batch
             res = model.predict_on_batch(input_tensor)
             predictions = np.append(predictions, res.squeeze())
             true_values = np.append(true_values, output_tensor.squeeze())
+            
+    print(predictions.shape)
 
     # metrics
     mse = mean_squared_error(true_values, predictions)
@@ -109,9 +109,9 @@ for i in range(repeats):
     print('Mean Absolute Percentage Error: ', mpe)
 
     fig, ax = plt.subplots(nrows=2, sharex=True)
-    ax[0].plot(true_values, label=r'$y$')
-    ax[0].plot(predictions, label=r'$\hat{y}$')
-    ax[1].plot(np.abs(true_values - predictions))
+    ax[0].plot(true_values[2500:3500], label=r'$y$')
+    ax[0].plot(predictions[2500:3500], label=r'$\hat{y}$')
+    ax[1].plot(np.abs(true_values[2500:3500] - predictions[2500:3500]))
     ax[0].set(ylabel=r'Normalized $PM_{2.5}$')
     ax[1].set(xlabel=r'Measurements', ylabel=r'$|y-\hat{y}|$')
     # plt.show()

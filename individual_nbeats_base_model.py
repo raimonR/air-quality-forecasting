@@ -7,13 +7,15 @@ from darts.models import NBEATSModel
 from darts.metrics import mape, mse
 import torch
 
+print(torch.cuda.is_available())
+    
 
 # TODO: Vary the number of blocks to determine optimal value
 # TODO: Vary the layer width to determine optimal value
 # TODO: Vary the number of epochs
 # TODO: Vary the learning rate
-model = NBEATSModel(input_chunk_length=24, output_chunk_length=24, generic_architecture=False, num_blocks=3,
-                    layer_widths=512, n_epochs=300, optimizer_cls=torch.optim.Adam,
+model = NBEATSModel(input_chunk_length=24, output_chunk_length=24, generic_architecture=False, num_blocks=1,
+                    layer_widths=1, n_epochs=300, optimizer_cls=torch.optim.Adam,
                     optimizer_kwargs={'lr': 0.01, 'eps': 1e-7}, model_name='base_model', force_reset=True)
 
 files = os.listdir('dataset/transfer_learning/')
@@ -21,6 +23,12 @@ for f in [files[0]]:
     train_set = pd.read_pickle(f'dataset/transfer_learning/{f}/train_set.pkl')
     dev_set = pd.read_pickle(f'dataset/transfer_learning/{f}/dev_set.pkl')
     test_set = pd.read_pickle(f'dataset/transfer_learning/{f}/test_set.pkl')
+    
+    train_set = train_set.apply(pd.to_numeric, downcast='float')
+    dev_set = dev_set.apply(pd.to_numeric, downcast='float')
+    test_set = test_set.apply(pd.to_numeric, downcast='float')
+    
+    print(train_set.dtypes)
 
     n = test_set.shape[0]
 
@@ -38,7 +46,7 @@ for f in [files[0]]:
         test_covar = test_covar.stack(TimeSeries.from_dataframe(test_set, value_cols=column, freq='1H'))
 
     model.fit(series=train_forecast, past_covariates=train_covar, val_series=dev_forecast,
-              val_past_covariates=dev_covar)
+              val_past_covariates=dev_covar, verbose=True)
 
     forecast = model.predict(n=n, series=test_forecast, past_covariates=test_covar)
 

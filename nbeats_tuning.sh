@@ -6,7 +6,7 @@
 #SBATCH --time=05:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem-per-cpu=16G
+#SBATCH --mem-per-cpu=32G
 #SBATCH --gpus=1
 #SBATCH --output=slurm-%x-%j.out
 
@@ -20,9 +20,6 @@ conda activate /home/groups/gorle/miniconda3/envs/pytorch_env
 # conda activate /home/groups/gorle/miniconda3/envs/tensorflow_env
 
 # python generate_dataset_split.py
-# python combined_dataset_lstm_base_model.py
-# python individual_dataset_lstm_base_model.py
-# python individual_dataset_lstm_multifit_model.py
 python individual_nbeats_base_model.py
 
 echo "individual_nbeats_base_model"
