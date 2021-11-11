@@ -190,6 +190,7 @@ def grouped_dataset_split(rng_int: int):
         dev_set_x[:, i, -150:] = normalizer_x.transform(dev_set_x[:, i, -150:])
         test_set_x[:, i, -150:] = normalizer_x.transform(test_set_x[:, i, -150:])
 
+    os.makedirs('dataset/lstm_dataset_splits/collective/', exist_ok=True)
     dump(normalizer_y, 'dataset/lstm_dataset_splits/collective/normalizer_y.joblib')
 
     train_set_x = np.nan_to_num(train_set_x)
