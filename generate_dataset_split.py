@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 
-# TODO: NEW NORMALIZATION METHOD IS NOT GOOD (FOR ALL DATASET SPLITS), SHOULD GO BACK TO OLD ONE --> CHECK GITHUB COMMITS.
+
 def individual_dataset_split():
     files = os.listdir('dataset/merged/')
     for f in files:
@@ -78,6 +78,7 @@ def individual_dataset_split():
             else:
                 d = d.interpolate()
 
+            d = d.drop(columns='group')
             d.to_pickle(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/train_sets/train_set_{idx}.pkl')
 
         os.makedirs(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/dev_sets/', exist_ok=True)
@@ -91,6 +92,7 @@ def individual_dataset_split():
             else:
                 d = d.interpolate()
 
+            d = d.drop(columns='group')
             d.to_pickle(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/dev_sets/dev_set_{idx}.pkl')
 
         os.makedirs(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/test_sets/', exist_ok=True)
@@ -104,6 +106,7 @@ def individual_dataset_split():
             else:
                 d = d.interpolate()
 
+            d = d.drop(columns='group')
             d.to_pickle(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/test_sets/test_set_{idx}.pkl')
 
         dump(normalizer_y, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/normalizer_y.joblib')
@@ -283,6 +286,7 @@ def transfer_dataset_split():
             else:
                 d = d.interpolate()
 
+            d = d.drop(columns='group')
             d.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/train_sets/train_set_{idx}.pkl')
 
         os.makedirs(f'dataset/transfer_learning/{f.split("_")[0]}/dev_sets/', exist_ok=True)
@@ -296,6 +300,7 @@ def transfer_dataset_split():
             else:
                 d = d.interpolate()
 
+            d = d.drop(columns='group')
             d.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/dev_sets/dev_set_{idx}.pkl')
 
         os.makedirs(f'dataset/transfer_learning/{f.split("_")[0]}/test_sets/', exist_ok=True)
@@ -309,6 +314,7 @@ def transfer_dataset_split():
             else:
                 d = d.interpolate()
 
+            d = d.drop(columns='group')
             d.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/test_sets/test_set_{idx}.pkl')
 
         dump(normalizer_y, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/normalizer_y.joblib')
