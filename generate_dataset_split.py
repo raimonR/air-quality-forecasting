@@ -17,30 +17,51 @@ def individual_dataset_split():
         dev_set = df_temp.iloc[split_1:split_2]
         test_set = df_temp.iloc[split_2:]
 
-        cols = train_set.columns.drop(['LATITUDE', 'LONGITUDE', 'ELEVATION'])
         normalizer = StandardScaler()
-        normalizer.fit(train_set[cols])
+        normalizer_y = StandardScaler()
+        train_set = train_set.assign(pm25=normalizer_y.fit_transform(train_set['pm25'].to_numpy().reshape(-1, 1)))
+        dev_set = dev_set.assign(pm25=normalizer_y.transform(dev_set['pm25'].to_numpy().reshape(-1, 1)))
+        test_set = test_set.assign(pm25=normalizer_y.transform(test_set['pm25'].to_numpy().reshape(-1, 1)))
+        for col in train_set.columns.to_list()[4:18]:
+            kwargs = {col: normalizer.fit_transform(train_set[col].to_numpy().reshape(-1, 1))}
+            train_set = train_set.assign(**kwargs)
+            kwargs = {col: normalizer.transform(dev_set[col].to_numpy().reshape(-1, 1))}
+            dev_set = dev_set.assign(**kwargs)
+            kwargs = {col: normalizer.transform(test_set[col].to_numpy().reshape(-1, 1))}
+            test_set = test_set.assign(**kwargs)
 
-        train_set_temp = pd.DataFrame(normalizer.transform(train_set[cols]), index=train_set.index, columns=cols)
-        train_set_temp = train_set_temp.assign(LATITUDE=train_set['LATITUDE'].values)
-        train_set_temp = train_set_temp.assign(LONGITUDE=train_set['LONGITUDE'].values)
-        train_set_temp = train_set_temp.assign(ELEVATION=train_set['ELEVATION'].values)
-        train_set = train_set_temp.copy()
-        del train_set_temp
+        train_scale_temp = normalizer.fit_transform(train_set.iloc[:, -450:-300])
+        dev_scale_temp = normalizer.transform(dev_set.iloc[:, -450:-300])
+        test_scale_temp = normalizer.transform(test_set.iloc[:, -450:-300])
+        for i, col in enumerate(train_set.columns.to_list()[-450:-300]):
+            kwargs = {col: train_scale_temp}
+            train_set = train_set.assign(**kwargs)
+            kwargs = {col: dev_scale_temp}
+            dev_set = dev_set.assign(**kwargs)
+            kwargs = {col: test_scale_temp}
+            test_set = test_set.assign(**kwargs)
 
-        dev_set_temp = pd.DataFrame(normalizer.transform(dev_set[cols]), index=dev_set.index, columns=cols)
-        dev_set_temp = dev_set_temp.assign(LATITUDE=dev_set['LATITUDE'].values)
-        dev_set_temp = dev_set_temp.assign(LONGITUDE=dev_set['LONGITUDE'].values)
-        dev_set_temp = dev_set_temp.assign(ELEVATION=dev_set['ELEVATION'].values)
-        dev_set = dev_set_temp.copy()
-        del dev_set_temp
+        train_scale_temp = normalizer.fit_transform(train_set.iloc[:, -300:-150])
+        dev_scale_temp = normalizer.transform(dev_set.iloc[:, -300:-150])
+        test_scale_temp = normalizer.transform(test_set.iloc[:, -300:-150])
+        for i, col in enumerate(train_set.columns.to_list()[-300:-150]):
+            kwargs = {col: train_scale_temp}
+            train_set = train_set.assign(**kwargs)
+            kwargs = {col: dev_scale_temp}
+            dev_set = dev_set.assign(**kwargs)
+            kwargs = {col: test_scale_temp}
+            test_set = test_set.assign(**kwargs)
 
-        test_set_temp = pd.DataFrame(normalizer.transform(test_set[cols]), index=test_set.index, columns=cols)
-        test_set_temp = test_set_temp.assign(LATITUDE=test_set['LATITUDE'].values)
-        test_set_temp = test_set_temp.assign(LONGITUDE=test_set['LONGITUDE'].values)
-        test_set_temp = test_set_temp.assign(ELEVATION=test_set['ELEVATION'].values)
-        test_set = test_set_temp.copy()
-        del test_set_temp
+        train_scale_temp = normalizer.fit_transform(train_set.iloc[:, -150:])
+        dev_scale_temp = normalizer.transform(dev_set.iloc[:, -150:])
+        test_scale_temp = normalizer.transform(test_set.iloc[:, -150:])
+        for i, col in enumerate(train_set.columns.to_list()[-150:]):
+            kwargs = {col: train_scale_temp}
+            train_set = train_set.assign(**kwargs)
+            kwargs = {col: dev_scale_temp}
+            dev_set = dev_set.assign(**kwargs)
+            kwargs = {col: test_scale_temp}
+            test_set = test_set.assign(**kwargs)
 
         train_set['group'] = train_set['pm25'].isna().cumsum()
         dev_set['group'] = dev_set['pm25'].isna().cumsum()
@@ -85,7 +106,7 @@ def individual_dataset_split():
 
             d.to_pickle(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/test_sets/test_set_{idx}.pkl')
 
-        dump(normalizer, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/normalizer.joblib')
+        dump(normalizer_y, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/normalizer_y.joblib')
 
         print(f'done with {f.split("_")[0]}')
 
@@ -200,30 +221,51 @@ def transfer_dataset_split():
         dev_set = df_temp.iloc[split_1:split_2]
         test_set = df_temp.iloc[split_2:]
 
-        cols = train_set.columns.drop(['LATITUDE', 'LONGITUDE', 'ELEVATION'])
         normalizer = StandardScaler()
-        normalizer.fit(train_set[cols])
+        normalizer_y = StandardScaler()
+        train_set = train_set.assign(pm25=normalizer_y.fit_transform(train_set['pm25'].to_numpy().reshape(-1, 1)))
+        dev_set = dev_set.assign(pm25=normalizer_y.transform(dev_set['pm25'].to_numpy().reshape(-1, 1)))
+        test_set = test_set.assign(pm25=normalizer_y.transform(test_set['pm25'].to_numpy().reshape(-1, 1)))
+        for col in train_set.columns.to_list()[4:18]:
+            kwargs = {col: normalizer.fit_transform(train_set[col].to_numpy().reshape(-1, 1))}
+            train_set = train_set.assign(**kwargs)
+            kwargs = {col: normalizer.transform(dev_set[col].to_numpy().reshape(-1, 1))}
+            dev_set = dev_set.assign(**kwargs)
+            kwargs = {col: normalizer.transform(test_set[col].to_numpy().reshape(-1, 1))}
+            test_set = test_set.assign(**kwargs)
 
-        train_set_temp = pd.DataFrame(normalizer.transform(train_set[cols]), index=train_set.index, columns=cols)
-        train_set_temp = train_set_temp.assign(LATITUDE=train_set['LATITUDE'].values)
-        train_set_temp = train_set_temp.assign(LONGITUDE=train_set['LONGITUDE'].values)
-        train_set_temp = train_set_temp.assign(ELEVATION=train_set['ELEVATION'].values)
-        train_set = train_set_temp.copy()
-        del train_set_temp
+        train_scale_temp = normalizer.fit_transform(train_set.iloc[:, -450:-300])
+        dev_scale_temp = normalizer.transform(dev_set.iloc[:, -450:-300])
+        test_scale_temp = normalizer.transform(test_set.iloc[:, -450:-300])
+        for i, col in enumerate(train_set.columns.to_list()[-450:-300]):
+            kwargs = {col: train_scale_temp}
+            train_set = train_set.assign(**kwargs)
+            kwargs = {col: dev_scale_temp}
+            dev_set = dev_set.assign(**kwargs)
+            kwargs = {col: test_scale_temp}
+            test_set = test_set.assign(**kwargs)
 
-        dev_set_temp = pd.DataFrame(normalizer.transform(dev_set[cols]), index=dev_set.index, columns=cols)
-        dev_set_temp = dev_set_temp.assign(LATITUDE=dev_set['LATITUDE'].values)
-        dev_set_temp = dev_set_temp.assign(LONGITUDE=dev_set['LONGITUDE'].values)
-        dev_set_temp = dev_set_temp.assign(ELEVATION=dev_set['ELEVATION'].values)
-        dev_set = dev_set_temp.copy()
-        del dev_set_temp
+        train_scale_temp = normalizer.fit_transform(train_set.iloc[:, -300:-150])
+        dev_scale_temp = normalizer.transform(dev_set.iloc[:, -300:-150])
+        test_scale_temp = normalizer.transform(test_set.iloc[:, -300:-150])
+        for i, col in enumerate(train_set.columns.to_list()[-300:-150]):
+            kwargs = {col: train_scale_temp}
+            train_set = train_set.assign(**kwargs)
+            kwargs = {col: dev_scale_temp}
+            dev_set = dev_set.assign(**kwargs)
+            kwargs = {col: test_scale_temp}
+            test_set = test_set.assign(**kwargs)
 
-        test_set_temp = pd.DataFrame(normalizer.transform(test_set[cols]), index=test_set.index, columns=cols)
-        test_set_temp = test_set_temp.assign(LATITUDE=test_set['LATITUDE'].values)
-        test_set_temp = test_set_temp.assign(LONGITUDE=test_set['LONGITUDE'].values)
-        test_set_temp = test_set_temp.assign(ELEVATION=test_set['ELEVATION'].values)
-        test_set = test_set_temp.copy()
-        del test_set_temp
+        train_scale_temp = normalizer.fit_transform(train_set.iloc[:, -150:])
+        dev_scale_temp = normalizer.transform(dev_set.iloc[:, -150:])
+        test_scale_temp = normalizer.transform(test_set.iloc[:, -150:])
+        for i, col in enumerate(train_set.columns.to_list()[-150:]):
+            kwargs = {col: train_scale_temp}
+            train_set = train_set.assign(**kwargs)
+            kwargs = {col: dev_scale_temp}
+            dev_set = dev_set.assign(**kwargs)
+            kwargs = {col: test_scale_temp}
+            test_set = test_set.assign(**kwargs)
 
         train_set['group'] = train_set['pm25'].isna().cumsum()
         dev_set['group'] = dev_set['pm25'].isna().cumsum()
@@ -268,7 +310,7 @@ def transfer_dataset_split():
 
             d.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/test_sets/test_set_{idx}.pkl')
 
-        dump(normalizer, f'dataset/transfer_learning/{f.split("_")[0]}/normalize.joblib')
+        dump(normalizer_y, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/normalizer_y.joblib')
 
         print(f'done with {f.split("_")[0]}')
 
