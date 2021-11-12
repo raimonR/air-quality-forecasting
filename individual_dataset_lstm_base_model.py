@@ -38,7 +38,7 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_size, shift):
 
 
 # Define hyperparameters and other parameters
-epochs = 500
+epochs = 2
 learning_rate = 1e-1
 l1l2 = (0.1, 0.1)
 n_features = 468
@@ -118,20 +118,20 @@ for idx, f in enumerate(files):
         print(forecast)
 
         test_ds = generate_inputs_outputs(test_set, past, horizon, 1, 24)
-        counter = 0
         for batch in test_ds.as_numpy_iterator():
             input_tensor, output_tensor = batch
             print(input_tensor.shape)
             print(output_tensor.shape)
             res = model.predict_on_batch(input_tensor)
             predictions = np.append(predictions, res.squeeze())
-            print(predictions.shape)
             true_values = np.append(true_values, output_tensor.squeeze())
-            counter += 1
-
-        print(counter)
 
     normalizer_y = load(f'dataset/lstm_dataset_splits/individual/{f}/normalizer_y.joblib')
+
+    print(true_values.shape)
+    print(predictions.shape)
+    print(normalizer_y.scale_)
+    print(normalizer_y.n_features_in_)
 
     true_values = normalizer_y.inverse_transform(true_values)
     predictions = normalizer_y.inverse_transform(predictions)
