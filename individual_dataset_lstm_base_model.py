@@ -133,8 +133,8 @@ for idx, f in enumerate(files):
     print(normalizer_y.scale_)
     print(normalizer_y.n_features_in_)
 
-    true_values = normalizer_y.inverse_transform(true_values)
-    predictions = normalizer_y.inverse_transform(predictions)
+    true_values = normalizer_y.inverse_transform(true_values.reshape(-1, 1))
+    predictions = normalizer_y.inverse_transform(predictions.reshape(-1, 1))
 
     # metrics
     mse = mean_squared_error(true_values, predictions)
