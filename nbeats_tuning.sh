@@ -23,3 +23,5 @@ conda activate /home/groups/gorle/miniconda3/envs/pytorch_env
 python individual_nbeats_base_model.py
 
 echo "individual_nbeats_base_model"
+date
+
