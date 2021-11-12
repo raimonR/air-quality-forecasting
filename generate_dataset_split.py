@@ -79,7 +79,8 @@ def individual_dataset_split():
                 d = d.interpolate()
 
             d = d.drop(columns='group')
-            d = d.fillna('bfill')
+            d = d.fillna(method='ffill')
+            d = d.fillna(method='bfill')
             print(d.isna().sum().sum())
             d.to_pickle(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/train_sets/train_set_{idx}.pkl')
 
@@ -95,7 +96,8 @@ def individual_dataset_split():
                 d = d.interpolate()
 
             d = d.drop(columns='group')
-            d = d.fillna('bfill')
+            d = d.fillna(method='ffill')
+            d = d.fillna(method='bfill')
             print(d.isna().sum().sum())
             d.to_pickle(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/dev_sets/dev_set_{idx}.pkl')
 
@@ -111,7 +113,8 @@ def individual_dataset_split():
                 d = d.interpolate()
 
             d = d.drop(columns='group')
-            d = d.fillna('bfill')
+            d = d.fillna(method='ffill')
+            d = d.fillna(method='bfill')
             print(d.isna().sum().sum())
             d.to_pickle(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/test_sets/test_set_{idx}.pkl')
 
@@ -293,7 +296,8 @@ def transfer_dataset_split():
                 d = d.interpolate()
 
             d = d.drop(columns='group')
-            d = d.fillna('bfill')
+            d = d.fillna(method='ffill')
+            d = d.fillna(method='bfill')
             print(d.isna().sum().sum())
             d.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/train_sets/train_set_{idx}.pkl')
 
@@ -309,7 +313,8 @@ def transfer_dataset_split():
                 d = d.interpolate()
 
             d = d.drop(columns='group')
-            d = d.fillna('bfill')
+            d = d.fillna(method='ffill')
+            d = d.fillna(method='bfill')
             print(d.isna().sum().sum())
             d.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/dev_sets/dev_set_{idx}.pkl')
 
@@ -325,7 +330,8 @@ def transfer_dataset_split():
                 d = d.interpolate()
 
             d = d.drop(columns='group')
-            d = d.fillna('bfill')
+            d = d.fillna(method='ffill')
+            d = d.fillna(method='bfill')
             print(d.isna().sum().sum())
             d.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/test_sets/test_set_{idx}.pkl')
 
