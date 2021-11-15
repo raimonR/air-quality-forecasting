@@ -186,14 +186,22 @@ def grouped_dataset_split(rng_int: int):
             else:
                 y_df = df_temp.loc[(day + np.timedelta64(1, 'D')):(day + np.timedelta64(47, 'h')), 'pm25'].interpolate()
 
-            set_x.append(x_df)
-            set_y.append(y_df.values)
+            if f.split('_')[0] == 'Thembisa':
+                set_x_thembisa.append(x_df)
+                set_y_thembisa.append(y_df.values)
+            else:
+                set_x.append(x_df)
+                set_y.append(y_df.values)
 
         print(f'Approx. number of {f.split("_")[0]} elements: {n}')
 
     set_x = np.array(set_x)
     set_y = np.array(set_y)
     set_y = set_y.reshape(set_y.shape[0], set_y.shape[1], 1)
+
+    set_x_thembisa = np.array(set_x_thembisa)
+    set_y_thembisa = np.array(set_y_thembisa)
+    set_y_thembisa = set_y_thembisa.reshape(set_y_thembisa[0], set_y_thembisa[1], 1)
 
     num = set_x.shape[0]
     split_1 = int(num*0.8)
@@ -212,27 +220,38 @@ def grouped_dataset_split(rng_int: int):
     dev_set_y[:, :, 0] = normalizer_y.transform(dev_set_y[:, :, 0])
     test_set_y[:, :, 0] = normalizer_y.transform(test_set_y[:, :, 0])
 
+    normalizer_x_thembisa = StandardScaler()
+    normalizer_y_thembisa = StandardScaler()
+    set_y_thembisa[:, :, 0] = normalizer_y_thembisa.fit_transform(set_y_thembisa.squeeze())
+
     for i in range(18):
+        set_x_thembisa[:, :, i] = normalizer_x_thembisa.fit_transform(set_x_thembisa[:, :, i])
         train_set_x[:, :, i] = normalizer_x.fit_transform(train_set_x[:, :, i])
         dev_set_x[:, :, i] = normalizer_x.transform(dev_set_x[:, :, i])
         test_set_x[:, :, i] = normalizer_x.transform(test_set_x[:, :, i])
 
     for i in range(train_set_x.shape[1]):
+        set_x_thembisa[:, i, -450:-300] = normalizer_x_thembisa.fit_transform(set_x_thembisa[:, i, -450:-300])
         train_set_x[:, i, -450:-300] = normalizer_x.fit_transform(train_set_x[:, i, -450:-300])
         dev_set_x[:, i, -450:-300] = normalizer_x.transform(dev_set_x[:, i, -450:-300])
         test_set_x[:, i, -450:-300] = normalizer_x.transform(test_set_x[:, i, -450:-300])
 
+        set_x_thembisa[:, i, -300:-150] = normalizer_x_thembisa.fit_transform(set_x_thembisa[:, i, -300:-150])
         train_set_x[:, i, -300:-150] = normalizer_x.fit_transform(train_set_x[:, i, -300:-150])
         dev_set_x[:, i, -300:-150] = normalizer_x.transform(dev_set_x[:, i, -300:-150])
         test_set_x[:, i, -300:-150] = normalizer_x.transform(test_set_x[:, i, -300:-150])
 
+        set_x_thembisa[:, i, -150:] = normalizer_x_thembisa.fit_transform(set_x_thembisa[:, i, -150:])
         train_set_x[:, i, -150:] = normalizer_x.fit_transform(train_set_x[:, i, -150:])
         dev_set_x[:, i, -150:] = normalizer_x.transform(dev_set_x[:, i, -150:])
         test_set_x[:, i, -150:] = normalizer_x.transform(test_set_x[:, i, -150:])
 
     os.makedirs('dataset/lstm_dataset_splits/collective/', exist_ok=True)
     dump(normalizer_y, 'dataset/lstm_dataset_splits/collective/normalizer_y.joblib')
+    dump(normalizer_y_thembisa, 'dataset/lstm_dataset_splits/collective/normalizer_y_thembisa.joblib')
 
+    set_x_thembisa = np.nan_to_num(set_x_thembisa)
+    set_y_thembisa = np.nan_to_num(set_y_thembisa)
     train_set_x = np.nan_to_num(train_set_x)
     train_set_y = np.nan_to_num(train_set_y)
     dev_set_x = np.nan_to_num(dev_set_x)
@@ -240,6 +259,8 @@ def grouped_dataset_split(rng_int: int):
     test_set_x = np.nan_to_num(test_set_x)
     test_set_y = np.nan_to_num(test_set_y)
 
+    np.save('dataset/lstm_dataset_splits/collective/set_x_thembisa', set_x_thembisa)
+    np.save('dataset/lstm_dataset_splits/collective/set_y_thembisa', set_y_thembisa)
     np.save('dataset/lstm_dataset_splits/collective/train_set_x', train_set_x)
     np.save('dataset/lstm_dataset_splits/collective/train_set_y', train_set_y)
     np.save('dataset/lstm_dataset_splits/collective/dev_set_x', dev_set_x)
@@ -396,6 +417,6 @@ def transfer_dataset_split():
     print('done')
 
 
-individual_dataset_split()
+# individual_dataset_split()
 grouped_dataset_split(0)
-transfer_dataset_split()
+# transfer_dataset_split()
