@@ -4,7 +4,8 @@ import pandas as pd
 
 def build_dataset():
     # Get datasets for each city
-    for city in ['Abidjan.pkl', 'Dhaka.pkl', 'Melbourne.pkl', 'Santiago.pkl', 'Oakland.pkl', 'Munich.pkl']:
+    for city in ['Abidjan.pkl', 'Dhaka.pkl', 'Melbourne.pkl', 'Santiago.pkl', 'Oakland.pkl', 'Anchorage.pkl',
+                 'Thembisa.pkl', 'Prague.pkl', 'Sao Paulo.pkl']:
         ds = ['air_quality_data', 'daily_weather_postprocessed', 'drought_postprocessed', 'radiosonde_postprocessed']
         merged_df = []
         for f in ds:

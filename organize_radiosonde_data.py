@@ -9,8 +9,9 @@ from scipy.interpolate import CubicSpline
 
 
 def preprocess_arrays():
-    data_list = [['Abidjan', 65578, 2020], ['Santiago', 85586, 2015], ['Oakland', 72493, 2016],
-                 ['Melbourne', 94866, 2020], ['Munich', 10868, 2016], ['Dhaka', 41923, 2016]]
+    data_list = [['Abidjan', 65578, 2020], ['Santiago', 85586, 2015], ['Oakland', 72493, 2017],
+                 ['Melbourne', 94866, 2020], ['Anchorage', 70273, 2016], ['Dhaka', 41923, 2016],
+                 ['Prague', 11520, 2016], ['Thembisa', 68263, 2019], ['Sao Paulo', 83779, 2017]]
     for station, station_number, initial_date in data_list:
         columns = ['PRES', 'HGHT', 'TEMP', 'DWPT', 'RELH', 'MIXR', 'DRCT', 'SKNT', 'THTA', 'THTE', 'THTV']
         df = pd.DataFrame()
@@ -94,5 +95,5 @@ def postprocess_arrays():
         df_temp.to_pickle(f'dataset/radiosonde_postprocessed/{f}')
 
 
-# preprocess_arrays()
+preprocess_arrays()
 postprocess_arrays()

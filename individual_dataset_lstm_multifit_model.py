@@ -2,6 +2,7 @@ import os
 import time
 import pickle
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 import tensorflow as tf

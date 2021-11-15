@@ -18,11 +18,13 @@ def to_dataframe(data: list):
 # 725 = Santiago, Chile
 # 2135 = Oakland, USA
 # 8415 = Dhaka, Bangladesh
-# 2669 = Munich, Germany
+# 2051 = Newcastle, UK
 # 10753 = Melbourne, Australia
 # 9762 = Abidjan, Ivory Coast
-aq_stations = [[725, 'Santiago'], [2135, 'Oakland'], [8415, 'Dhaka'], [2669, 'Munich'], [10753, 'Melbourne'],
-               [9762, 'Abidjan']]
+# 5300 = Sao Paulo, Brazil
+# 8101 = Cagliari, Italy
+aq_stations = [[725, 'Santiago'], [2135, 'Oakland'], [8415, 'Dhaka'], [10753, 'Melbourne'],
+               [9762, 'Abidjan'], [4369, 'Prague'], [293, 'Anchorage'], [5300, 'Sao Paulo']]
 
 for el in aq_stations:
     # Define API query parameters
@@ -46,3 +48,13 @@ for el in aq_stations:
     df_temp.to_pickle(f'dataset/air_quality_data/{el[1]}.pkl')
 
     time.sleep(0.5)
+
+df_temp = pd.read_excel('dataset/air_quality_data/Olifantsfontein.xlsx')
+df_temp = df_temp.iloc[:-10, :]
+dlist = []
+for i in df_temp.iloc[:, 0].tolist():
+    i = i.replace('24:00', '00:00')
+    dlist.append(pd.Timestamp(i))
+
+df_temp = pd.DataFrame(data={'pm25': df_temp['PM2.5'].to_numpy(), 'date': dlist})
+df_temp.to_pickle(f'dataset/air_quality_data/Thembisa.pkl')

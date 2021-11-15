@@ -12,8 +12,9 @@ santiago = []
 abidjan = []
 oakland = []
 
-set_list = [['Oakland', [-122.5, 37.5]], ['Santiago', [-70.5, -33.5]], ['Munich', [11.5, 48.5]],
-            ['Abidjan', [-3.5, 5.5]], ['Dhaka', [90.5, 23.5]], ['Melbourne', [144.5, -37.5]]]
+set_list = [['Oakland', [-122.5, 37.5]], ['Santiago', [-70.5, -33.5]], ['Prague', [50.5, 14.5]],
+            ['Abidjan', [-3.5, 5.5]], ['Dhaka', [90.5, 23.5]], ['Melbourne', [144.5, -37.5]],
+            ['Sao Paulo', [-23.5, -46.5]], ['Anchorage', [61.5, -149.5]], ['Thembisa', [-25.5, 28.5]]]
 for element in set_list:
     drought_data = []
     for f in files:

@@ -128,11 +128,6 @@ for idx, f in enumerate(files):
 
     normalizer_y = load(f'dataset/lstm_dataset_splits/individual/{f}/normalizer_y.joblib')
 
-    print(true_values.shape)
-    print(predictions.shape)
-    print(normalizer_y.scale_)
-    print(normalizer_y.n_features_in_)
-
     true_values = normalizer_y.inverse_transform(true_values.reshape(-1, 1))
     predictions = normalizer_y.inverse_transform(predictions.reshape(-1, 1))
 
@@ -142,8 +137,8 @@ for idx, f in enumerate(files):
     mpe = mean_absolute_percentage_error(true_values, predictions)
 
     error_metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-    with open(f'results/tests/individual_lstm/{f}/error_metrics.pickle', 'wb') as file:
-        pickle.dump(error_metrics, file, protocol=-1)
+    # with open(f'results/tests/individual_lstm/{f}/error_metrics.pickle', 'wb') as file:
+    #     pickle.dump(error_metrics, file, protocol=-1)
 
     print('Mean Squared Error: ', mse)
     print('Mean Absolute Error: ', mae)
@@ -155,8 +150,8 @@ for idx, f in enumerate(files):
     ax[1].plot(np.abs(true_values[:240] - predictions[:240]))
     ax[0].set(ylabel=r'Normalized $PM_{2.5}$')
     ax[1].set(xlabel=r'Measurements', ylabel=r'$|y-\hat{y}|$')
-    # plt.show()
-    fig.savefig(f'results/tests/individual_lstm/{f}/forecast_vs_true_plot.png')
+    plt.show()
+    # fig.savefig(f'results/tests/individual_lstm/{f}/forecast_vs_true_plot.png')
     plt.close()
 
     print(f'done with {f}')

@@ -10,18 +10,48 @@ def individual_dataset_split():
     for f in files:
         df_temp = pd.read_pickle(f'dataset/merged/{f}')
 
-        num = df_temp.shape[0]
-        split_1 = int(num*0.8)
-        split_2 = int(num*0.9)
-        train_set = df_temp.iloc[:split_1]
-        dev_set = df_temp.iloc[split_1:split_2]
-        test_set = df_temp.iloc[split_2:]
+        if f.split('_')[0] == 'Dhaka':
+            df_temp.loc['2018-07':'2019-06', 'pm25'] = np.nan
+        elif f.split('_')[0] == 'Oakland':
+            df_temp['dewpoint'] = 0
+            df_temp['visibility'] = 0
+        elif f.split('_')[0] == 'Melbourne':
+            df_temp = df_temp.loc[:'2021-04-19', :]
+        elif f.split('_')[0] == 'Prague':
+            df_temp = df_temp.loc['2017-10':, :]
+        elif f.split('_')[0] == 'Santiago':
+            df_temp = df_temp.loc['2016-02':, :]
+        elif f.split('_')[0] == 'Thembisa':
+            df_temp = df_temp.loc['2019-03':, :]
+
+        df_temp['group'] = df_temp['pm25'].isna().cumsum()
+        num_elements = 0
+        for g in df_temp['group'].unique().tolist():
+            if df_temp[df_temp['group'] == g].shape[0] > 1:
+                num_elements += df_temp[df_temp['group'] == g].shape[0]
+
+        split_1 = int(num_elements*0.8)
+        split_2 = int(num_elements*0.9)
+        num_elements = 0
+        for g in df_temp['group'].unique().tolist():
+            if df_temp[df_temp['group'] == g].shape[0] > 1:
+                if num_elements <= split_1:
+                    num_elements += df_temp[df_temp['group'] == g].shape[0]
+                    train_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1H')
+                if (num_elements > split_1) and (num_elements <= split_2):
+                    num_elements += df_temp[df_temp['group'] == g].shape[0]
+                    dev_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1H')
+                if num_elements > split_2:
+                    num_elements += df_temp[df_temp['group'] == g].shape[0]
+                    test_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1H')
 
         normalizer = StandardScaler()
         normalizer_y = StandardScaler()
-        train_set = train_set.assign(pm25=normalizer_y.fit_transform(train_set['pm25'].to_numpy().reshape(-1, 1)))
-        dev_set = dev_set.assign(pm25=normalizer_y.transform(dev_set['pm25'].to_numpy().reshape(-1, 1)))
-        test_set = test_set.assign(pm25=normalizer_y.transform(test_set['pm25'].to_numpy().reshape(-1, 1)))
+        df_temp = df_temp.assign(pm25=normalizer_y.fit_transform(df_temp['pm25'].to_numpy().reshape(-1, 1)))
+
+        train_set = df_temp.loc[:train_set_index, :]
+        dev_set = df_temp.loc[train_set_index:dev_set_index, :]
+        test_set = df_temp.loc[dev_set_index:test_set_index, :]
         for col in train_set.columns.to_list()[4:18]:
             kwargs = {col: normalizer.fit_transform(train_set[col].to_numpy().reshape(-1, 1))}
             train_set = train_set.assign(**kwargs)
@@ -52,20 +82,16 @@ def individual_dataset_split():
             kwargs = {col: test_scale_temp}
             test_set = test_set.assign(**kwargs)
 
-        train_scale_temp = normalizer.fit_transform(train_set.iloc[:, -150:])
-        dev_scale_temp = normalizer.transform(dev_set.iloc[:, -150:])
-        test_scale_temp = normalizer.transform(test_set.iloc[:, -150:])
-        for i, col in enumerate(train_set.columns.to_list()[-150:]):
+        train_scale_temp = normalizer.fit_transform(train_set.iloc[:, -150:-1])
+        dev_scale_temp = normalizer.transform(dev_set.iloc[:, -150:-1])
+        test_scale_temp = normalizer.transform(test_set.iloc[:, -150:-1])
+        for i, col in enumerate(train_set.columns.to_list()[-150:-1]):
             kwargs = {col: train_scale_temp}
             train_set = train_set.assign(**kwargs)
             kwargs = {col: dev_scale_temp}
             dev_set = dev_set.assign(**kwargs)
             kwargs = {col: test_scale_temp}
             test_set = test_set.assign(**kwargs)
-
-        train_set['group'] = train_set['pm25'].isna().cumsum()
-        dev_set['group'] = dev_set['pm25'].isna().cumsum()
-        test_set['group'] = test_set['pm25'].isna().cumsum()
 
         os.makedirs(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/train_sets/', exist_ok=True)
         for idx, group in enumerate(train_set['group'].unique().tolist()):
@@ -130,6 +156,8 @@ def grouped_dataset_split(rng_int: int):
     files = os.listdir('dataset/merged/')
     set_x = []
     set_y = []
+    set_x_thembisa = []
+    set_y_thembisa = []
     for f in files:
         df_temp = pd.read_pickle(f'dataset/merged/{f}')
 
@@ -227,18 +255,48 @@ def transfer_dataset_split():
     for f in files:
         df_temp = pd.read_pickle(f'dataset/merged/{f}')
 
-        num = df_temp.shape[0]
-        split_1 = int(num*0.8)
-        split_2 = int(num*0.9)
-        train_set = df_temp.iloc[:split_1]
-        dev_set = df_temp.iloc[split_1:split_2]
-        test_set = df_temp.iloc[split_2:]
+        if f.split('_')[0] == 'Dhaka':
+            df_temp.loc['2018-07':'2019-06', 'pm25'] = np.nan
+        elif f.split('_')[0] == 'Oakland':
+            df_temp['dewpoint'] = 0
+            df_temp['visibility'] = 0
+        elif f.split('_')[0] == 'Melbourne':
+            df_temp = df_temp.loc[:'2021-04-19', :]
+        elif f.split('_')[0] == 'Prague':
+            df_temp = df_temp.loc['2017-10':, :]
+        elif f.split('_')[0] == 'Santiago':
+            df_temp = df_temp.loc['2016-02':, :]
+        elif f.split('_')[0] == 'Thembisa':
+            df_temp = df_temp.loc['2019-03':, :]
+
+        df_temp['group'] = df_temp['pm25'].isna().cumsum()
+        num_elements = 0
+        for g in df_temp['group'].unique().tolist():
+            if df_temp[df_temp['group'] == g].shape[0] > 1:
+                num_elements += df_temp[df_temp['group'] == g].shape[0]
+
+        split_1 = int(num_elements*0.8)
+        split_2 = int(num_elements*0.9)
+        num_elements = 0
+        for g in df_temp['group'].unique().tolist():
+            if df_temp[df_temp['group'] == g].shape[0] > 1:
+                if num_elements <= split_1:
+                    num_elements += df_temp[df_temp['group'] == g].shape[0]
+                    train_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1H')
+                if (num_elements > split_1) and (num_elements <= split_2):
+                    num_elements += df_temp[df_temp['group'] == g].shape[0]
+                    dev_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1H')
+                if num_elements > split_2:
+                    num_elements += df_temp[df_temp['group'] == g].shape[0]
+                    test_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1H')
 
         normalizer = StandardScaler()
         normalizer_y = StandardScaler()
-        train_set = train_set.assign(pm25=normalizer_y.fit_transform(train_set['pm25'].to_numpy().reshape(-1, 1)))
-        dev_set = dev_set.assign(pm25=normalizer_y.transform(dev_set['pm25'].to_numpy().reshape(-1, 1)))
-        test_set = test_set.assign(pm25=normalizer_y.transform(test_set['pm25'].to_numpy().reshape(-1, 1)))
+        df_temp = df_temp.assign(pm25=normalizer_y.fit_transform(df_temp['pm25'].to_numpy().reshape(-1, 1)))
+
+        train_set = df_temp.loc[:train_set_index, :]
+        dev_set = df_temp.loc[train_set_index:dev_set_index, :]
+        test_set = df_temp.loc[dev_set_index:test_set_index, :]
         for col in train_set.columns.to_list()[4:18]:
             kwargs = {col: normalizer.fit_transform(train_set[col].to_numpy().reshape(-1, 1))}
             train_set = train_set.assign(**kwargs)
@@ -269,20 +327,16 @@ def transfer_dataset_split():
             kwargs = {col: test_scale_temp}
             test_set = test_set.assign(**kwargs)
 
-        train_scale_temp = normalizer.fit_transform(train_set.iloc[:, -150:])
-        dev_scale_temp = normalizer.transform(dev_set.iloc[:, -150:])
-        test_scale_temp = normalizer.transform(test_set.iloc[:, -150:])
-        for i, col in enumerate(train_set.columns.to_list()[-150:]):
+        train_scale_temp = normalizer.fit_transform(train_set.iloc[:, -150:-1])
+        dev_scale_temp = normalizer.transform(dev_set.iloc[:, -150:-1])
+        test_scale_temp = normalizer.transform(test_set.iloc[:, -150:-1])
+        for i, col in enumerate(train_set.columns.to_list()[-150:-1]):
             kwargs = {col: train_scale_temp}
             train_set = train_set.assign(**kwargs)
             kwargs = {col: dev_scale_temp}
             dev_set = dev_set.assign(**kwargs)
             kwargs = {col: test_scale_temp}
             test_set = test_set.assign(**kwargs)
-
-        train_set['group'] = train_set['pm25'].isna().cumsum()
-        dev_set['group'] = dev_set['pm25'].isna().cumsum()
-        test_set['group'] = test_set['pm25'].isna().cumsum()
 
         os.makedirs(f'dataset/transfer_learning/{f.split("_")[0]}/train_sets/', exist_ok=True)
         for idx, group in enumerate(train_set['group'].unique().tolist()):
