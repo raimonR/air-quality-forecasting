@@ -201,7 +201,7 @@ def grouped_dataset_split(rng_int: int):
 
     set_x_thembisa = np.array(set_x_thembisa)
     set_y_thembisa = np.array(set_y_thembisa)
-    set_y_thembisa = set_y_thembisa.reshape(set_y_thembisa[0], set_y_thembisa[1], 1)
+    set_y_thembisa = set_y_thembisa.reshape(set_y_thembisa.shape[0], set_y_thembisa.shape[1], 1)
 
     num = set_x.shape[0]
     split_1 = int(num*0.8)
