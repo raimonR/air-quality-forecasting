@@ -3,7 +3,6 @@ from joblib import load
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 import tensorflow as tf
 from tensorflow import keras
@@ -67,8 +66,8 @@ print('Mean Squared Error: ', mse)
 print('Mean Absolute Error: ', mae)
 print('Mean Absolute Percentage Error: ', mpe)
 
-plot_test_y = np.concatenate(test_set_y)[:500]
-plot_forecast_y = np.concatenate(test_res)[:500]
+plot_test_y = np.concatenate(test_set_y)
+plot_forecast_y = np.concatenate(test_res)
 fig, ax = plt.subplots(nrows=2, sharex=True)
 ax[0].plot(plot_test_y, label=r'$y$')
 ax[0].plot(plot_forecast_y, label=r'$\hat{y}$')
@@ -79,5 +78,26 @@ ax[0].legend(fontsize=5)
 # plt.show()
 fig.savefig(f'results/tests/combined_lstm/forecast_vs_true_plot.png')
 plt.close()
+
+print('done with training, validation, and testing')
+
+set_x = np.load('dataset/lstm_dataset_splits/collective/set_x_thembisa.npy')
+set_y = np.load('dataset/lstm_dataset_splits/collective/set_y_thembisa.npy')
+normalizer_y = load('dataset/lstm_dataset_splits/collective/normalizer_y_thembisa.joblib')
+
+test_error = model.evaluate(x=set_y, y=set_y)
+print(test_error)
+forecast = model.predict(set_x)
+true_y = np.concatenate(normalizer_y.inverse_transform(set_y.squeeze()))
+forecast = np.concatenate(normalizer_y.inverse_transform(forecast.squeeze()))
+
+fig, ax = plt.subplots(nrows=2, sharex=True)
+ax[0].plot(true_y, label=r'$y$')
+ax[0].plot(forecast, label=r'$\hat{y}$')
+ax[1].plot(np.abs(true_y - forecast))
+ax[0].set(ylabel=r'Normalized $PM_{2.5}$')
+ax[1].set(xlabel=r'Measurements', ylabel=r'$|y-\hat{y}|$')
+ax[0].legend(fontsize=5)
+fig.savefig(f'results/tests/combined_lstm/thembisa_forecast_plot.png')
 
 print('done')
