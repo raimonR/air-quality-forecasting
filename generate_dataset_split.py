@@ -5,6 +5,9 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 
 
+# TODO: FIGURE OUT WHY ABIDJAN DOESN'T HAVE ANY DEV SETS
+# TODO: MELBOURNE HAS NO TEST SETS
+
 def individual_dataset_split():
     files = os.listdir('dataset/merged/')
     for f in files:
@@ -173,13 +176,13 @@ def grouped_dataset_split(rng_int: int):
         n = np.floor(cal.shape[0]/2*0.9).astype(int)
         cal = rng.choice(cal, n, replace=False, shuffle=False)
         for day in cal:
-            if df_temp.loc[day:(day + np.timedelta64(2, 'D')), :].shape[0] < 48:
+            if df_temp.loc[day:(day + np.timedelta64(47, 'H')), :].shape[0] < 48:
                 continue
 
-            if (df_temp.loc[day:(day + np.timedelta64(2, 'D')), :].isna().sum() > 4).any():
+            if (df_temp.loc[day:(day + np.timedelta64(47, 'h')), :].isna().sum() > 4).any():
                 continue
             else:
-                x_df = df_temp.loc[day:(day + np.timedelta64(2, 'D')), :].interpolate()
+                x_df = df_temp.loc[day:(day + np.timedelta64(23, 'h')), :].interpolate()
 
             if (df_temp.loc[(day + np.timedelta64(1, 'D')):(day + np.timedelta64(47, 'h')), 'pm25'].isna().sum() > 4).any():
                 continue
