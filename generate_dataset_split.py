@@ -284,6 +284,7 @@ def transfer_dataset_split():
             df_temp['visibility'] = 0
         elif f.split('_')[0] == 'Melbourne':
             df_temp = df_temp.loc[:'2021-04-19', :]
+            df_temp['visibility'] = 0
         elif f.split('_')[0] == 'Prague':
             df_temp = df_temp.loc['2017-10':, :]
         elif f.split('_')[0] == 'Santiago':
@@ -305,10 +306,10 @@ def transfer_dataset_split():
                 if num_elements <= split_1:
                     num_elements += df_temp[df_temp['group'] == g].shape[0]
                     train_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1h')
-                elif (num_elements > split_1) and (num_elements <= split_2):
+                if (num_elements > split_1) and (num_elements <= split_2):
                     num_elements += df_temp[df_temp['group'] == g].shape[0]
                     dev_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1h')
-                elif num_elements > split_2:
+                if num_elements > split_2:
                     num_elements += df_temp[df_temp['group'] == g].shape[0]
                     test_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1h')
 
