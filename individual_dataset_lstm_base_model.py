@@ -60,7 +60,7 @@ model.summary()
 model.compile(optimizer=opt, loss='mse')
 
 files = os.listdir('dataset/lstm_dataset_splits/individual/')
-for idx, f in enumerate(files):
+for idx, f in enumerate([files[0]]):
     train_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/train_sets/')
     dev_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/dev_sets/')
     test_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/test_sets/')
@@ -105,11 +105,11 @@ for idx, f in enumerate(files):
     true_values = np.array([])
     for sets in test_sets:
         test_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/test_sets/{sets}').to_numpy()
-        test_ds = generate_inputs_outputs(test_set, past, horizon, 16, 1)
+        test_ds = generate_inputs_outputs(test_set, past, horizon, 16, 24)
 
         i = 0
         while len(list(test_ds)) < 1:
-            test_ds = generate_inputs_outputs(test_set, past, horizon, 16 - i, 1)
+            test_ds = generate_inputs_outputs(test_set, past, horizon, 16 - i, 24)
             i += 1
 
         for batch in test_ds.as_numpy_iterator():
