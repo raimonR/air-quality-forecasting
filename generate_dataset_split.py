@@ -101,7 +101,7 @@ def individual_dataset_split():
             if d.shape[0] < 48:
                 continue
 
-            if (d.isna().sum() > 4).any():
+            if (d.isna().sum() > 6).any():
                 continue
             else:
                 d = d.interpolate()
@@ -118,7 +118,7 @@ def individual_dataset_split():
             if d.shape[0] < 48:
                 continue
 
-            if (d.isna().sum() > 4).any():
+            if (d.isna().sum() > 6).any():
                 continue
             else:
                 d = d.interpolate()
@@ -135,7 +135,7 @@ def individual_dataset_split():
             if d.shape[0] < 48:
                 continue
 
-            if (d.isna().sum() > 4).any():
+            if (d.isna().sum() > 6).any():
                 continue
             else:
                 d = d.interpolate()
@@ -305,13 +305,13 @@ def transfer_dataset_split():
             if df_temp[df_temp['group'] == g].shape[0] > 1:
                 if num_elements <= split_1:
                     num_elements += df_temp[df_temp['group'] == g].shape[0]
-                    train_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1H')
+                    train_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1h')
                 if (num_elements > split_1) and (num_elements <= split_2):
                     num_elements += df_temp[df_temp['group'] == g].shape[0]
-                    dev_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1H')
+                    dev_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1h')
                 if num_elements > split_2:
                     num_elements += df_temp[df_temp['group'] == g].shape[0]
-                    test_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1H')
+                    test_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1h')
 
         normalizer = StandardScaler()
         normalizer_y = StandardScaler()
@@ -367,7 +367,7 @@ def transfer_dataset_split():
             if d.shape[0] < 48:
                 continue
 
-            if (d.isna().sum() > 4).any():
+            if (d.isna().sum() > 6).any():
                 continue
             else:
                 d = d.interpolate()
@@ -384,7 +384,7 @@ def transfer_dataset_split():
             if d.shape[0] < 48:
                 continue
 
-            if (d.isna().sum() > 4).any():
+            if (d.isna().sum() > 6).any():
                 continue
             else:
                 d = d.interpolate()
@@ -401,7 +401,7 @@ def transfer_dataset_split():
             if d.shape[0] < 48:
                 continue
 
-            if (d.isna().sum() > 4).any():
+            if (d.isna().sum() > 6).any():
                 continue
             else:
                 d = d.interpolate()
