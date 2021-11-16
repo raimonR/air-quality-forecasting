@@ -38,8 +38,8 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_size, shift):
 
 
 # Define hyperparameters and other parameters
-epochs = 2
-learning_rate = 1e-1
+epochs = 500
+learning_rate = 1e-3
 l1l2 = (0.1, 0.1)
 n_features = 468
 past = 24
@@ -51,13 +51,14 @@ reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, pa
 
 model = Sequential()
 model.add(Input(shape=(past, n_features)))
+model.add(Bidirectional(LSTM(units=64, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
 model.add(Bidirectional(LSTM(units=32, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
 model.add(Dense(units=horizon))
 model.summary()
 
 model.compile(optimizer=opt, loss='mse')
 
-batch_numbers = [64, 64, 64, 64, 64, 64, 64, 64, 64]
+batch_numbers = [32]*9
 files = os.listdir('dataset/lstm_dataset_splits/individual/')
 for idx, f in enumerate(files):
     train_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/train_sets/')
