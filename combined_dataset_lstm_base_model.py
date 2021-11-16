@@ -26,7 +26,8 @@ l1l2 = (0.1, 0.1)
 
 t0 = time.perf_counter()
 opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
-callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True)
+early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=25, restore_best_weights=True)
+reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=25, min_lr=0.001)
 
 model = Sequential()
 model.add(Input(shape=(train_set_x.shape[1], train_set_x.shape[2])))
@@ -38,12 +39,12 @@ model.summary()
 model.compile(optimizer=opt, loss='mse')
 
 res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y), shuffle=False,
-                epochs=epochs, batch_size=batches, callbacks=[callback])
+                epochs=epochs, batch_size=batches, callbacks=[early_stopping, reduce_lr])
 
 t1 = time.perf_counter()
-print(f'Time for {callback.stopped_epoch} epochs:', t1 - t0)
+print(f'Time for {early_stopping.stopped_epoch} epochs:', t1 - t0)
 
-model.save(f'results/tests/combined_lstm/keras_states/combined_model')
+model.save(f'results/tests/combined_lstm/combined_model')
 
 # forecast air quality
 normalizer = load(f'dataset/lstm_dataset_splits/collective/normalizer_y.joblib')

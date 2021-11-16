@@ -47,7 +47,7 @@ horizon = 24
 
 opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
 early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=25, restore_best_weights=True)
-reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=10, min_lr=0.001)
+reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=25, min_lr=0.001)
 
 model = Sequential()
 model.add(Input(shape=(past, n_features)))
@@ -137,8 +137,8 @@ for idx, f in enumerate(files):
     mpe = mean_absolute_percentage_error(true_values, predictions)
 
     error_metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-    # with open(f'results/tests/individual_lstm/{f}/error_metrics.pickle', 'wb') as file:
-    #     pickle.dump(error_metrics, file, protocol=-1)
+    with open(f'results/tests/individual_lstm/{f}/error_metrics.pickle', 'wb') as file:
+        pickle.dump(error_metrics, file, protocol=-1)
 
     print('Mean Squared Error: ', mse)
     print('Mean Absolute Error: ', mae)
