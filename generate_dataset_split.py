@@ -97,7 +97,7 @@ def individual_dataset_split():
         os.makedirs(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/train_sets/', exist_ok=True)
         for idx, group in enumerate(train_set['group'].unique().tolist()):
             d = train_set[train_set['group'] == group]
-            if d.shape[0] < 48:
+            if d.shape[0] < 72:
                 continue
 
             if (d.isna().sum() > 6).any():
@@ -114,7 +114,7 @@ def individual_dataset_split():
         os.makedirs(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/dev_sets/', exist_ok=True)
         for idx, group in enumerate(dev_set['group'].unique().tolist()):
             d = dev_set[dev_set['group'] == group]
-            if d.shape[0] < 48:
+            if d.shape[0] < 72:
                 continue
 
             if (d.isna().sum() > 6).any():
@@ -131,7 +131,7 @@ def individual_dataset_split():
         os.makedirs(f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/test_sets/', exist_ok=True)
         for idx, group in enumerate(test_set['group'].unique().tolist()):
             d = test_set[test_set['group'] == group]
-            if d.shape[0] < 48:
+            if d.shape[0] < 72:
                 continue
 
             if (d.isna().sum() > 6).any():
@@ -174,18 +174,18 @@ def grouped_dataset_split(rng_int: int):
         n = np.floor(cal.shape[0]/2*0.9).astype(int)
         cal = rng.choice(cal, n, replace=False, shuffle=False)
         for day in cal:
-            if df_temp.loc[day:(day + np.timedelta64(47, 'h')), :].shape[0] < 48:
+            if df_temp.loc[day:(day + np.timedelta64(71, 'h')), :].shape[0] < 72:
                 continue
 
-            if (df_temp.loc[day:(day + np.timedelta64(47, 'h')), :].isna().sum() > 4).any():
+            if (df_temp.loc[day:(day + np.timedelta64(71, 'h')), :].isna().sum() > 6).any():
                 continue
             else:
-                x_df = df_temp.loc[day:(day + np.timedelta64(23, 'h')), :].interpolate()
+                x_df = df_temp.loc[day:(day + np.timedelta64(47, 'h')), :].interpolate()
 
-            if (df_temp.loc[(day + np.timedelta64(1, 'D')):(day + np.timedelta64(47, 'h')), 'pm25'].isna().sum() > 4).any():
+            if (df_temp.loc[(day + np.timedelta64(2, 'D')):(day + np.timedelta64(71, 'h')), 'pm25'].isna().sum() > 6).any():
                 continue
             else:
-                y_df = df_temp.loc[(day + np.timedelta64(1, 'D')):(day + np.timedelta64(47, 'h')), 'pm25'].interpolate()
+                y_df = df_temp.loc[(day + np.timedelta64(2, 'D')):(day + np.timedelta64(71, 'h')), 'pm25'].interpolate()
 
             if f.split('_')[0] == 'Thembisa':
                 set_x_thembisa.append(x_df)
@@ -364,7 +364,7 @@ def transfer_dataset_split():
         os.makedirs(f'dataset/transfer_learning/{f.split("_")[0]}/train_sets/', exist_ok=True)
         for idx, group in enumerate(train_set['group'].unique().tolist()):
             d = train_set[train_set['group'] == group]
-            if d.shape[0] < 48:
+            if d.shape[0] < 72:
                 continue
 
             if (d.isna().sum() > 6).any():
@@ -381,7 +381,7 @@ def transfer_dataset_split():
         os.makedirs(f'dataset/transfer_learning/{f.split("_")[0]}/dev_sets/', exist_ok=True)
         for idx, group in enumerate(dev_set['group'].unique().tolist()):
             d = dev_set[dev_set['group'] == group]
-            if d.shape[0] < 48:
+            if d.shape[0] < 72:
                 continue
 
             if (d.isna().sum() > 6).any():
@@ -398,7 +398,7 @@ def transfer_dataset_split():
         os.makedirs(f'dataset/transfer_learning/{f.split("_")[0]}/test_sets/', exist_ok=True)
         for idx, group in enumerate(test_set['group'].unique().tolist()):
             d = test_set[test_set['group'] == group]
-            if d.shape[0] < 48:
+            if d.shape[0] < 72:
                 continue
 
             if (d.isna().sum() > 6).any():

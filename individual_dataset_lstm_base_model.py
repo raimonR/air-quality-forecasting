@@ -42,8 +42,9 @@ epochs = 500
 learning_rate = 1e-3
 l1l2 = (0.1, 0.1)
 n_features = 468
-past = 24
+past = 48
 horizon = 24
+batch_numbers = [16]*9
 
 opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
 early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=25, restore_best_weights=True)
@@ -58,7 +59,6 @@ model.summary()
 
 model.compile(optimizer=opt, loss='mse')
 
-batch_numbers = [32]*9
 files = os.listdir('dataset/lstm_dataset_splits/individual/')
 for idx, f in enumerate(files):
     train_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/train_sets/')
@@ -74,9 +74,7 @@ for idx, f in enumerate(files):
     t0 = time.perf_counter()
     for sets in zip_sets:
         train_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/train_sets/{sets[0]}').to_numpy()
-        # train_set = train_set.astype('float32')
         dev_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/dev_sets/{sets[1]}').to_numpy()
-        # dev_set = dev_set.astype('float32')
 
         train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx], 1)
         dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx], 1)
@@ -113,16 +111,9 @@ for idx, f in enumerate(files):
             test_ds = generate_inputs_outputs(test_set, past, horizon, 128 - i, 1)
             i += 1
 
-        print(128 - i)
-
-        forecast = model.evaluate(test_ds, return_dict=True)
-        print(forecast)
-
         test_ds = generate_inputs_outputs(test_set, past, horizon, 1, 24)
         for batch in test_ds.as_numpy_iterator():
             input_tensor, output_tensor = batch
-            print(input_tensor.shape)
-            print(output_tensor.shape)
             res = model.predict_on_batch(input_tensor)
             predictions = np.append(predictions, res.squeeze())
             true_values = np.append(true_values, output_tensor.squeeze())

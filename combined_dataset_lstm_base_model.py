@@ -1,3 +1,4 @@
+import os
 import time
 from joblib import load
 import pickle
@@ -11,6 +12,7 @@ from keras.layers import Input, LSTM, Dense, Bidirectional
 from keras.regularizers import l1_l2
 
 
+os.makedirs('results/tests/combined_lstm/', exist_ok=True)
 train_set_x = np.load('dataset/lstm_dataset_splits/collective/train_set_x.npy')
 train_set_y = np.load('dataset/lstm_dataset_splits/collective/train_set_y.npy')
 dev_set_x = np.load('dataset/lstm_dataset_splits/collective/dev_set_x.npy')
@@ -20,7 +22,7 @@ test_set_y = np.load('dataset/lstm_dataset_splits/collective/test_set_y.npy')
 
 # Define hyperparameters
 epochs = 500
-batches = 128
+batches = 64
 learning_rate = 1e-3
 l1l2 = (0.1, 0.1)
 
@@ -69,34 +71,48 @@ print('Mean Absolute Percentage Error: ', mpe)
 
 plot_test_y = np.concatenate(test_set_y)
 plot_forecast_y = np.concatenate(test_res)
+index = np.random.randint(720, plot_forecast_y.shape[0])
+
 fig, ax = plt.subplots(nrows=2, sharex=True)
-ax[0].plot(plot_test_y[:720], label=r'$y$')
-ax[0].plot(plot_forecast_y[:720], label=r'$\hat{y}$')
-ax[1].plot(np.abs(plot_test_y - plot_forecast_y)[:720])
-ax[0].set(ylabel=r'Normalized $PM_{2.5}$')
+ax[0].plot(plot_test_y[(index - 720):index], label=r'$y$')
+ax[0].plot(plot_forecast_y[(index - 720):index], label=r'$\hat{y}$')
+ax[1].plot(np.abs(plot_test_y - plot_forecast_y)[(index - 720):index])
+ax[0].set(ylabel=r'$PM_{2.5}$')
 ax[1].set(xlabel=r'Measurements', ylabel=r'$|y-\hat{y}|$')
 ax[0].legend(fontsize=5)
 # plt.show()
 fig.savefig(f'results/tests/combined_lstm/forecast_vs_true_plot.png')
 plt.close()
 
-print('done with training, validation, and testing')
-
+# Thembisa test
 set_x = np.load('dataset/lstm_dataset_splits/collective/set_x_thembisa.npy')
 set_y = np.load('dataset/lstm_dataset_splits/collective/set_y_thembisa.npy')
 normalizer_y = load('dataset/lstm_dataset_splits/collective/normalizer_y_thembisa.joblib')
 
-test_error = model.evaluate(x=set_x, y=set_y)
-print(test_error)
 forecast = model.predict(set_x)
 true_y = np.concatenate(normalizer_y.inverse_transform(set_y.squeeze()))
 forecast = np.concatenate(normalizer_y.inverse_transform(forecast.squeeze()))
 
+mse = mean_squared_error(test_set_y, test_res)
+mae = mean_absolute_error(test_set_y, test_res)
+mpe = mean_absolute_percentage_error(test_set_y, test_res)
+
+error_metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
+with open('results/tests/combined_lstm/error_metrics_thembisa.pickle', 'wb') as file:
+    pickle.dump(error_metrics, file, protocol=-1)
+
+print('Thembisa')
+print('Mean Squared Error: ', mse)
+print('Mean Absolute Error: ', mae)
+print('Mean Absolute Percentage Error: ', mpe)
+
+
+index = np.random.randint(720, forecast.shape[0])
 fig, ax = plt.subplots(nrows=2, sharex=True)
-ax[0].plot(true_y[:720], label=r'$y$')
-ax[0].plot(forecast[:720], label=r'$\hat{y}$')
-ax[1].plot(np.abs(true_y - forecast)[:720])
-ax[0].set(ylabel=r'Normalized $PM_{2.5}$')
+ax[0].plot(true_y[(index - 720):index], label=r'$y$')
+ax[0].plot(forecast[(index - 720):index], label=r'$\hat{y}$')
+ax[1].plot(np.abs(true_y - forecast)[(index - 720):index])
+ax[0].set(ylabel=r'$PM_{2.5}$')
 ax[1].set(xlabel=r'Measurements', ylabel=r'$|y-\hat{y}|$')
 ax[0].legend(fontsize=5)
 fig.savefig(f'results/tests/combined_lstm/thembisa_forecast_plot.png')
