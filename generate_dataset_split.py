@@ -176,7 +176,7 @@ def grouped_dataset_split(rng_int: int):
         n = np.floor(cal.shape[0]/2*0.9).astype(int)
         cal = rng.choice(cal, n, replace=False, shuffle=False)
         for day in cal:
-            if df_temp.loc[day:(day + np.timedelta64(47, 'H')), :].shape[0] < 48:
+            if df_temp.loc[day:(day + np.timedelta64(47, 'h')), :].shape[0] < 48:
                 continue
 
             if (df_temp.loc[day:(day + np.timedelta64(47, 'h')), :].isna().sum() > 4).any():
