@@ -17,6 +17,7 @@ def individual_dataset_split():
             df_temp['visibility'] = 0
         elif f.split('_')[0] == 'Melbourne':
             df_temp = df_temp.loc[:'2021-04-19', :]
+            df_temp['visibility'] = 0
         elif f.split('_')[0] == 'Prague':
             df_temp = df_temp.loc['2017-10':, :]
         elif f.split('_')[0] == 'Santiago':
@@ -418,5 +419,5 @@ def transfer_dataset_split():
 
 
 individual_dataset_split()
-grouped_dataset_split(0)
-transfer_dataset_split()
+# grouped_dataset_split(0)
+# transfer_dataset_split()
