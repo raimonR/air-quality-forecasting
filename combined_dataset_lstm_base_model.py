@@ -19,7 +19,7 @@ test_set_x = np.load('dataset/lstm_dataset_splits/collective/test_set_x.npy')
 test_set_y = np.load('dataset/lstm_dataset_splits/collective/test_set_y.npy')
 
 # Define hyperparameters
-epochs = 300
+epochs = 500
 batches = 128
 learning_rate = 1e-3
 l1l2 = (0.1, 0.1)
