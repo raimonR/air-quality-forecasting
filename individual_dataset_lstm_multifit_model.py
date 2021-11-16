@@ -43,7 +43,7 @@ for i in range(repeats):
 
     # Define Parameters
     n_features = 468
-    past = 24
+    past = 48
     horizon = 24
 
     opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")

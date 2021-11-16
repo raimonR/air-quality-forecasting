@@ -38,7 +38,7 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_size, shift):
 
 
 # Define hyperparameters and other parameters
-epochs = 500
+epochs = 1
 learning_rate = 1e-3
 l1l2 = (0.1, 0.1)
 n_features = 468
@@ -71,11 +71,13 @@ for idx, f in enumerate(files):
         dev_sets.append(dev_sets[i])
 
     zip_sets = list(zip_longest(train_sets, dev_sets))
+    os.makedirs(f'results/tests/individual_lstm/{f}/', exist_ok=True)
     t0 = time.perf_counter()
     for sets in zip_sets:
         train_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/train_sets/{sets[0]}').to_numpy()
         dev_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/dev_sets/{sets[1]}').to_numpy()
 
+        # TODO: decide if the shift between inputs and outputs is 1, 24, or 48 time steps
         train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx], 1)
         dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx], 1)
 
@@ -93,9 +95,8 @@ for idx, f in enumerate(files):
 
         print(batch_numbers[idx] - i)
 
-        os.makedirs(f'results/tests/individual_lstm/{f}/', exist_ok=True)
         res = model.fit(x=train_ds, validation_data=dev_ds, epochs=epochs, shuffle=False,
-                        callbacks=[early_stopping, reduce_lr])
+            callbacks=[early_stopping, reduce_lr])
 
         t1 = time.perf_counter()
         print(f'Time for {early_stopping.stopped_epoch} epochs:', t1 - t0)
@@ -104,14 +105,13 @@ for idx, f in enumerate(files):
     true_values = np.array([])
     for sets in test_sets:
         test_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/test_sets/{sets}').to_numpy()
-        test_ds = generate_inputs_outputs(test_set, past, horizon, 128, 1)
+        test_ds = generate_inputs_outputs(test_set, past, horizon, 16, 1)
 
         i = 0
         while len(list(test_ds)) < 1:
-            test_ds = generate_inputs_outputs(test_set, past, horizon, 128 - i, 1)
+            test_ds = generate_inputs_outputs(test_set, past, horizon, 16 - i, 1)
             i += 1
 
-        test_ds = generate_inputs_outputs(test_set, past, horizon, 1, 24)
         for batch in test_ds.as_numpy_iterator():
             input_tensor, output_tensor = batch
             res = model.predict_on_batch(input_tensor)

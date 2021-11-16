@@ -93,9 +93,9 @@ forecast = model.predict(set_x)
 true_y = np.concatenate(normalizer_y.inverse_transform(set_y.squeeze()))
 forecast = np.concatenate(normalizer_y.inverse_transform(forecast.squeeze()))
 
-mse = mean_squared_error(test_set_y, test_res)
-mae = mean_absolute_error(test_set_y, test_res)
-mpe = mean_absolute_percentage_error(test_set_y, test_res)
+mse = mean_squared_error(true_y, forecast)
+mae = mean_absolute_error(true_y, forecast)
+mpe = mean_absolute_percentage_error(true_y, forecast)
 
 error_metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
 with open('results/tests/combined_lstm/error_metrics_thembisa.pickle', 'wb') as file:
