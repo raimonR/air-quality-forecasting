@@ -38,7 +38,7 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_size, shift):
 
 
 # Define hyperparameters and other parameters
-epochs = 1
+epochs = 500
 learning_rate = 1e-3
 l1l2 = (0.1, 0.1)
 n_features = 468
@@ -60,7 +60,7 @@ model.summary()
 model.compile(optimizer=opt, loss='mse')
 
 files = os.listdir('dataset/lstm_dataset_splits/individual/')
-for idx, f in enumerate([files[0]]):
+for idx, f in enumerate(files):
     train_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/train_sets/')
     dev_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/dev_sets/')
     test_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/test_sets/')
