@@ -145,13 +145,13 @@ for idx, f in enumerate(files):
     print('Mean Absolute Percentage Error: ', mpe)
 
     fig, ax = plt.subplots(nrows=2, sharex=True)
-    ax[0].plot(true_values[:240], label=r'$y$')
-    ax[0].plot(predictions[:240], label=r'$\hat{y}$')
-    ax[1].plot(np.abs(true_values[:240] - predictions[:240]))
+    ax[0].plot(true_values[:720], label=r'$y$')
+    ax[0].plot(predictions[:720], label=r'$\hat{y}$')
+    ax[1].plot(np.abs(true_values - predictions)[:720])
     ax[0].set(ylabel=r'Normalized $PM_{2.5}$')
     ax[1].set(xlabel=r'Measurements', ylabel=r'$|y-\hat{y}|$')
-    plt.show()
-    # fig.savefig(f'results/tests/individual_lstm/{f}/forecast_vs_true_plot.png')
+    # plt.show()
+    fig.savefig(f'results/tests/individual_lstm/{f}/forecast_vs_true_plot.png')
     plt.close()
 
     print(f'done with {f}')
