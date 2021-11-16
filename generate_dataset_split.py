@@ -39,10 +39,10 @@ def individual_dataset_split():
                 if num_elements <= split_1:
                     num_elements += df_temp[df_temp['group'] == g].shape[0]
                     train_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1h')
-                if (num_elements > split_1) and (num_elements <= split_2):
+                elif (num_elements > split_1) and (num_elements <= split_2):
                     num_elements += df_temp[df_temp['group'] == g].shape[0]
                     dev_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1h')
-                if num_elements > split_2:
+                elif num_elements > split_2:
                     num_elements += df_temp[df_temp['group'] == g].shape[0]
                     test_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1h')
 
@@ -306,10 +306,10 @@ def transfer_dataset_split():
                 if num_elements <= split_1:
                     num_elements += df_temp[df_temp['group'] == g].shape[0]
                     train_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1h')
-                if (num_elements > split_1) and (num_elements <= split_2):
+                elif (num_elements > split_1) and (num_elements <= split_2):
                     num_elements += df_temp[df_temp['group'] == g].shape[0]
                     dev_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1h')
-                if num_elements > split_2:
+                elif num_elements > split_2:
                     num_elements += df_temp[df_temp['group'] == g].shape[0]
                     test_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1h')
 
