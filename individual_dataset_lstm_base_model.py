@@ -57,7 +57,7 @@ model.summary()
 
 model.compile(optimizer=opt, loss='mse')
 
-batch_numbers = [64, 64, 64, 64, 64, 64]
+batch_numbers = [64, 64, 64, 64, 64, 64, 64, 64, 64]
 files = os.listdir('dataset/lstm_dataset_splits/individual/')
 for idx, f in enumerate(files):
     train_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/train_sets/')
