@@ -26,7 +26,7 @@ l1l2 = (0.1, 0.1)
 
 t0 = time.perf_counter()
 opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
-callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True)
 
 model = Sequential()
 model.add(Input(shape=(train_set_x.shape[1], train_set_x.shape[2])))
