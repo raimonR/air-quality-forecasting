@@ -85,7 +85,7 @@ set_x = np.load('dataset/lstm_dataset_splits/collective/set_x_thembisa.npy')
 set_y = np.load('dataset/lstm_dataset_splits/collective/set_y_thembisa.npy')
 normalizer_y = load('dataset/lstm_dataset_splits/collective/normalizer_y_thembisa.joblib')
 
-test_error = model.evaluate(x=set_y, y=set_y)
+test_error = model.evaluate(x=set_x, y=set_y)
 print(test_error)
 forecast = model.predict(set_x)
 true_y = np.concatenate(normalizer_y.inverse_transform(set_y.squeeze()))
