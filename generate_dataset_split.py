@@ -7,7 +7,6 @@ from sklearn.preprocessing import StandardScaler
 
 # TODO: FIGURE OUT WHY ABIDJAN DOESN'T HAVE ANY DEV SETS
 # TODO: MELBOURNE HAS NO TEST SETS
-
 def individual_dataset_split():
     files = os.listdir('dataset/merged/')
     for f in files:
@@ -40,13 +39,13 @@ def individual_dataset_split():
             if df_temp[df_temp['group'] == g].shape[0] > 1:
                 if num_elements <= split_1:
                     num_elements += df_temp[df_temp['group'] == g].shape[0]
-                    train_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1H')
+                    train_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1h')
                 if (num_elements > split_1) and (num_elements <= split_2):
                     num_elements += df_temp[df_temp['group'] == g].shape[0]
-                    dev_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1H')
+                    dev_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1h')
                 if num_elements > split_2:
                     num_elements += df_temp[df_temp['group'] == g].shape[0]
-                    test_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1H')
+                    test_set_index = df_temp[df_temp['group'] == g].index[-1] + pd.Timedelta('1h')
 
         normalizer = StandardScaler()
         normalizer_y = StandardScaler()
@@ -420,6 +419,6 @@ def transfer_dataset_split():
     print('done')
 
 
-# individual_dataset_split()
-grouped_dataset_split(0)
+individual_dataset_split()
+# grouped_dataset_split(0)
 # transfer_dataset_split()
