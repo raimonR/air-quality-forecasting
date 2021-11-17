@@ -77,7 +77,6 @@ for idx, f in enumerate(files):
         train_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/train_sets/{sets[0]}').to_numpy()
         dev_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/dev_sets/{sets[1]}').to_numpy()
 
-        # TODO: decide if the shift between inputs and outputs is 1, 24, or 48 time steps
         train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx], 24)
         dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx], 24)
 
@@ -96,7 +95,7 @@ for idx, f in enumerate(files):
         print(batch_numbers[idx] - i)
 
         res = model.fit(x=train_ds, validation_data=dev_ds, epochs=epochs, shuffle=False,
-            callbacks=[early_stopping, reduce_lr])
+                        callbacks=[early_stopping, reduce_lr])
 
         t1 = time.perf_counter()
         print(f'Time for {early_stopping.stopped_epoch} epochs:', t1 - t0)
@@ -139,7 +138,7 @@ for idx, f in enumerate(files):
     diff = 720
     if predictions.shape[0] < diff:
         index = predictions.shape[0]
-        diff = 0
+        diff = index
     else:
         index = np.random.randint(diff, predictions.shape[0])
 
