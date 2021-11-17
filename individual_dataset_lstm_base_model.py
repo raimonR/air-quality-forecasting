@@ -136,15 +136,17 @@ for idx, f in enumerate(files):
     print('Mean Absolute Error: ', mae)
     print('Mean Absolute Percentage Error: ', mpe)
 
-    if predictions.shape[0] < 720:
+    diff = 720
+    if predictions.shape[0] < diff:
         index = predictions.shape[0]
+        diff = 0
     else:
-        index = np.random.randint(720, predictions.shape[0])
+        index = np.random.randint(diff, predictions.shape[0])
 
     fig, ax = plt.subplots(nrows=2, sharex=True)
-    ax[0].plot(true_values[(index - 720):index], label=r'$y$')
-    ax[0].plot(predictions[(index - 720):index], label=r'$\hat{y}$')
-    ax[1].plot(np.abs(true_values - predictions)[(index - 720):index])
+    ax[0].plot(true_values[int((index - diff)):index], label=r'$y$')
+    ax[0].plot(predictions[int((index - diff)):index], label=r'$\hat{y}$')
+    ax[1].plot(np.abs(true_values - predictions)[(index - diff):index])
     ax[0].set(ylabel=r'$PM_{2.5}$')
     ax[1].set(xlabel=r'Measurements', ylabel=r'$|y-\hat{y}|$')
     # plt.show()
