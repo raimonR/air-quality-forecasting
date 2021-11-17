@@ -78,19 +78,19 @@ for idx, f in enumerate(files):
         dev_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/dev_sets/{sets[1]}').to_numpy()
 
         # TODO: decide if the shift between inputs and outputs is 1, 24, or 48 time steps
-        train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx], 1)
-        dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx], 1)
+        train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx], 24)
+        dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx], 24)
 
         i = 0
         while len(list(train_ds)) < 1:
-            train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx] - i, 1)
+            train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx] - i, 24)
             i += 1
 
         print(batch_numbers[idx] - i)
 
         i = 0
         while len(list(dev_ds)) < 1:
-            dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx] - i, 1)
+            dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx] - i, 24)
             i += 1
 
         print(batch_numbers[idx] - i)
@@ -105,11 +105,11 @@ for idx, f in enumerate(files):
     true_values = np.array([])
     for sets in test_sets:
         test_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/test_sets/{sets}').to_numpy()
-        test_ds = generate_inputs_outputs(test_set, past, horizon, 64, 1)
+        test_ds = generate_inputs_outputs(test_set, past, horizon, 128, 24)
 
         i = 0
         while len(list(test_ds)) < 1:
-            test_ds = generate_inputs_outputs(test_set, past, horizon, 64 - i, 1)
+            test_ds = generate_inputs_outputs(test_set, past, horizon, 128 - i, 24)
             i += 1
 
         for batch in test_ds.as_numpy_iterator():
