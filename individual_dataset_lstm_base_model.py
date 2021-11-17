@@ -39,12 +39,12 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_size, shift):
 
 # Define hyperparameters and other parameters
 epochs = 500
-learning_rate = 1e-3
-l1l2 = (0.1, 0.1)
+learning_rate = 1e-2
+l1l2 = (0.0, 0.0)
 n_features = 468
 past = 48
 horizon = 24
-batch_numbers = [16]*9
+batch_numbers = [128]*9
 
 opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
 early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=25, restore_best_weights=True)
@@ -105,11 +105,11 @@ for idx, f in enumerate(files):
     true_values = np.array([])
     for sets in test_sets:
         test_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/test_sets/{sets}').to_numpy()
-        test_ds = generate_inputs_outputs(test_set, past, horizon, 16, 24)
+        test_ds = generate_inputs_outputs(test_set, past, horizon, 64, 1)
 
         i = 0
         while len(list(test_ds)) < 1:
-            test_ds = generate_inputs_outputs(test_set, past, horizon, 16 - i, 24)
+            test_ds = generate_inputs_outputs(test_set, past, horizon, 64 - i, 1)
             i += 1
 
         for batch in test_ds.as_numpy_iterator():
@@ -136,11 +136,12 @@ for idx, f in enumerate(files):
     print('Mean Absolute Error: ', mae)
     print('Mean Absolute Percentage Error: ', mpe)
 
+    index = np.random.randint(720, predictions.shape[0])
     fig, ax = plt.subplots(nrows=2, sharex=True)
-    ax[0].plot(true_values[:720], label=r'$y$')
-    ax[0].plot(predictions[:720], label=r'$\hat{y}$')
-    ax[1].plot(np.abs(true_values - predictions)[:720])
-    ax[0].set(ylabel=r'Normalized $PM_{2.5}$')
+    ax[0].plot(true_values[(index - 720):index], label=r'$y$')
+    ax[0].plot(predictions[(index - 720):index], label=r'$\hat{y}$')
+    ax[1].plot(np.abs(true_values - predictions)[(index - 720):index])
+    ax[0].set(ylabel=r'$PM_{2.5}$')
     ax[1].set(xlabel=r'Measurements', ylabel=r'$|y-\hat{y}|$')
     # plt.show()
     fig.savefig(f'results/tests/individual_lstm/{f}/forecast_vs_true_plot.png')
