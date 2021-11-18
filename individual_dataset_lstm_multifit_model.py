@@ -116,19 +116,23 @@ for f in files:
         num = sets.replace('.', '_').split('_')[-2]
         _, output = list(test_ds)[0]
         for i in range(res.shape[0]):
+            true_y = normalizer_y.invert_transform(output[i, :])
+            forecast_y = normalizer_y.invert_transform(res[i, :])
+
             fig, ax = plt.subplots(nrows=2, sharex=True)
-            ax[0].plot(output[i, :], label=r'$y$')
-            ax[0].plot(res[i, :], label=r'$\hat{y}$')
+            ax[0].plot(true_y, label=r'$y$')
+            ax[0].plot(forecast_y, label=r'$\hat{y}$')
+            ax[1].plot(np.abs(true_y - forecast_y))
             ax[0].set(ylabel=r'$PM_{2.5}$')
             ax[1].set(ylabel=r'$|y-\hat{y}|$', xlabel='Time Steps')
             ax[0].legend()
-            fig.savefig(f'results/tests/multifit/{f}/plots/forecast_plots_{num}_{i}.png')
+            fig.savefig(f'results/tests/individual_lstm/{f}/plots/forecast_plots_{num}_{i}.png')
             plt.close()
 
             # metrics
-            mse = mean_squared_error(output[i, :], res[i, :])
-            mae = mean_absolute_error(output[i, :], res[i, :])
-            mpe = mean_absolute_percentage_error(output[i, :], res[i, :])
+            mse = mean_squared_error(true_y, forecast_y)
+            mae = mean_absolute_error(true_y, forecast_y)
+            mpe = mean_absolute_percentage_error(true_y, forecast_y)
             metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
             with open(f'results/tests/individual_lstm/{f}/error_metrics_{num}_{i}.csv', 'w') as error_file:
                 w = csv.writer(error_file)
