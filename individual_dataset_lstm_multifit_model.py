@@ -39,7 +39,7 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_num, shift):
 
 
 # Define Parameters
-epochs = 2
+epochs = 500
 learning_rate = 1e-2
 l1l2 = (0.0, 0.0)
 n_features = 468
