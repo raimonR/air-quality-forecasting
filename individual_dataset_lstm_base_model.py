@@ -47,8 +47,8 @@ horizon = 24
 batch_numbers = [128]*9
 
 opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
-early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=25, restore_best_weights=True)
-reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=25, min_lr=0.001)
+early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=40, restore_best_weights=True)
+reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=40, min_lr=0.001)
 
 model = Sequential()
 model.add(Input(shape=(past, n_features)))
@@ -96,6 +96,8 @@ for idx, f in enumerate(files):
         t1 = time.perf_counter()
         print(f'Time for {early_stopping.stopped_epoch} epochs:', t1 - t0)
 
+    predictions_array = np.array([])
+    true_array = np.array([])
     normalizer_y = load(f'dataset/lstm_dataset_splits/individual/{f}/normalizer_y.joblib')
     for sets in test_sets:
         test_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/test_sets/{sets}').to_numpy()
@@ -113,6 +115,9 @@ for idx, f in enumerate(files):
         for i in range(res.shape[0]):
             true_y = normalizer_y.invert_transform(output[i, :])
             forecast_y = normalizer_y.invert_transform(res[i, :])
+
+            predictions_array = np.append(predictions_array, forecast_y)
+            true_array = np.append(true_array, true_y)
 
             fig, ax = plt.subplots(nrows=2, sharex=True)
             ax[0].plot(true_y, label=r'$y$')
@@ -133,6 +138,15 @@ for idx, f in enumerate(files):
                 w = csv.writer(error_file)
                 for key, value in metrics.items():
                     w.writerow([key, value])
+
+    mse = mean_squared_error(true_array, predictions_array)
+    mae = mean_absolute_error(true_array, predictions_array)
+    mpe = mean_absolute_percentage_error(true_array, predictions_array)
+    metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
+    with open(f'results/tests/individual_lstm/{f}/error_metrics_total.csv', 'w') as error_file:
+        w = csv.writer(error_file)
+        for key, value in metrics.items():
+            w.writerow([key, value])
 
     keras.backend.clear_session()
     print(f'done with {f}')

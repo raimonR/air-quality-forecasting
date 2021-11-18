@@ -100,10 +100,12 @@ for idx, f in enumerate(files):
     print(f'Done with {f}')
 
 for f in files:
-    os.makedirs(f'results/tests/multifit/{f}/plots', exist_ok=True)
-    normalizer_y = load(f'dataset/transfer_learning/{f}/normalizer_y.joblib')
+    os.makedirs(f'results/tests/multifit/{f}/plots/', exist_ok=True)
+    predictions_array = np.array([])
+    true_array = np.array([])
+    normalizer_y = load(f'dataset/lstm_dataset_splits/individual/{f}/normalizer_y.joblib')
     for sets in test_sets:
-        test_set = pd.read_pickle(f'dataset/transfer_learning/{f}/test_sets/{sets}').to_numpy()
+        test_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/test_sets/{sets}').to_numpy()
         test_ds = generate_inputs_outputs(test_set, past, horizon, 128, 24)
 
         i = 0
@@ -119,6 +121,9 @@ for f in files:
             true_y = normalizer_y.invert_transform(output[i, :])
             forecast_y = normalizer_y.invert_transform(res[i, :])
 
+            predictions_array = np.append(predictions_array, forecast_y)
+            true_array = np.append(true_array, true_y)
+
             fig, ax = plt.subplots(nrows=2, sharex=True)
             ax[0].plot(true_y, label=r'$y$')
             ax[0].plot(forecast_y, label=r'$\hat{y}$')
@@ -126,7 +131,7 @@ for f in files:
             ax[0].set(ylabel=r'$PM_{2.5}$')
             ax[1].set(ylabel=r'$|y-\hat{y}|$', xlabel='Time Steps')
             ax[0].legend()
-            fig.savefig(f'results/tests/individual_lstm/{f}/plots/forecast_plots_{num}_{i}.png')
+            fig.savefig(f'results/tests/multifit/{f}/plots/forecast_plots_{num}_{i}.png')
             plt.close()
 
             # metrics
@@ -134,9 +139,18 @@ for f in files:
             mae = mean_absolute_error(true_y, forecast_y)
             mpe = mean_absolute_percentage_error(true_y, forecast_y)
             metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-            with open(f'results/tests/individual_lstm/{f}/error_metrics_{num}_{i}.csv', 'w') as error_file:
+            with open(f'results/tests/multifit/{f}/error_metrics_{num}_{i}.csv', 'w') as error_file:
                 w = csv.writer(error_file)
                 for key, value in metrics.items():
                     w.writerow([key, value])
+
+    mse = mean_squared_error(true_array, predictions_array)
+    mae = mean_absolute_error(true_array, predictions_array)
+    mpe = mean_absolute_percentage_error(true_array, predictions_array)
+    metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
+    with open(f'results/tests/multifit/{f}/error_metrics_total.csv', 'w') as error_file:
+        w = csv.writer(error_file)
+        for key, value in metrics.items():
+            w.writerow([key, value])
 
 print('done')
