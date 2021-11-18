@@ -3,6 +3,9 @@ import time
 import pickle
 import numpy as np
 import pandas as pd
+import csv
+from joblib import load
+from itertools import zip_longest
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 import tensorflow as tf
@@ -15,9 +18,10 @@ from tensorflow import autograph
 autograph.set_verbosity(0)
 
 
-def generate_inputs_outputs(data, n_past, n_horizon, batch_size, shift):
+@tf.autograph.experimental.do_not_convert
+def generate_inputs_outputs(data, n_past, n_horizon, batch_num, shift):
     def make_batch(x):
-        return x.batch(length)
+        return x.batch(length, drop_remainder=True)
 
     def make_split(x):
         return x[:-n_horizon], x[-n_horizon:, 0]
@@ -30,96 +34,105 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_size, shift):
 
     ds = ds.map(make_split)
 
-    ds = ds.batch(batch_size)
+    ds = ds.batch(batch_num, drop_remainder=True)
     return ds
 
-repeats = 1
-for i in range(repeats):
-    # Define hyperparameters
-    epochs = 500
-    batches = 128
-    learning_rate = 1e-1
-    l1l2 = (0.1, 0.1)
 
-    # Define Parameters
-    n_features = 468
-    past = 48
-    horizon = 24
+# Define Parameters
+epochs = 2
+learning_rate = 1e-2
+l1l2 = (0.0, 0.0)
+n_features = 468
+past = 48
+horizon = 24
+batch_numbers = [128]*9
 
-    opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
-    early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=25, restore_best_weights=True)
-    reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=10, min_lr=0.001)
+opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
+early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=25, restore_best_weights=True)
+reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=25, min_lr=0.001)
 
-    model = Sequential()
-    model.add(Input(shape=(past, n_features)))
-    model.add(Bidirectional(LSTM(units=64, return_sequences=True, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
-    model.add(Bidirectional(LSTM(units=32, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
-    model.add(Dense(units=horizon))
-    model.summary()
+model = Sequential()
+model.add(Input(shape=(past, n_features)))
+model.add(Bidirectional(LSTM(units=64, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
+model.add(Bidirectional(LSTM(units=32, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
+model.add(Dense(units=horizon))
+model.summary()
 
-    model.compile(optimizer=opt, loss='mse')
+model.compile(optimizer=opt, loss='mse')
 
-    os.makedirs(f'results/tests/multifit_lstm/', exist_ok=True)
-    files = os.listdir('dataset/lstm_dataset_splits/individual/')
-    for f in files:
-        train_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/train_set.npy')
-        dev_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/dev_set.npy')
-        test_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/test_set.npy')
+os.makedirs('results/tests/multifit/', exist_ok=True)
+files = os.listdir('dataset/transfer_learning/')
+for idx, f in enumerate(files):
+    train_sets = os.listdir(f'dataset/transfer_learning/{f}/train_sets/')
+    dev_sets = os.listdir(f'dataset/transfer_learning/{f}/dev_sets/')
+    test_sets = os.listdir(f'dataset/transfer_learning/{f}/test_sets/')
 
-        train_ds = generate_inputs_outputs(train_set, past, horizon, 128, 1)
-        dev_ds = generate_inputs_outputs(dev_set, past, horizon, 128, 1)
+    n = np.floor(len(train_sets)/len(dev_sets)).astype(int)
+    dev_sets = np.concatenate([dev_sets for i in range(n)]).tolist()
+    for i in range(len(train_sets) % len(dev_sets)):
+        dev_sets.append(dev_sets[i])
 
-        t0 = time.perf_counter()
+    zip_sets = list(zip_longest(train_sets, dev_sets))
+    t0 = time.perf_counter()
+    for sets in zip_sets:
+        train_set = pd.read_pickle(f'dataset/transfer_learning/{f}/train_sets/{sets[0]}').to_numpy()
+        dev_set = pd.read_pickle(f'dataset/transfer_learning/{f}/dev_sets/{sets[1]}').to_numpy()
+
+        train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx], 24)
+        dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx], 24)
+
+        i = 0
+        while len(list(train_ds)) < 1:
+            train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx] - i, 24)
+            i += 1
+
+        i = 0
+        while len(list(dev_ds)) < 1:
+            dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx] - i, 24)
+            i += 1
+
         res = model.fit(x=train_ds, validation_data=dev_ds, epochs=epochs, shuffle=False,
                         callbacks=[early_stopping, reduce_lr])
 
         t1 = time.perf_counter()
         print(f'Time for {early_stopping.stopped_epoch} epochs:', t1 - t0)
-        print(f'Done with {f}')
 
-    metrics = []
-    predictions = np.array([])
-    true_values = np.array([])
-    for f in files:
-        test_set = np.load(f'dataset/lstm_dataset_splits/individual/{f}/test_set.npy')
-        test_ds = generate_inputs_outputs(test_set, past, horizon, 128, 1)
+    print(f'Done with {f}')
 
-        forecast = model.evaluate(test_ds, return_dict=True)
-        metrics.append(forecast['loss'])
+for f in files:
+    os.makedirs(f'results/tests/multifit/{f}/plots', exist_ok=True)
+    normalizer_y = load(f'dataset/transfer_learning/{f}/normalizer_y.joblib')
+    for sets in test_sets:
+        test_set = pd.read_pickle(f'dataset/transfer_learning/{f}/test_sets/{sets}').to_numpy()
+        test_ds = generate_inputs_outputs(test_set, past, horizon, 128, 24)
 
-        test_ds = generate_inputs_outputs(test_set, past, horizon, 1, 24)
-        for batch in test_ds.as_numpy_iterator():
-            input_tensor, output_tensor = batch
-            res = model.predict_on_batch(input_tensor)
-            predictions = np.append(predictions, res.squeeze())
-            true_values = np.append(true_values, output_tensor.squeeze())
-            
-    print(predictions.shape)
+        i = 0
+        while len(list(test_ds)) < 1:
+            test_ds = generate_inputs_outputs(test_set, past, horizon, 128 - i, 24)
+            i += 1
 
-    # metrics
-    mse = mean_squared_error(true_values, predictions)
-    mae = mean_absolute_error(true_values, predictions)
-    mpe = mean_absolute_percentage_error(true_values, predictions)
+        res = model.predict(test_ds)
 
-    error_metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-    with open(f'results/tests/multifit_lstm/error_metrics_v{i}.pickle', 'wb') as file:
-        pickle.dump(error_metrics, file, protocol=-1)
+        num = sets.replace('.', '_').split('_')[-2]
+        _, output = list(test_ds)[0]
+        for i in range(res.shape[0]):
+            fig, ax = plt.subplots(nrows=2, sharex=True)
+            ax[0].plot(output[i, :], label=r'$y$')
+            ax[0].plot(res[i, :], label=r'$\hat{y}$')
+            ax[0].set(ylabel=r'$PM_{2.5}$')
+            ax[1].set(ylabel=r'$|y-\hat{y}|$', xlabel='Time Steps')
+            ax[0].legend()
+            fig.savefig(f'results/tests/multifit/{f}/plots/forecast_plots_{num}_{i}.png')
+            plt.close()
 
-    print('Mean Squared Error: ', mse)
-    print('Mean Absolute Error: ', mae)
-    print('Mean Absolute Percentage Error: ', mpe)
-
-    index = np.random.randint(720, predictions.shape[0])
-    fig, ax = plt.subplots(nrows=2, sharex=True)
-    ax[0].plot(true_values[(index - 720):index], label=r'$y$')
-    ax[0].plot(predictions[(index - 720):index], label=r'$\hat{y}$')
-    ax[1].plot(np.abs(true_values - predictions)[(index - 720):index])
-    ax[0].set(ylabel=r'$PM_{2.5}$')
-    ax[1].set(xlabel=r'Measurements', ylabel=r'$|y-\hat{y}|$')
-    # plt.show()
-    fig.savefig(f'results/tests/multifit_lstm/forecast_vs_true_plot_v{i}.png')
-    plt.close()
-
-    print(f'done with {i} iteration')
+            # metrics
+            mse = mean_squared_error(output[i, :], res[i, :])
+            mae = mean_absolute_error(output[i, :], res[i, :])
+            mpe = mean_absolute_percentage_error(output[i, :], res[i, :])
+            metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
+            with open(f'results/tests/individual_lstm/{f}/error_metrics_{num}_{i}.csv', 'w') as error_file:
+                w = csv.writer(error_file)
+                for key, value in metrics.items():
+                    w.writerow([key, value])
 
 print('done')

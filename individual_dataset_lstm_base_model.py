@@ -125,7 +125,7 @@ for idx, f in enumerate(files):
             mae = mean_absolute_error(output[i, :], res[i, :])
             mpe = mean_absolute_percentage_error(output[i, :], res[i, :])
             metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-            with open(f'results/tests/individual_lstm/{f}/error_metrics_{num}_{i}.csv', 'wb') as error_file:
+            with open(f'results/tests/individual_lstm/{f}/error_metrics_{num}_{i}.csv', 'w') as error_file:
                 w = csv.writer(error_file)
                 for key, value in metrics.items():
                     w.writerow([key, value])
