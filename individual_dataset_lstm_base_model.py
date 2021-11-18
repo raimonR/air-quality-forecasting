@@ -129,6 +129,8 @@ for idx, f in enumerate(files):
                 w = csv.writer(error_file)
                 for key, value in metrics.items():
                     w.writerow([key, value])
+
+    keras.backend.clear_session()
     #
     # print('Mean Squared Error: ', mse)
     # print('Mean Absolute Error: ', mae)
