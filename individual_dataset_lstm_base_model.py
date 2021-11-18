@@ -116,7 +116,7 @@ for idx, f in enumerate(files):
             ax[0].plot(res[i, :], label=r'$\hat{y}$')
             ax[0].set(ylabel=r'$PM_{2.5}$')
             ax[1].set(ylabel=r'$|y-\hat{y}|$', xlabel='Time Steps')
-            ax.legend()
+            ax[0].legend()
             fig.savefig(f'results/tests/individual_lstm/{f}/plots/forecast_plots_{num}_{i}.png')
             plt.close()
 
