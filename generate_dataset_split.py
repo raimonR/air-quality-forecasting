@@ -412,7 +412,7 @@ def transfer_dataset_split():
             print(d.isna().sum().sum())
             d.to_pickle(f'dataset/transfer_learning/{f.split("_")[0]}/test_sets/test_set_{idx}.pkl')
 
-        dump(normalizer_y, f'dataset/lstm_dataset_splits/individual/{f.split("_")[0]}/normalizer_y.joblib')
+        dump(normalizer_y, f'dataset/transfer_learning/{f.split("_")[0]}/normalizer_y.joblib')
 
         print(f'done with {f.split("_")[0]}')
 
