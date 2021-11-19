@@ -38,7 +38,7 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_num, shift):
 
 
 # Define hyperparameters and other parameters
-epochs = 500
+epochs = 1
 learning_rate = 1e-2
 l1l2 = (0.0, 0.0)
 n_features = 468
@@ -113,11 +113,11 @@ for idx, f in enumerate(files):
         num = sets.replace('.', '_').split('_')[-2]
         _, output = list(test_ds)[0]
         for i in range(res.shape[0]):
-            true_y = normalizer_y.inverse_transform(output[i, :])
-            forecast_y = normalizer_y.inverse_transform(res[i, :])
+            true_y = normalizer_y.inverse_transform(output[i, :].numpy().reshape(-1, 1))
+            forecast_y = normalizer_y.inverse_transform(res[i, :].reshape(-1, 1))
 
-            predictions_array = np.append(predictions_array, forecast_y)
-            true_array = np.append(true_array, true_y)
+            predictions_array = np.append(predictions_array, forecast_y.squeeze())
+            true_array = np.append(true_array, true_y.squeeze())
 
             fig, ax = plt.subplots(nrows=2, sharex=True)
             ax[0].plot(true_y, label=r'$y$')
