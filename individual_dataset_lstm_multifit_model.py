@@ -118,8 +118,8 @@ for f in files:
         num = sets.replace('.', '_').split('_')[-2]
         _, output = list(test_ds)[0]
         for i in range(res.shape[0]):
-            true_y = normalizer_y.invert_transform(output[i, :])
-            forecast_y = normalizer_y.invert_transform(res[i, :])
+            true_y = normalizer_y.inverse_transform(output[i, :])
+            forecast_y = normalizer_y.inverse_transform(res[i, :])
 
             predictions_array = np.append(predictions_array, forecast_y)
             true_array = np.append(true_array, true_y)
