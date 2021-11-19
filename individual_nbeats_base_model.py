@@ -18,9 +18,6 @@ model = NBEATSModel(input_chunk_length=24, output_chunk_length=24, generic_archi
                     layer_widths=1, n_epochs=300, optimizer_cls=torch.optim.Adam,
                     optimizer_kwargs={'lr': 0.01, 'eps': 1e-7}, model_name='base_model', force_reset=True)
 
-for params in model.parameters():
-    print(params)
-
 # files = os.listdir('dataset/transfer_learning/')
 # for f in [files[0]]:
 #     train_set = pd.read_pickle(f'dataset/transfer_learning/{f}/train_set.pkl')

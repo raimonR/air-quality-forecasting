@@ -61,11 +61,11 @@ model.summary()
 model.compile(optimizer=opt, loss='mse')
 
 os.makedirs('results/tests/multifit/', exist_ok=True)
-files = os.listdir('dataset/transfer_learning/')
+files = os.listdir('dataset/lstm_dataset_splits/individual/')
 for idx, f in enumerate(files):
-    train_sets = os.listdir(f'dataset/transfer_learning/{f}/train_sets/')
-    dev_sets = os.listdir(f'dataset/transfer_learning/{f}/dev_sets/')
-    test_sets = os.listdir(f'dataset/transfer_learning/{f}/test_sets/')
+    train_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/train_sets/')
+    dev_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/dev_sets/')
+    test_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/test_sets/')
 
     n = np.floor(len(train_sets)/len(dev_sets)).astype(int)
     dev_sets = np.concatenate([dev_sets for i in range(n)]).tolist()
@@ -75,8 +75,8 @@ for idx, f in enumerate(files):
     zip_sets = list(zip_longest(train_sets, dev_sets))
     t0 = time.perf_counter()
     for sets in zip_sets:
-        train_set = pd.read_pickle(f'dataset/transfer_learning/{f}/train_sets/{sets[0]}').to_numpy()
-        dev_set = pd.read_pickle(f'dataset/transfer_learning/{f}/dev_sets/{sets[1]}').to_numpy()
+        train_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/train_sets/{sets[0]}').to_numpy()
+        dev_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/dev_sets/{sets[1]}').to_numpy()
 
         train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx], 24)
         dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx], 24)
