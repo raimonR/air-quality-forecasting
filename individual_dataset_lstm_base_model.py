@@ -53,6 +53,7 @@ reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, pa
 model = Sequential()
 model.add(Input(shape=(past, n_features)))
 model.add(Bidirectional(LSTM(units=64, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
+# model.add(Bidirectional(LSTM(units=128, return_sequences=True, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
 model.add(Bidirectional(LSTM(units=32, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
 model.add(Dense(units=horizon))
 model.summary()
@@ -119,26 +120,6 @@ for idx, f in enumerate(files):
             predictions_array = np.append(predictions_array, forecast_y.squeeze())
             true_array = np.append(true_array, true_y.squeeze())
 
-            fig, ax = plt.subplots(nrows=2, sharex=True)
-            ax[0].plot(true_y, label=r'$y$')
-            ax[0].plot(forecast_y, label=r'$\hat{y}$')
-            ax[1].plot(np.abs(true_y - forecast_y))
-            ax[0].set(ylabel=r'$PM_{2.5}$')
-            ax[1].set(ylabel=r'$|y-\hat{y}|$', xlabel='Time Steps')
-            ax[0].legend()
-            fig.savefig(f'results/tests/individual_lstm/{f}/plots/forecast_plots_{num}_{i}.png')
-            plt.close()
-
-            # metrics
-            mse = mean_squared_error(true_y, forecast_y)
-            mae = mean_absolute_error(true_y, forecast_y)
-            mpe = mean_absolute_percentage_error(true_y, forecast_y)
-            metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-            with open(f'results/tests/individual_lstm/{f}/error_metrics_{num}_{i}.csv', 'w') as error_file:
-                w = csv.writer(error_file)
-                for key, value in metrics.items():
-                    w.writerow([key, value])
-
     mse = mean_squared_error(true_array, predictions_array)
     mae = mean_absolute_error(true_array, predictions_array)
     mpe = mean_absolute_percentage_error(true_array, predictions_array)
@@ -147,6 +128,29 @@ for idx, f in enumerate(files):
         w = csv.writer(error_file)
         for key, value in metrics.items():
             w.writerow([key, value])
+
+    fig_arr_forecast = np.split(predictions_array, [horizon*i for i in range(200)])
+    fig_arr_true = np.array_split(true_array, [horizon*i for i in range(200)])
+    fig_arr_forecast = np.array([x for x in fig_arr_forecast if horizon in x.shape])
+    fig_arr_true = np.array([x for x in fig_arr_true if horizon in x.shape])
+
+    rng = np.random.default_rng(0)
+    shuffle = rng.permutation(fig_arr_forecast.shape[0])
+    fig_arr_forecast = fig_arr_forecast[shuffle, :][:6]
+    fig_arr_true = fig_arr_true[shuffle, :][:6]
+    fig, axes = plt.subplots(nrows=2, ncols=3, sharey=True, sharex=True)
+    for j, ax in enumerate(axes.flatten()):
+        l1 = ax.plot(fig_arr_true)
+        l2 = ax.plot(fig_arr_forecast)
+        if not (j % 3):
+            ax.set(ylabel=r'$PM_{2.5}$')
+
+        if j == 4:
+            ax.set(xlabel='Time Steps')
+
+    fig.legend([l1, l2], labels=[r'$y$', r'$\hat{y}$'], loc=7, borderaxespad=0.1)
+    fig.savefig(f'results/tests/individual_lstm/{f}/forecast_plots.png')
+    plt.close()
 
     keras.backend.clear_session()
     print(f'done with {f}')
