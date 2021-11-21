@@ -280,11 +280,11 @@ def transfer_dataset_split():
         if f.split('_')[0] == 'Dhaka':
             df_temp.loc['2018-07':'2019-06', 'pm25'] = np.nan
         elif f.split('_')[0] == 'Oakland':
-            df_temp['dewpoint'] = 0
-            df_temp['visibility'] = 0
+            df_temp.loc[:, 'dewpoint'] = 0
+            df_temp.loc[:, 'visibility'] = 0
         elif f.split('_')[0] == 'Melbourne':
             df_temp = df_temp.loc[:'2021-04-19', :]
-            df_temp['visibility'] = 0
+            df_temp.loc[:, 'visibility'] = 0
         elif f.split('_')[0] == 'Prague':
             df_temp = df_temp.loc['2017-10':, :]
         elif f.split('_')[0] == 'Santiago':
@@ -419,6 +419,6 @@ def transfer_dataset_split():
     print('done')
 
 
-individual_dataset_split()
-grouped_dataset_split(0)
+# individual_dataset_split()
+# grouped_dataset_split(0)
 transfer_dataset_split()

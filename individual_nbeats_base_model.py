@@ -33,8 +33,8 @@ for idx, f in enumerate([files[0]]):
     zip_sets = list(zip_longest(train_sets, dev_sets))
     t0 = time.perf_counter()
     for sets in [zip_sets[0]]:
-        train_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/train_sets/{sets[0]}')
-        dev_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/dev_sets/{sets[1]}')
+        train_set = pd.read_pickle(f'dataset/transfer_learning/{f}/train_sets/{sets[0]}')
+        dev_set = pd.read_pickle(f'dataset/transfer_learning/{f}/dev_sets/{sets[1]}')
 
         train_forecast = TimeSeries.from_dataframe(train_set, value_cols='pm25', freq='1H')
         train_forecast = TimeSeries.from_xarray(train_forecast.data_array().astype('float32'))
@@ -61,9 +61,9 @@ for idx, f in enumerate([files[0]]):
 
     predictions_array = np.array([])
     true_array = np.array([])
-    normalizer_y = load(f'dataset/lstm_dataset_splits/individual/{f}/normalizer_y.joblib')
+    normalizer_y = load(f'dataset/transfer_learning/{f}/normalizer_y.joblib')
     for sets in [test_sets[0]]:
-        test_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/test_sets/{sets}')
+        test_set = pd.read_pickle(f'dataset/transfer_learning/{f}/test_sets/{sets}')
 
         test_forecast = TimeSeries.from_dataframe(test_set, value_cols='pm25', freq='1H')
         test_forecast = TimeSeries.from_xarray(test_forecast.data_array().astype('float32'))
