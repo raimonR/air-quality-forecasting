@@ -1,6 +1,5 @@
 import os
 import time
-import pickle
 import numpy as np
 import pandas as pd
 import csv
@@ -144,7 +143,7 @@ for f in files:
             ax.set(xlabel='Time Steps')
 
     fig.legend(handles=[l1, l2], labels=[r'$y$', r'$\hat{y}$'], loc=7, borderaxespad=0.1)
-    fig.savefig(f'results/tests/individual_lstm/{f}/forecast_plots_64_node.png')
+    fig.savefig(f'results/tests/individual_lstm/{f}/forecast_plots.png')
     plt.close()
 
     mse = mean_squared_error(true_array, predictions_array)
