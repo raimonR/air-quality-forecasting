@@ -62,6 +62,7 @@ for idx, f in enumerate([files[0]]):
     predictions_array = np.array([])
     true_array = np.array([])
     normalizer_y = load(f'dataset/transfer_learning/{f}/normalizer_y.joblib')
+    os.makedirs(f'results/tests/nbeats/{f}/', exist_ok=True)
     for sets in [test_sets[0]]:
         test_set = pd.read_pickle(f'dataset/transfer_learning/{f}/test_sets/{sets}')
 

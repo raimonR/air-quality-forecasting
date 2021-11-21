@@ -64,7 +64,6 @@ files = os.listdir('dataset/lstm_dataset_splits/individual/')
 for idx, f in enumerate(files):
     train_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/train_sets/')
     dev_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/dev_sets/')
-    test_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/test_sets/')
 
     n = np.floor(len(train_sets)/len(dev_sets)).astype(int)
     dev_sets = np.concatenate([dev_sets for i in range(n)]).tolist()
@@ -100,6 +99,7 @@ for idx, f in enumerate(files):
 
 for f in files:
     os.makedirs(f'results/tests/multifit/{f}/plots/', exist_ok=True)
+    test_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/test_sets/')
     predictions_array = np.array([])
     true_array = np.array([])
     normalizer_y = load(f'dataset/lstm_dataset_splits/individual/{f}/normalizer_y.joblib')
