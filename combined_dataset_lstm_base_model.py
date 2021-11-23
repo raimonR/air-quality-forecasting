@@ -2,7 +2,6 @@ import os
 import csv
 import time
 from joblib import load
-import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
@@ -104,7 +103,7 @@ mae = mean_absolute_error(true_y, forecast)
 mpe = mean_absolute_percentage_error(true_y, forecast)
 
 error_metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-with open('results/tests/combined_lstm/error_metrics_thembisa.csv', 'wb') as error_file:
+with open('results/tests/combined_lstm/error_metrics_thembisa.csv', 'w') as error_file:
     w = csv.writer(error_file)
     for key, value in error_metrics.items():
         w.writerow([key, value])

@@ -3,7 +3,7 @@
 #SBATCH --job-name=combined_lstm_test
 #
 #SBATCH -p gpu
-#SBATCH --time=07:00:00
+#SBATCH --time=04:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=16G

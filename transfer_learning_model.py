@@ -35,3 +35,7 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_num, shift):
 
     ds = ds.batch(batch_num, drop_remainder=True)
     return ds
+
+
+north_list = ['']
+south_list = ['']
