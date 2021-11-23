@@ -38,7 +38,7 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_num, shift):
 
 
 # Define hyperparameters and other parameters
-epochs = 750
+epochs = 1000
 learning_rate = 1e-2
 l1l2 = (0.0, 0.0)
 n_features = 468
@@ -47,11 +47,13 @@ horizon = 24
 batch_numbers = [128]*9
 
 opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
-early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=60, restore_best_weights=True)
-reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=60, min_lr=0.0001)
+early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=100, restore_best_weights=True)
+reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=100, min_lr=0.0001)
 
 model = Sequential()
 model.add(Input(shape=(past, n_features)))
+model.add(Bidirectional(LSTM(units=128, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
+model.add(Bidirectional(LSTM(units=128, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
 model.add(Bidirectional(LSTM(units=128, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
 model.add(Bidirectional(LSTM(units=64, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
 model.add(Dense(units=horizon))
@@ -123,7 +125,7 @@ for idx, f in enumerate(files):
     mae = mean_absolute_error(true_array, predictions_array)
     mpe = mean_absolute_percentage_error(true_array, predictions_array)
     metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-    with open(f'results/tests/individual_lstm/{f}/error_metrics_total_64_node.csv', 'w') as error_file:
+    with open(f'results/tests/individual_lstm/{f}/error_metrics_total_128_node.csv', 'w') as error_file:
         w = csv.writer(error_file)
         for key, value in metrics.items():
             w.writerow([key, value])
@@ -148,20 +150,30 @@ for idx, f in enumerate(files):
             ax.set(xlabel='Time Steps')
 
     fig.legend([l1, l2], labels=[r'$y$', r'$\hat{y}$'], loc=7, borderaxespad=0.1)
-    fig.savefig(f'results/tests/individual_lstm/{f}/forecast_plots_64_node.png')
+    fig.savefig(f'results/tests/individual_lstm/{f}/forecast_plots_128_node.png')
     plt.close()
 
     keras.backend.clear_session()
     print(f'done with {f}')
 
-print('done with 128-64 node neural network')
+print('done with 128-128-128-64 node neural network')
+
+# Define hyperparameters and other parameters
+epochs = 1000
+learning_rate = 1e-2
+l1l2 = (0.0, 0.1)
+n_features = 468
+past = 48
+horizon = 24
+batch_numbers = [128]*9
 
 opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
-early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=60, restore_best_weights=True)
-reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=60, min_lr=0.0001)
+early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=100, restore_best_weights=True)
+reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=100, min_lr=0.0001)
 
 model = Sequential()
 model.add(Input(shape=(past, n_features)))
+model.add(Bidirectional(LSTM(units=128, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
 model.add(Bidirectional(LSTM(units=128, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
 model.add(Bidirectional(LSTM(units=128, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
 model.add(Bidirectional(LSTM(units=64, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
@@ -234,7 +246,7 @@ for idx, f in enumerate(files):
     mae = mean_absolute_error(true_array, predictions_array)
     mpe = mean_absolute_percentage_error(true_array, predictions_array)
     metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-    with open(f'results/tests/individual_lstm/{f}/error_metrics_total_64_node.csv', 'w') as error_file:
+    with open(f'results/tests/individual_lstm/{f}/error_metrics_total_128_node_l2.csv', 'w') as error_file:
         w = csv.writer(error_file)
         for key, value in metrics.items():
             w.writerow([key, value])
@@ -259,10 +271,12 @@ for idx, f in enumerate(files):
             ax.set(xlabel='Time Steps')
 
     fig.legend([l1, l2], labels=[r'$y$', r'$\hat{y}$'], loc=7, borderaxespad=0.1)
-    fig.savefig(f'results/tests/individual_lstm/{f}/forecast_plots_64_node.png')
+    fig.savefig(f'results/tests/individual_lstm/{f}/forecast_plots_128_node_l2.png')
     plt.close()
 
     keras.backend.clear_session()
     print(f'done with {f}')
 
-print('done with 128-128-64 node neural network')
+print('done with 128-128-128-64 l2=0.1 node neural network')
+
+
