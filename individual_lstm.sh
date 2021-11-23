@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-#SBATCH --job-name=lstm_tuning
+#SBATCH --job-name=individual_lstm_test
 #
 #SBATCH -p gpu
-#SBATCH --time=06:00:00
+#SBATCH --time=07:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=16G
@@ -24,5 +24,5 @@ conda activate /home/groups/gorle/miniconda3/envs/tensorflow_env
 python individual_dataset_lstm_base_model.py
 # python individual_dataset_lstm_multifit_model.py
 
-echo "generate_dataset_split done"
+echo "individual_dataset_lstm_multifit_model done"
 date
