@@ -1,4 +1,5 @@
 import os
+import csv
 import time
 from joblib import load
 import pickle
@@ -21,21 +22,24 @@ test_set_x = np.load('dataset/lstm_dataset_splits/collective/test_set_x.npy')
 test_set_y = np.load('dataset/lstm_dataset_splits/collective/test_set_y.npy')
 
 # Define hyperparameters
-epochs = 500
-batches = 64
-learning_rate = 1e-3
-l1l2 = (0.1, 0.1)
+epochs = 1000
+batches = 128
+learning_rate = 1e-2
+l1l2 = (0.0, 0.0)
+horizon = 24
 
 t0 = time.perf_counter()
 opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
-early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=25, restore_best_weights=True)
-reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=25, min_lr=0.001)
+early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=100, restore_best_weights=True)
+reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=100, min_lr=0.0001)
 
 model = Sequential()
 model.add(Input(shape=(train_set_x.shape[1], train_set_x.shape[2])))
-model.add(Bidirectional(LSTM(units=64, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
-model.add(Bidirectional(LSTM(units=32, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
-model.add(Dense(units=24))
+model.add(Bidirectional(LSTM(units=128, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
+model.add(Bidirectional(LSTM(units=128, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
+model.add(Bidirectional(LSTM(units=128, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
+model.add(Bidirectional(LSTM(units=64, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
+model.add(Dense(units=horizon))
 model.summary()
 
 model.compile(optimizer=opt, loss='mse')
@@ -61,9 +65,11 @@ mse = mean_squared_error(test_set_y, test_res)
 mae = mean_absolute_error(test_set_y, test_res)
 mpe = mean_absolute_percentage_error(test_set_y, test_res)
 
-error_metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-with open('results/tests/combined_lstm/error_metrics.pickle', 'wb') as file:
-    pickle.dump(error_metrics, file, protocol=-1)
+metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
+with open('results/tests/combined_lstm/error_metrics.csv', 'w') as error_file:
+    w = csv.writer(error_file)
+    for key, value in metrics.items():
+        w.writerow([key, value])
 
 print('Mean Squared Error: ', mse)
 print('Mean Absolute Error: ', mae)
@@ -98,8 +104,10 @@ mae = mean_absolute_error(true_y, forecast)
 mpe = mean_absolute_percentage_error(true_y, forecast)
 
 error_metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-with open('results/tests/combined_lstm/error_metrics_thembisa.pickle', 'wb') as file:
-    pickle.dump(error_metrics, file, protocol=-1)
+with open('results/tests/combined_lstm/error_metrics_thembisa.csv', 'wb') as error_file:
+    w = csv.writer(error_file)
+    for key, value in error_metrics.items():
+        w.writerow([key, value])
 
 print('Thembisa')
 print('Mean Squared Error: ', mse)
