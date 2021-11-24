@@ -79,17 +79,17 @@ for idx, f in enumerate(files):
         train_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/train_sets/{sets[0]}').to_numpy()
         dev_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/dev_sets/{sets[1]}').to_numpy()
 
-        train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx], 24)
-        dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx], 24)
+        train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx], 1)
+        dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx], 1)
 
         i = 0
         while len(list(train_ds)) < 1:
-            train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx] - i, 24)
+            train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx] - i, 1)
             i += 1
 
         i = 0
         while len(list(dev_ds)) < 1:
-            dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx] - i, 24)
+            dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx] - i, 1)
             i += 1
 
         res = model.fit(x=train_ds, validation_data=dev_ds, epochs=epochs, shuffle=False,
@@ -125,7 +125,7 @@ for idx, f in enumerate(files):
     mae = mean_absolute_error(true_array, predictions_array)
     mpe = mean_absolute_percentage_error(true_array, predictions_array)
     metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-    with open(f'results/tests/individual_lstm/{f}/error_metrics_total.csv', 'w') as error_file:
+    with open(f'results/tests/individual_lstm/{f}/error_metrics_total_s1.csv', 'w') as error_file:
         w = csv.writer(error_file)
         for key, value in metrics.items():
             w.writerow([key, value])
@@ -142,7 +142,7 @@ for idx, f in enumerate(files):
     ax[0].legend()
     ax[0].set(ylabel=r'$PM_{2.5}$')
     ax[1].set(xlabel='Measurements', ylabel=r'$|y - \hat{y}|$')
-    fig.savefig(f'results/tests/individual_lstm/{f}/forecast_plots.png')
+    fig.savefig(f'results/tests/individual_lstm/{f}/forecast_plots_s1.png')
     plt.close()
 
     keras.backend.clear_session()
