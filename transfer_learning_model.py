@@ -37,5 +37,9 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_num, shift):
     return ds
 
 
-north_list = ['']
-south_list = ['']
+north_list = ['Anchorage', 'Oakland', 'Prague', 'Dhaka', 'Abidjan']
+south_list = ['Melbourne', 'Santiago', 'Sao Paulo', 'Thembisa']
+
+for n in range(len(north_list) + 1):
+    for loc in north_list[:n]:
+        print(loc)
