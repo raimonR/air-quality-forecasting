@@ -136,7 +136,7 @@ for f in files:
     ax[0].legend()
     ax[0].set(ylabel=r'$PM_{2.5}$')
     ax[1].set(xlabel='Measurements', ylabel=r'$|y - \hat{y}|$')
-    fig.savefig(f'results/tests/individual_lstm/{f}/forecast_plots.png')
+    fig.savefig(f'results/tests/multifit/forecast_plots.png')
     plt.close()
 
     mse = mean_squared_error(true_array, predictions_array)
