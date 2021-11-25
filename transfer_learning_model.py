@@ -108,12 +108,12 @@ for n in networks:
     model = keras.models.load_model(f'dataset/transfer_learning/neural_networks/{n}')
 
     for f in files:
-        test_sets = os.listdir(f'dataset/lstm_dataset_splits/individual/{f}/test_sets/')
+        test_sets = os.listdir(f'dataset/transfer_learning/{f}/test_sets/')
         predictions_array = np.array([])
         true_array = np.array([])
-        normalizer_y = load(f'dataset/lstm_dataset_splits/individual/{f}/normalizer_y.joblib')
+        normalizer_y = load(f'dataset/transfer_learning/{f}/normalizer_y.joblib')
         for sets in test_sets:
-            test_set = pd.read_pickle(f'dataset/lstm_dataset_splits/individual/{f}/test_sets/{sets}').to_numpy()
+            test_set = pd.read_pickle(f'dataset/transfer_learning/{f}/test_sets/{sets}').to_numpy()
             test_ds = generate_inputs_outputs(test_set, past, horizon, 128, 24)
 
             i = 0
