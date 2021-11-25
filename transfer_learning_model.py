@@ -40,6 +40,28 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_num, shift):
 north_list = ['Anchorage', 'Oakland', 'Prague', 'Dhaka', 'Abidjan']
 south_list = ['Melbourne', 'Santiago', 'Sao Paulo', 'Thembisa']
 
-for n in range(len(north_list) + 1):
+for n in range(1, len(north_list) + 1):
+    # Define hyperparameters and other parameters
+    epochs = 750
+    learning_rate = 1e-2
+    l1l2 = (0.0, 0.0)
+    n_features = 468
+    past = 48
+    horizon = 24
+    batch_numbers = [128]*9
+
+    opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
+    early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=60, restore_best_weights=True)
+    reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=60, min_lr=0.0001)
+
+    model = Sequential()
+    model.add(Input(shape=(past, n_features)))
+    model.add(Bidirectional(LSTM(units=128, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
+    model.add(Bidirectional(LSTM(units=128, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
+    model.add(Bidirectional(LSTM(units=64, kernel_regularizer=l1_l2(l1l2[0], l1l2[1]))))
+    model.add(Dense(units=horizon))
+    model.summary()
+
+    model.compile(optimizer=opt, loss='mse')
     for loc in north_list[:n]:
         print(loc)

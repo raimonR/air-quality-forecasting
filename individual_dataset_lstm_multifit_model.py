@@ -38,7 +38,7 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_num, shift):
 
 
 # Define hyperparameters and other parameters
-epochs = 750
+epochs = 1000
 learning_rate = 1e-2
 l1l2 = (0.0, 0.0)
 n_features = 468
@@ -47,8 +47,8 @@ horizon = 24
 batch_numbers = [128]*9
 
 opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
-early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=60, restore_best_weights=True)
-reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=60, min_lr=0.0001)
+early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=100, restore_best_weights=True)
+reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=100, min_lr=0.0001)
 
 model = Sequential()
 model.add(Input(shape=(past, n_features)))
