@@ -50,6 +50,7 @@ north_list = ['Anchorage', 'Oakland', 'Prague', 'Dhaka', 'Abidjan']
 south_list = ['Melbourne', 'Santiago', 'Sao Paulo', 'Thembisa']
 os.makedirs('dataset/transfer_learning/neural_networks/', exist_ok=True)
 for n in range(1, len(north_list) + 1):
+    print(f'Starting {north_list[:n]}')
     opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
     early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=100, restore_best_weights=True)
     reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=100, min_lr=0.0001)
