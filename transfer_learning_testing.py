@@ -9,9 +9,6 @@ import pandas as pd
 from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 import tensorflow as tf
 from tensorflow import keras
-from keras.models import Sequential
-from keras.layers import Input, LSTM, Dense, Bidirectional
-from keras.regularizers import l1_l2
 from tensorflow import autograph
 
 autograph.set_verbosity(0)
@@ -46,66 +43,15 @@ past = 48
 horizon = 24
 batch_numbers = 128
 
+opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
+early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=100, restore_best_weights=True)
+reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=100, min_lr=0.0001)
+
 north_list = ['Anchorage', 'Oakland', 'Prague', 'Dhaka', 'Abidjan']
 south_list = ['Melbourne', 'Santiago', 'Sao Paulo', 'Thembisa']
-os.makedirs('dataset/transfer_learning/neural_networks/', exist_ok=True)
-for n in range(1, len(north_list) + 1):
-    print(f'Starting {north_list[:n]}')
-    opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
-    early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=100, restore_best_weights=True)
-    reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=100, min_lr=0.0001)
-
-    model = Sequential()
-    model.add(Input(shape=(past, n_features)))
-    model.add(Bidirectional(LSTM(units=128, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
-    model.add(Bidirectional(LSTM(units=128, return_sequences=True, activity_regularizer=l1_l2(l1l2[0], l1l2[1]))))
-    model.add(Bidirectional(LSTM(units=64, kernel_regularizer=l1_l2(l1l2[0], l1l2[1])), name='transfer_learning'))
-    model.add(Dense(units=horizon, name='output'))
-    model.summary()
-
-    model.compile(optimizer=opt, loss='mse')
-
-    for loc in north_list[:n]:
-        train_sets = os.listdir(f'dataset/transfer_learning/{loc}/train_sets/')
-        dev_sets = os.listdir(f'dataset/transfer_learning/{loc}/dev_sets/')
-
-        n = np.floor(len(train_sets)/len(dev_sets)).astype(int)
-        dev_sets = np.concatenate([dev_sets for i in range(n)]).tolist()
-        for i in range(len(train_sets)%len(dev_sets)):
-            dev_sets.append(dev_sets[i])
-
-        zip_sets = list(zip_longest(train_sets, dev_sets))
-        t0 = time.perf_counter()
-        for sets in zip_sets:
-            train_set = pd.read_pickle(f'dataset/transfer_learning/{loc}/train_sets/{sets[0]}').to_numpy()
-            dev_set = pd.read_pickle(f'dataset/transfer_learning/{loc}/dev_sets/{sets[1]}').to_numpy()
-
-            train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers, 1)
-            dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers, 1)
-
-            i = 0
-            while len(list(train_ds)) < 1:
-                train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers - i, 1)
-                i += 1
-
-            i = 0
-            while len(list(dev_ds)) < 1:
-                dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers - i, 1)
-                i += 1
-
-            res = model.fit(x=train_ds, validation_data=dev_ds, epochs=epochs, shuffle=False,
-                            callbacks=[early_stopping, reduce_lr])
-
-            t1 = time.perf_counter()
-            print(f'Time for {early_stopping.stopped_epoch} epochs:', t1 - t0)
-
-    model.save(f'dataset/transfer_learning/neural_networks/tl_n{n}')
-
-    keras.backend.clear_session()
 
 os.makedirs('results/tests/transfer_learning/', exist_ok=True)
 networks = os.listdir('dataset/transfer_learning/neural_networks/')
-files = os.listdir('dataset/transfer_learning/').remove('neural_networks')
 for n in networks:
     model = keras.models.load_model(f'dataset/transfer_learning/neural_networks/{n}')
 
@@ -118,13 +64,13 @@ for n in networks:
     model.summary()
     model.compile(optimizer=opt, loss='mse')
 
-    for idx, f in enumerate(files):
+    for idx, f in enumerate(south_list):
         train_sets = os.listdir(f'dataset/transfer_learning/{f}/train_sets/')
         dev_sets = os.listdir(f'dataset/transfer_learning/{f}/dev_sets/')
 
         n = np.floor(len(train_sets)/len(dev_sets)).astype(int)
         dev_sets = np.concatenate([dev_sets for i in range(n)]).tolist()
-        for i in range(len(train_sets)%len(dev_sets)):
+        for i in range(len(train_sets) % len(dev_sets)):
             dev_sets.append(dev_sets[i])
 
         zip_sets = list(zip_longest(train_sets, dev_sets))
@@ -154,7 +100,7 @@ for n in networks:
 
         print(f'Done with {f}')
 
-    for f in files:
+    for f in south_list:
         os.makedirs(f'results/tests/transfer_learning/{f}/', exist_ok=True)
         test_sets = os.listdir(f'dataset/transfer_learning/{f}/test_sets/')
         predictions_array = np.array([])
@@ -203,6 +149,5 @@ for n in networks:
             w = csv.writer(error_file)
             for key, value in metrics.items():
                 w.writerow([key, value])
-
 
     keras.backend.clear_session()
