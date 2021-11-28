@@ -30,7 +30,7 @@ horizon = 24
 t0 = time.perf_counter()
 opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
 early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=100, restore_best_weights=True)
-reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=100, min_lr=0.0001)
+reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=50, min_lr=0.0001)
 
 model = Sequential()
 model.add(Input(shape=(train_set_x.shape[1], train_set_x.shape[2])))
