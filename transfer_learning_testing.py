@@ -45,7 +45,7 @@ batch_numbers = 128
 
 opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
 early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=100, restore_best_weights=True)
-reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=100, min_lr=0.0001)
+reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=50, min_lr=0.0001)
 
 north_list = ['Anchorage', 'Oakland', 'Prague', 'Dhaka', 'Abidjan']
 south_list = ['Melbourne', 'Santiago', 'Sao Paulo', 'Thembisa']
