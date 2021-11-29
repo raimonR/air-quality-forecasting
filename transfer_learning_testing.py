@@ -79,17 +79,17 @@ for n in networks:
             train_set = pd.read_pickle(f'dataset/transfer_learning/{f}/train_sets/{sets[0]}').to_numpy()
             dev_set = pd.read_pickle(f'dataset/transfer_learning/{f}/dev_sets/{sets[1]}').to_numpy()
 
-            train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx], 1)
-            dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx], 1)
+            train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers, 1)
+            dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers, 1)
 
             i = 0
             while len(list(train_ds)) < 1:
-                train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers[idx] - i, 1)
+                train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers - i, 1)
                 i += 1
 
             i = 0
             while len(list(dev_ds)) < 1:
-                dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers[idx] - i, 1)
+                dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers - i, 1)
                 i += 1
 
             res = model.fit(x=train_ds, validation_data=dev_ds, epochs=epochs, shuffle=False,
