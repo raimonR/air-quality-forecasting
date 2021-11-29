@@ -47,10 +47,9 @@ horizon = 24
 batch_numbers = 128
 
 north_list = ['Anchorage', 'Oakland', 'Prague', 'Dhaka', 'Abidjan']
-south_list = ['Melbourne', 'Santiago', 'Sao Paulo', 'Thembisa']
 os.makedirs('dataset/transfer_learning/neural_networks/', exist_ok=True)
-for n in range(1, len(north_list) + 1):
-    print(f'Starting {north_list[:n]}')
+for n_iter in range(1, len(north_list) + 1):
+    print(f'Starting {north_list[:n_iter]}')
     opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
     early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=100, restore_best_weights=True)
     reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=50, min_lr=0.0001)
@@ -65,7 +64,7 @@ for n in range(1, len(north_list) + 1):
 
     model.compile(optimizer=opt, loss='mse')
 
-    for loc in north_list[:n]:
+    for loc in north_list[:n_iter]:
         train_sets = os.listdir(f'dataset/transfer_learning/{loc}/train_sets/')
         dev_sets = os.listdir(f'dataset/transfer_learning/{loc}/dev_sets/')
 
@@ -99,6 +98,6 @@ for n in range(1, len(north_list) + 1):
             t1 = time.perf_counter()
             print(f'Time for {early_stopping.stopped_epoch} epochs:', t1 - t0)
 
-    model.save(f'dataset/transfer_learning/neural_networks/tl_n{n}')
+    model.save(f'dataset/transfer_learning/neural_networks/tl_n{n_iter}')
 
     keras.backend.clear_session()
