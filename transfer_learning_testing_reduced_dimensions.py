@@ -50,10 +50,10 @@ reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, pa
 north_list = ['Anchorage', 'Oakland', 'Prague', 'Dhaka', 'Abidjan']
 south_list = ['Melbourne', 'Santiago', 'Sao Paulo', 'Thembisa']
 
-os.makedirs('results/tests/transfer_learning/full_dim/', exist_ok=True)
-networks = os.listdir('dataset/transfer_learning/neural_networks/full_dim/')
+os.makedirs('results/tests/transfer_learning/', exist_ok=True)
+networks = os.listdir('dataset/transfer_learning/neural_networks/reduced_dim/')
 for n_networks in networks:
-    model = keras.models.load_model(f'dataset/transfer_learning/neural_networks/full_dim/{n}')
+    model = keras.models.load_model(f'dataset/transfer_learning/neural_networks/reduced_dim/{n}')
 
     for layer in model.layers:
         layer.trainable = False
@@ -76,8 +76,8 @@ for n_networks in networks:
         zip_sets = list(zip_longest(train_sets, dev_sets))
         t0 = time.perf_counter()
         for sets in zip_sets:
-            train_set = pd.read_pickle(f'dataset/transfer_learning/{f}/train_sets/{sets[0]}').to_numpy()
-            dev_set = pd.read_pickle(f'dataset/transfer_learning/{f}/dev_sets/{sets[1]}').to_numpy()
+            train_set = pd.read_pickle(f'dataset/transfer_learning/{f}/train_sets/{sets[0]}').to_numpy()[:, :18]
+            dev_set = pd.read_pickle(f'dataset/transfer_learning/{f}/dev_sets/{sets[1]}').to_numpy()[:, :18]
 
             train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers, 1)
             dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers, 1)
@@ -100,13 +100,13 @@ for n_networks in networks:
 
         print(f'Done with training {f}')
 
-        os.makedirs(f'results/tests/transfer_learning/full_dim/{f}/', exist_ok=True)
+        os.makedirs(f'results/tests/transfer_learning/reduced_dim/{f}/', exist_ok=True)
         test_sets = os.listdir(f'dataset/transfer_learning/{f}/test_sets/')
         predictions_array = np.array([])
         true_array = np.array([])
         normalizer_y = load(f'dataset/transfer_learning/{f}/normalizer_y.joblib')
         for sets in test_sets:
-            test_set = pd.read_pickle(f'dataset/transfer_learning/{f}/test_sets/{sets}').to_numpy()
+            test_set = pd.read_pickle(f'dataset/transfer_learning/{f}/test_sets/{sets}').to_numpy()[:, :18]
             test_ds = generate_inputs_outputs(test_set, past, horizon, 128, 24)
 
             i = 0
@@ -137,14 +137,14 @@ for n_networks in networks:
         ax[0].legend()
         ax[0].set(ylabel=r'$PM_{2.5}$')
         ax[1].set(xlabel='Measurements', ylabel=r'$|y - \hat{y}|$')
-        fig.savefig(f'results/tests/transfer_learning/full_dim/{f}/forecast_plots_individual_n{n_networks}.png')
+        fig.savefig(f'results/tests/transfer_learning/reduced_dim/{f}/forecast_plots_individual_n{n_networks}.png')
         plt.close()
 
         mse = mean_squared_error(true_array, predictions_array)
         mae = mean_absolute_error(true_array, predictions_array)
         mpe = mean_absolute_percentage_error(true_array, predictions_array)
         metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-        with open(f'results/tests/transfer_learning/full_dim/{f}/error_metrics_total_individual_n{n_networks}.csv', 'w') as error_file:
+        with open(f'results/tests/transfer_learning/reduced_dim/{f}/error_metrics_total_individual_n{n_networks}.csv', 'w') as error_file:
             w = csv.writer(error_file)
             for key, value in metrics.items():
                 w.writerow([key, value])

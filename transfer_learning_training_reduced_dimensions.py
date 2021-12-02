@@ -47,7 +47,7 @@ horizon = 24
 batch_numbers = 128
 
 north_list = ['Anchorage', 'Oakland', 'Prague', 'Dhaka', 'Abidjan']
-os.makedirs('dataset/transfer_learning/neural_networks/', exist_ok=True)
+os.makedirs('dataset/transfer_learning/neural_networks/reduced_dim/', exist_ok=True)
 for n_iter in range(1, len(north_list) + 1):
     print(f'Starting {north_list[:n_iter]}')
     opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
@@ -76,11 +76,11 @@ for n_iter in range(1, len(north_list) + 1):
         zip_sets = list(zip_longest(train_sets, dev_sets))
         t0 = time.perf_counter()
         for sets in zip_sets:
-            train_set = pd.read_pickle(f'dataset/transfer_learning/{loc}/train_sets/{sets[0]}').to_numpy()
-            dev_set = pd.read_pickle(f'dataset/transfer_learning/{loc}/dev_sets/{sets[1]}').to_numpy()
+            train_set = pd.read_pickle(f'dataset/transfer_learning/{loc}/train_sets/{sets[0]}').to_numpy()[:, :18]
+            dev_set = pd.read_pickle(f'dataset/transfer_learning/{loc}/dev_sets/{sets[1]}').to_numpy()[:, :18]
 
-            train_ds = generate_inputs_outputs(train_set[:, :18], past, horizon, batch_numbers, 1)
-            dev_ds = generate_inputs_outputs(dev_set[:, :18], past, horizon, batch_numbers, 1)
+            train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers, 1)
+            dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers, 1)
 
             i = 0
             while len(list(train_ds)) < 1:
@@ -98,6 +98,6 @@ for n_iter in range(1, len(north_list) + 1):
             t1 = time.perf_counter()
             print(f'Time for {early_stopping.stopped_epoch} epochs:', t1 - t0)
 
-    model.save(f'dataset/transfer_learning/neural_networks/tl_reduced_dim_n{n_iter}')
+    model.save(f'dataset/transfer_learning/neural_networks/reduced_dim/tl_n{n_iter}')
 
     keras.backend.clear_session()

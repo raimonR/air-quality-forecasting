@@ -47,7 +47,7 @@ horizon = 24
 batch_numbers = 128
 
 north_list = ['Anchorage', 'Oakland', 'Prague', 'Dhaka', 'Abidjan']
-os.makedirs('dataset/transfer_learning/neural_networks/', exist_ok=True)
+os.makedirs('dataset/transfer_learning/neural_networks/full_dim/', exist_ok=True)
 for n_iter in range(1, len(north_list) + 1):
     print(f'Starting {north_list[:n_iter]}')
     opt = keras.optimizers.Nadam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-07, name="Nadam")
@@ -98,6 +98,6 @@ for n_iter in range(1, len(north_list) + 1):
             t1 = time.perf_counter()
             print(f'Time for {early_stopping.stopped_epoch} epochs:', t1 - t0)
 
-    model.save(f'dataset/transfer_learning/neural_networks/tl_n{n_iter}')
+    model.save(f'dataset/transfer_learning/neural_networks/full_dim/tl_n{n_iter}')
 
     keras.backend.clear_session()
