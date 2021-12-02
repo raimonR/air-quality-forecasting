@@ -53,7 +53,7 @@ south_list = ['Melbourne', 'Santiago', 'Sao Paulo', 'Thembisa']
 os.makedirs('results/tests/transfer_learning/full_dim/', exist_ok=True)
 networks = os.listdir('dataset/transfer_learning/neural_networks/full_dim/')
 for n_networks in networks:
-    model = keras.models.load_model(f'dataset/transfer_learning/neural_networks/full_dim/{n}')
+    model = keras.models.load_model(f'dataset/transfer_learning/neural_networks/full_dim/{n_networks}')
 
     for layer in model.layers:
         layer.trainable = False

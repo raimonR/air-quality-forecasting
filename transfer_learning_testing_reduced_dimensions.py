@@ -38,7 +38,7 @@ def generate_inputs_outputs(data, n_past, n_horizon, batch_num, shift):
 epochs = 1000
 learning_rate = 1e-2
 l1l2 = (0.0, 0.0)
-n_features = 468
+n_features = 18
 past = 48
 horizon = 24
 batch_numbers = 128
@@ -53,7 +53,7 @@ south_list = ['Melbourne', 'Santiago', 'Sao Paulo', 'Thembisa']
 os.makedirs('results/tests/transfer_learning/', exist_ok=True)
 networks = os.listdir('dataset/transfer_learning/neural_networks/reduced_dim/')
 for n_networks in networks:
-    model = keras.models.load_model(f'dataset/transfer_learning/neural_networks/reduced_dim/{n}')
+    model = keras.models.load_model(f'dataset/transfer_learning/neural_networks/reduced_dim/{n_networks}')
 
     for layer in model.layers:
         layer.trainable = False
@@ -76,8 +76,8 @@ for n_networks in networks:
         zip_sets = list(zip_longest(train_sets, dev_sets))
         t0 = time.perf_counter()
         for sets in zip_sets:
-            train_set = pd.read_pickle(f'dataset/transfer_learning/{f}/train_sets/{sets[0]}').to_numpy()[:, :18]
-            dev_set = pd.read_pickle(f'dataset/transfer_learning/{f}/dev_sets/{sets[1]}').to_numpy()[:, :18]
+            train_set = pd.read_pickle(f'dataset/transfer_learning/{f}/train_sets/{sets[0]}').to_numpy()[:, :n_features]
+            dev_set = pd.read_pickle(f'dataset/transfer_learning/{f}/dev_sets/{sets[1]}').to_numpy()[:, :n_features]
 
             train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers, 1)
             dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers, 1)
@@ -106,7 +106,7 @@ for n_networks in networks:
         true_array = np.array([])
         normalizer_y = load(f'dataset/transfer_learning/{f}/normalizer_y.joblib')
         for sets in test_sets:
-            test_set = pd.read_pickle(f'dataset/transfer_learning/{f}/test_sets/{sets}').to_numpy()[:, :18]
+            test_set = pd.read_pickle(f'dataset/transfer_learning/{f}/test_sets/{sets}').to_numpy()[:, :n_features]
             test_ds = generate_inputs_outputs(test_set, past, horizon, 128, 24)
 
             i = 0

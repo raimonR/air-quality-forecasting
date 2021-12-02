@@ -76,8 +76,8 @@ for n_iter in range(1, len(north_list) + 1):
         zip_sets = list(zip_longest(train_sets, dev_sets))
         t0 = time.perf_counter()
         for sets in zip_sets:
-            train_set = pd.read_pickle(f'dataset/transfer_learning/{loc}/train_sets/{sets[0]}').to_numpy()[:, :18]
-            dev_set = pd.read_pickle(f'dataset/transfer_learning/{loc}/dev_sets/{sets[1]}').to_numpy()[:, :18]
+            train_set = pd.read_pickle(f'dataset/transfer_learning/{loc}/train_sets/{sets[0]}').to_numpy()[:, :n_features]
+            dev_set = pd.read_pickle(f'dataset/transfer_learning/{loc}/dev_sets/{sets[1]}').to_numpy()[:, :n_features]
 
             train_ds = generate_inputs_outputs(train_set, past, horizon, batch_numbers, 1)
             dev_ds = generate_inputs_outputs(dev_set, past, horizon, batch_numbers, 1)
