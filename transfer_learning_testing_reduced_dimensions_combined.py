@@ -138,7 +138,7 @@ for n_networks in networks:
         ax[0].legend()
         ax[0].set(ylabel=r'$PM_{2.5}$')
         ax[1].set(xlabel='Measurements', ylabel=r'$|y - \hat{y}|$')
-        fig.savefig(f'results/tests/transfer_learning/reduced_dim{f}/forecast_plots_n{n_networks}.png')
+        fig.savefig(f'results/tests/transfer_learning/reduced_dim/{f}/forecast_plots_n{n_networks}.png')
         plt.close()
 
         mse = mean_squared_error(true_array, predictions_array)
