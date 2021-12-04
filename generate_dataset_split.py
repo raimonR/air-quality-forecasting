@@ -162,6 +162,21 @@ def grouped_dataset_split(rng_int: int):
     for f in files:
         df_temp = pd.read_pickle(f'dataset/merged/{f}')
 
+        if f.split('_')[0] == 'Dhaka':
+            df_temp.loc['2018-07':'2019-06', 'pm25'] = np.nan
+        elif f.split('_')[0] == 'Oakland':
+            df_temp.loc[:, 'dewpoint'] = 0
+            df_temp.loc[:, 'visibility'] = 0
+        elif f.split('_')[0] == 'Melbourne':
+            df_temp = df_temp.loc[:'2021-04-19', :]
+            df_temp.loc[:, 'visibility'] = 0
+        elif f.split('_')[0] == 'Prague':
+            df_temp = df_temp.loc['2017-10':, :]
+        elif f.split('_')[0] == 'Santiago':
+            df_temp = df_temp.loc['2016-02':, :]
+        elif f.split('_')[0] == 'Thembisa':
+            df_temp = df_temp.loc['2019-03':, :]
+
         min_index = df_temp.index[0]
         if min_index.hour != 0:
             min_index = df_temp.index[df_temp.index.hour == 0][0]
@@ -419,6 +434,118 @@ def transfer_dataset_split():
     print('done')
 
 
-individual_dataset_split()
+def non_sequential_spilt(rng_int: int):
+    rng = np.random.default_rng(rng_int)
+    files = os.listdir('dataset/merged/')
+    for f in files:
+        set_x = []
+        set_y = []
+        df_temp = pd.read_pickle(f'dataset/merged/{f}')
+
+        if f.split('_')[0] == 'Dhaka':
+            df_temp.loc['2018-07':'2019-06', 'pm25'] = np.nan
+        elif f.split('_')[0] == 'Oakland':
+            df_temp.loc[:, 'dewpoint'] = 0
+            df_temp.loc[:, 'visibility'] = 0
+        elif f.split('_')[0] == 'Melbourne':
+            df_temp = df_temp.loc[:'2021-04-19', :]
+            df_temp.loc[:, 'visibility'] = 0
+        elif f.split('_')[0] == 'Prague':
+            df_temp = df_temp.loc['2017-10':, :]
+        elif f.split('_')[0] == 'Santiago':
+            df_temp = df_temp.loc['2016-02':, :]
+        elif f.split('_')[0] == 'Thembisa':
+            df_temp = df_temp.loc['2019-03':, :]
+
+        min_index = df_temp.index[0]
+        if min_index.hour != 0:
+            min_index = df_temp.index[df_temp.index.hour == 0][0]
+
+        max_index = df_temp.index[-1]
+        if max_index.hour != 0:
+            max_index = df_temp.index[df_temp.index.hour == 0][-1]
+
+        cal = np.arange(min_index, max_index, step=np.timedelta64(1, 'D'), dtype='datetime64')
+        n = np.floor(cal.shape[0]/2*0.9).astype(int)
+        cal = rng.choice(cal, n, replace=False, shuffle=False)
+        for day in cal:
+            if df_temp.loc[day:(day + np.timedelta64(71, 'h')), :].shape[0] < 72:
+                continue
+
+            if (df_temp.loc[day:(day + np.timedelta64(71, 'h')), :].isna().sum() > 6).any():
+                continue
+            else:
+                x_df = df_temp.loc[day:(day + np.timedelta64(47, 'h')), :].interpolate()
+
+            if (df_temp.loc[(day + np.timedelta64(2, 'D')):(day + np.timedelta64(71, 'h')), 'pm25'].isna().sum() > 6).any():
+                continue
+            else:
+                y_df = df_temp.loc[(day + np.timedelta64(2, 'D')):(day + np.timedelta64(71, 'h')), 'pm25'].interpolate()
+
+            set_x.append(x_df)
+            set_y.append(y_df.values)
+
+        print(f'Approx. number of {f.split("_")[0]} elements: {n}')
+
+        set_x = np.array(set_x)
+        set_y = np.array(set_y)
+        set_y = set_y.reshape(set_y.shape[0], set_y.shape[1], 1)
+
+        num = set_x.shape[0]
+        split_1 = int(num*0.8)
+        split_2 = int(num*0.9)
+
+        train_set_x, train_set_y = set_x[:split_1], set_y[:split_1]
+        dev_set_x, dev_set_y = set_x[split_1:split_2], set_y[split_1:split_2]
+        test_set_x, test_set_y = set_x[split_2:], set_y[split_2:]
+
+        normalizer_x = StandardScaler()
+        normalizer_y = StandardScaler()
+        train_set_y[:, :, 0] = normalizer_y.fit_transform(train_set_y.squeeze())
+        dev_set_y[:, :, 0] = normalizer_y.transform(dev_set_y[:, :, 0])
+        test_set_y[:, :, 0] = normalizer_y.transform(test_set_y[:, :, 0])
+
+        for i in range(18):
+            train_set_x[:, :, i] = normalizer_x.fit_transform(train_set_x[:, :, i])
+            dev_set_x[:, :, i] = normalizer_x.transform(dev_set_x[:, :, i])
+            test_set_x[:, :, i] = normalizer_x.transform(test_set_x[:, :, i])
+
+        for i in range(train_set_x.shape[1]):
+            train_set_x[:, i, -450:-300] = normalizer_x.fit_transform(train_set_x[:, i, -450:-300])
+            dev_set_x[:, i, -450:-300] = normalizer_x.transform(dev_set_x[:, i, -450:-300])
+            test_set_x[:, i, -450:-300] = normalizer_x.transform(test_set_x[:, i, -450:-300])
+
+            train_set_x[:, i, -300:-150] = normalizer_x.fit_transform(train_set_x[:, i, -300:-150])
+            dev_set_x[:, i, -300:-150] = normalizer_x.transform(dev_set_x[:, i, -300:-150])
+            test_set_x[:, i, -300:-150] = normalizer_x.transform(test_set_x[:, i, -300:-150])
+
+            train_set_x[:, i, -150:] = normalizer_x.fit_transform(train_set_x[:, i, -150:])
+            dev_set_x[:, i, -150:] = normalizer_x.transform(dev_set_x[:, i, -150:])
+            test_set_x[:, i, -150:] = normalizer_x.transform(test_set_x[:, i, -150:])
+
+        os.makedirs(f'dataset/non_sequential_splits/{f.split("_")[0]}/', exist_ok=True)
+        dump(normalizer_y, f'dataset/non_sequential_splits/{f.split("_")[0]}/normalizer_y.joblib')
+
+        train_set_x = np.nan_to_num(train_set_x)
+        train_set_y = np.nan_to_num(train_set_y)
+        dev_set_x = np.nan_to_num(dev_set_x)
+        dev_set_y = np.nan_to_num(dev_set_y)
+        test_set_x = np.nan_to_num(test_set_x)
+        test_set_y = np.nan_to_num(test_set_y)
+
+        np.save(f'dataset/non_sequential_splits/{f.split("_")[0]}/train_set_x', train_set_x)
+        np.save(f'dataset/non_sequential_splits/{f.split("_")[0]}/train_set_y', train_set_y)
+        np.save(f'dataset/non_sequential_splits/{f.split("_")[0]}/dev_set_x', dev_set_x)
+        np.save(f'dataset/non_sequential_splits/{f.split("_")[0]}/dev_set_y', dev_set_y)
+        np.save(f'dataset/non_sequential_splits/{f.split("_")[0]}/test_set_x', test_set_x)
+        np.save(f'dataset/non_sequential_splits/{f.split("_")[0]}/test_set_y', test_set_y)
+
+        print(f'done with {f.split("_")[0]}')
+
+    print('done')
+
+
+# individual_dataset_split()
 grouped_dataset_split(0)
-transfer_dataset_split()
+# transfer_dataset_split()
+non_sequential_spilt(0)
