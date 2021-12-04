@@ -38,7 +38,7 @@ model.compile(optimizer=opt, loss='mse')
 
 files = os.listdir('dataset/non_sequential_splits/')
 for idx, f in enumerate(files):
-    os.makedirs(f'results/tests/non_sequential_splits/{f}/', exist_ok=True)
+    os.makedirs(f'results/tests/non_sequential_splits/individual/{f}/', exist_ok=True)
     train_set_x = np.load(f'dataset/non_sequential_splits/{f}/train_set_x.npy')
     train_set_y = np.load(f'dataset/non_sequential_splits/{f}/train_set_y.npy')
     dev_set_x = np.load(f'dataset/non_sequential_splits/{f}/dev_set_x.npy')
@@ -65,7 +65,7 @@ for idx, f in enumerate(files):
     mae = mean_absolute_error(test_set_y, test_res)
     mpe = mean_absolute_percentage_error(test_set_y, test_res)
     metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-    with open(f'results/tests/non_sequential_splits/{f}/error_metrics_total.csv', 'w') as error_file:
+    with open(f'results/tests/non_sequential_splits/individual/{f}/error_metrics_total.csv', 'w') as error_file:
         w = csv.writer(error_file)
         for key, value in metrics.items():
             w.writerow([key, value])
@@ -82,7 +82,7 @@ for idx, f in enumerate(files):
     ax[0].legend()
     ax[0].set(ylabel=r'$PM_{2.5}$')
     ax[1].set(xlabel='Measurements', ylabel=r'$|y - \hat{y}|$')
-    fig.savefig(f'results/tests/non_sequential_splits/{f}/forecast_plots.png')
+    fig.savefig(f'results/tests/non_sequential_splits/individual/{f}/forecast_plots.png')
     plt.close()
 
     keras.backend.clear_session()
