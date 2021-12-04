@@ -49,6 +49,6 @@ for n_iter in range(1, len(north_list) + 1):
         t1 = time.perf_counter()
         print(f'Time for {early_stopping.stopped_epoch} epochs:', t1 - t0)
 
-    model.save(f'dataset/non_sequential_splits/neural_networks/full_dim/tl_n{n_iter}')
+    model.save(f'dataset/non_sequential_splits/neural_networks/reduced_dim/tl_n{n_iter}')
 
     keras.backend.clear_session()
