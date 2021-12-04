@@ -62,6 +62,10 @@ for f in files:
 
     test_res = model.predict(test_set_x)
 
+    # rescale back from minmax normalizer
+    test_res = normalizer_y.inverse_transform(test_res)
+    test_set_y = normalizer_y.inverse_transform(test_set_y.squeeze())
+
     mse = mean_squared_error(test_set_y, test_res)
     mae = mean_absolute_error(test_set_y, test_res)
     mpe = mean_absolute_percentage_error(test_set_y, test_res)
