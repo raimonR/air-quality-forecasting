@@ -37,10 +37,10 @@ for n_iter in range(1, len(north_list) + 1):
     model.compile(optimizer=opt, loss='mse')
 
     for loc in north_list[:n_iter]:
-        train_set_x = np.load(f'dataset/non_sequential_splits/{loc}/train_set_x.npy')[:, :n_features]
-        train_set_y = np.load(f'dataset/non_sequential_splits/{loc}/train_set_y.npy')[:, :n_features]
-        dev_set_x = np.load(f'dataset/non_sequential_splits/{loc}/dev_set_x.npy')[:, :n_features]
-        dev_set_y = np.load(f'dataset/non_sequential_splits/{loc}/dev_set_y.npy')[:, :n_features]
+        train_set_x = np.load(f'dataset/non_sequential_splits/{loc}/train_set_x.npy')[:, :, :n_features]
+        train_set_y = np.load(f'dataset/non_sequential_splits/{loc}/train_set_y.npy')[:, :, :n_features]
+        dev_set_x = np.load(f'dataset/non_sequential_splits/{loc}/dev_set_x.npy')[:, :, :n_features]
+        dev_set_y = np.load(f'dataset/non_sequential_splits/{loc}/dev_set_y.npy')[:, :, :n_features]
 
         t0 = time.perf_counter()
         res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y), epochs=epochs,
