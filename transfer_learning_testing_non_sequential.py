@@ -2,10 +2,8 @@ import os
 import time
 import csv
 from joblib import load
-from itertools import zip_longest
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
 from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 import tensorflow as tf
 from tensorflow import keras
@@ -28,7 +26,7 @@ north_list = ['Anchorage', 'Oakland', 'Prague', 'Dhaka', 'Abidjan']
 south_list = ['Melbourne', 'Santiago', 'Sao Paulo', 'Thembisa']
 
 os.makedirs('results/tests/non_sequential_splits/transfer_learning/full_dim/', exist_ok=True)
-networks = os.listdir('dataset/non_sequential_splits/neural_networks/')
+networks = os.listdir('dataset/non_sequential_splits/neural_networks/full_dim/')
 for n_networks in networks:
     model = keras.models.load_model(f'dataset/non_sequential_splits/neural_networks/full_dim/{n_networks}')
 
