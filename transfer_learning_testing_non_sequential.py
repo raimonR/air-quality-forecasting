@@ -30,7 +30,7 @@ south_list = ['Melbourne', 'Santiago', 'Sao Paulo', 'Thembisa']
 os.makedirs('results/tests/non_sequential_splits/transfer_learning/full_dim/', exist_ok=True)
 networks = os.listdir('dataset/non_sequential_splits/neural_networks/')
 for n_networks in networks:
-    model = keras.models.load_model(f'dataset/transfer_learning/neural_networks/full_dim/{n_networks}')
+    model = keras.models.load_model(f'dataset/non_sequential_splits/neural_networks/full_dim/{n_networks}')
 
     for layer in model.layers:
         layer.trainable = False
