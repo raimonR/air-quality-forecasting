@@ -65,9 +65,6 @@ for n_networks in networks:
         test_res = normalizer_y.inverse_transform(test_res)
         test_set_y = normalizer_y.inverse_transform(test_set_y.squeeze())
 
-        print(test_res.shape)
-        print(test_set_y.shape)
-
         mse = mean_squared_error(test_set_y, test_res)
         mae = mean_absolute_error(test_set_y, test_res)
         mpe = mean_absolute_percentage_error(test_set_y, test_res)
@@ -81,6 +78,9 @@ for n_networks in networks:
             i = test_res.shape[0]
         else:
             i = 240
+
+        test_res = np.concatenate(test_res)
+        test_set_y = np.concatenate(test_set_y)
 
         fig, ax = plt.subplots(nrows=2, sharex=True)
         ax[0].plot(test_set_y[:i], label=r'$y$')

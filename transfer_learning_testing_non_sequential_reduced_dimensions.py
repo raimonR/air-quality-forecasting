@@ -79,6 +79,9 @@ for n_networks in networks:
         else:
             i = 240
 
+        test_res = np.concatenate(test_res)
+        test_set_y = np.concatenate(test_set_y)
+
         fig, ax = plt.subplots(nrows=2, sharex=True)
         ax[0].plot(test_set_y[:i], label=r'$y$')
         ax[0].plot(test_res[:i], label=r'$\hat{y}$')
