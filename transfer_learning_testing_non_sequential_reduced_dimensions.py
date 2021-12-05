@@ -74,13 +74,13 @@ for n_networks in networks:
             for key, value in metrics.items():
                 w.writerow([key, value])
 
+        test_res = np.concatenate(test_res)
+        test_set_y = np.concatenate(test_set_y)
+
         if test_res.shape[0] < 240:
             i = test_res.shape[0]
         else:
             i = 240
-
-        test_res = np.concatenate(test_res)
-        test_set_y = np.concatenate(test_set_y)
 
         fig, ax = plt.subplots(nrows=2, sharex=True)
         ax[0].plot(test_set_y[:i], label=r'$y$')

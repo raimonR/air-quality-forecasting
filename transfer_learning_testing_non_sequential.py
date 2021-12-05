@@ -47,7 +47,7 @@ for n_networks in networks:
 
         t0 = time.perf_counter()
         res = model.fit(x=train_set_x, y=train_set_y, validation_data=(dev_set_x, dev_set_y), epochs=epochs,
-                        shuffle=False, callbacks=[early_stopping, reduce_lr])
+            shuffle=False, callbacks=[early_stopping, reduce_lr])
 
         t1 = time.perf_counter()
         print(f'Time for {early_stopping.stopped_epoch} epochs:', t1 - t0)
@@ -74,13 +74,13 @@ for n_networks in networks:
             for key, value in metrics.items():
                 w.writerow([key, value])
 
+        test_res = np.concatenate(test_res)
+        test_set_y = np.concatenate(test_set_y)
+
         if test_res.shape[0] < 240:
             i = test_res.shape[0]
         else:
             i = 240
-
-        test_res = np.concatenate(test_res)
-        test_set_y = np.concatenate(test_set_y)
 
         fig, ax = plt.subplots(nrows=2, sharex=True)
         ax[0].plot(test_set_y[:i], label=r'$y$')

@@ -75,6 +75,9 @@ for f in files:
         for key, value in metrics.items():
             w.writerow([key, value])
 
+    test_res = np.concatenate(test_res)
+    test_set_y = np.concatenate(test_set_y)
+
     if test_res.shape[0] < 240:
         i = test_res.shape[0]
     else:
