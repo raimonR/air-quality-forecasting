@@ -70,7 +70,7 @@ for n_networks in networks:
         mae = mean_absolute_error(test_set_y, test_res)
         mpe = mean_absolute_percentage_error(test_set_y, test_res)
         metrics = {'Mean Squared Error': mse, 'Mean Absolute Error': mae, 'Mean Absolute Percentage Error': mpe}
-        with open(f'results/tests/non_sequential_splits/transfer_learning/reduced_dim/{f}/error_metrics_total.csv', 'w') as error_file:
+        with open(f'results/tests/non_sequential_splits/transfer_learning/reduced_dim/{f}/error_metrics_total_{n_networks}.csv', 'w') as error_file:
             w = csv.writer(error_file)
             for key, value in metrics.items():
                 w.writerow([key, value])
@@ -90,7 +90,7 @@ for n_networks in networks:
         ax[0].legend()
         ax[0].set(ylabel=r'$PM_{2.5}$')
         ax[1].set(xlabel='Measurements', ylabel=r'$|y - \hat{y}|$')
-        fig.savefig(f'results/tests/non_sequential_splits/transfer_learning/reduced_dim/{f}/forecast_plots.png')
+        fig.savefig(f'results/tests/non_sequential_splits/transfer_learning/reduced_dim/{f}/forecast_plots_{n_networks}.png')
         plt.close()
 
     keras.backend.clear_session()
