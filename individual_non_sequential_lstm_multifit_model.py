@@ -35,7 +35,8 @@ model.summary()
 
 model.compile(optimizer=opt, loss='mse')
 
-files = os.listdir('dataset/non_sequential_splits/').remove('neural_networks')
+files = os.listdir('dataset/non_sequential_splits/')
+files.remove('neural_networks')
 for idx, f in enumerate(files):
     train_set_x = np.load(f'dataset/non_sequential_splits/{f}/train_set_x.npy')
     train_set_y = np.load(f'dataset/non_sequential_splits/{f}/train_set_y.npy')
