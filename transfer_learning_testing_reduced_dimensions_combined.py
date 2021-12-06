@@ -151,3 +151,5 @@ for n_networks in networks:
                 w.writerow([key, value])
 
     keras.backend.clear_session()
+
+print('done with reduced_dims')

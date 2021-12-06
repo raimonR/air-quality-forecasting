@@ -98,7 +98,7 @@ for n_networks in networks:
             t1 = time.perf_counter()
             print(f'Time for {early_stopping.stopped_epoch} epochs:', t1 - t0)
 
-        print(f'Done with training {f}')
+        print(f'Done with {f}')
 
         os.makedirs(f'results/tests/transfer_learning/reduced_dim/{f}/', exist_ok=True)
         test_sets = os.listdir(f'dataset/transfer_learning/{f}/test_sets/')
@@ -150,3 +150,5 @@ for n_networks in networks:
                 w.writerow([key, value])
 
     keras.backend.clear_session()
+
+print('done with reduced_dims')
