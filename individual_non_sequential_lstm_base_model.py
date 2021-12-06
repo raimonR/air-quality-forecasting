@@ -4,7 +4,6 @@ import csv
 from joblib import load
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
 from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 import tensorflow as tf
 from tensorflow import keras
@@ -36,7 +35,7 @@ model.summary()
 
 model.compile(optimizer=opt, loss='mse')
 
-files = os.listdir('dataset/non_sequential_splits/')
+files = os.listdir('dataset/non_sequential_splits/').remove('neural_networks')
 for idx, f in enumerate(files):
     os.makedirs(f'results/tests/non_sequential_splits/individual/{f}/', exist_ok=True)
     train_set_x = np.load(f'dataset/non_sequential_splits/{f}/train_set_x.npy')

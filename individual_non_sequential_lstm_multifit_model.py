@@ -1,10 +1,8 @@
 import os
 import time
 import numpy as np
-import pandas as pd
 import csv
 from joblib import load
-from itertools import zip_longest
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 import tensorflow as tf
@@ -12,7 +10,6 @@ from tensorflow import keras
 from keras.models import Sequential
 from keras.layers import Input, LSTM, Dense, Bidirectional
 from keras.regularizers import l1_l2
-from tensorflow import autograph
 
 
 # Define hyperparameters and other parameters
@@ -38,7 +35,7 @@ model.summary()
 
 model.compile(optimizer=opt, loss='mse')
 
-files = os.listdir('dataset/non_sequential_splits/')
+files = os.listdir('dataset/non_sequential_splits/').remove('neural_networks')
 for idx, f in enumerate(files):
     train_set_x = np.load(f'dataset/non_sequential_splits/{f}/train_set_x.npy')
     train_set_y = np.load(f'dataset/non_sequential_splits/{f}/train_set_y.npy')
